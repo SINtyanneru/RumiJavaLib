@@ -1,0 +1,31 @@
+plugins {
+	id 'com.github.johnrengelman.shadow' version '8.1.1'
+	id 'java'
+}
+
+group = 'rumi_java_lib'
+version = '1.0'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	//SQL
+	implementation("org.mariadb.jdbc:mariadb-java-client:3.2.0")
+
+	//JSON
+	implementation("com.fasterxml.jackson.core:jackson-core:2.16.0")
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0")
+	implementation("com.fasterxml.jackson.core:jackson-annotations:2.16.0")
+}
+
+jar {
+	manifest {
+		attributes 'Main-Class': 'com.rumisystem.rumi_java_lib.Main'
+	}
+}
+
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+}
