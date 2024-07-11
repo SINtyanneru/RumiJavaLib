@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.checkerframework.checker.units.qual.K;
+
 public class ArrayNode {
 	private HashMap<Object, Object> NODE_DATA = new HashMap<>();
 

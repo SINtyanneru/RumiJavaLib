@@ -43,9 +43,9 @@ public class CONFIG {
 						DATA.get(SEKSHON).setDATA(KEY, TEXT.toString());
 					} else if(VAL.equals("true") || VAL.equals("false")) {
 						if(VAL.equals("true")){
-							DATA.setDATA(KEY, true);
+							DATA.get(SEKSHON).setDATA(KEY, true);
 						} else {
-							DATA.setDATA(KEY, true);
+							DATA.get(SEKSHON).setDATA(KEY, true);
 						}
 					} else if(VAL.matches("-?\\d+(\\.\\d+)?")) {
 						DATA.get(SEKSHON).setDATA(KEY, Integer.parseInt(VAL));
