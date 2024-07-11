@@ -66,6 +66,21 @@ public class ArrayNode {
 		}
 	}
 
+	public boolean asBool(Object KEY){
+		//キーはStringもしくはintか？
+		if(KEY instanceof String || KEY instanceof Integer){
+			//指定されたキーの値はIntなら値を返す
+			if(NODE_DATA.get(KEY) instanceof Boolean){
+				return (boolean) NODE_DATA.get(KEY);
+			} else {
+				//Boolじゃない
+				throw new RuntimeException("型がはBoolではありません");
+			}
+		} else {
+			throw new RuntimeException("キーはStringかiniしか使えません");
+		}
+	}
+
 	public Object asObject(Object KEY){
 		//キーはStringもしくはintか？
 		if(KEY instanceof String || KEY instanceof Integer){
