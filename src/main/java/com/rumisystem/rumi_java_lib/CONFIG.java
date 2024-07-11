@@ -1,7 +1,6 @@
 package com.rumisystem.rumi_java_lib;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class CONFIG {
