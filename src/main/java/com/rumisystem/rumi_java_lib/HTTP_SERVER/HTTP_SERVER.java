@@ -50,7 +50,12 @@ public class HTTP_SERVER {
 		@Override
 		public void handle(HttpExchange EXCHANGE) {
 			try {
-				LOG(LOG_TYPE.INFO, "HTTP Request:" + EXCHANGE.getRequestMethod() + " " + EXCHANGE.getRequestURI());
+				//禁止ワードが含まれていないならログを吐く
+				if(!EXCHANGE.getRequestURI().toString().contains("SESSION")){
+					LOG(LOG_TYPE.INFO, "HTTP Request:" + EXCHANGE.getRequestMethod() + " " + EXCHANGE.getRequestURI());
+				} else {
+					LOG(LOG_TYPE.INFO, "HTTP Request:" + EXCHANGE.getRequestMethod() + " ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+				}
 
 				//URIパラメーターを解析するやつ
 				HashMap<String, String> URI_PARAM_HM = new HashMap<String, String>();//URIパラメーターを解析した結果のハッシュマップ
