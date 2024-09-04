@@ -1,10 +1,10 @@
-package com.rumisystem.rumi_java_lib.WebSocket;
+package com.rumisystem.rumi_java_lib.WebSocket.Server;
 
-import com.rumisystem.rumi_java_lib.WebSocket.CONNECT_EVENT.CONNECT_EVENT;
-import com.rumisystem.rumi_java_lib.WebSocket.CONNECT_EVENT.CONNECT_EVENT_LISTENER;
-import com.rumisystem.rumi_java_lib.WebSocket.EVENT.CLOSE_EVENT;
-import com.rumisystem.rumi_java_lib.WebSocket.EVENT.MESSAGE_EVENT;
-import com.rumisystem.rumi_java_lib.WebSocket.EVENT.WS_EVENT_LISTENER;
+import com.rumisystem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT.CONNECT_EVENT;
+import com.rumisystem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT.CONNECT_EVENT_LISTENER;
+import com.rumisystem.rumi_java_lib.WebSocket.Server.EVENT.CLOSE_EVENT;
+import com.rumisystem.rumi_java_lib.WebSocket.Server.EVENT.MESSAGE_EVENT;
+import com.rumisystem.rumi_java_lib.WebSocket.Server.EVENT.WS_EVENT_LISTENER;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -12,7 +12,7 @@ import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
-import static com.rumisystem.rumi_java_lib.WebSocket.WebSocketSERVER.*;
+import static com.rumisystem.rumi_java_lib.WebSocket.Server.WebSocketSERVER.*;
 
 public class WS_HS extends WebSocketServer {
 	public WS_HS(InetSocketAddress ADDRESS) {

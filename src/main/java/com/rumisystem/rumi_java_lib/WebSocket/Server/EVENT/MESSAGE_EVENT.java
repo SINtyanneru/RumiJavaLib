@@ -1,4 +1,4 @@
-package com.rumisystem.rumi_java_lib.WebSocket.EVENT;
+package com.rumisystem.rumi_java_lib.WebSocket.Server.EVENT;
 
 import org.java_websocket.WebSocket;
 

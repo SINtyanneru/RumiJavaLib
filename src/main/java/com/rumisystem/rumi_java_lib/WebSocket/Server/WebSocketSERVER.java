@@ -1,6 +1,6 @@
-package com.rumisystem.rumi_java_lib.WebSocket;
+package com.rumisystem.rumi_java_lib.WebSocket.Server;
 
-import com.rumisystem.rumi_java_lib.WebSocket.CONNECT_EVENT.CONNECT_EVENT_LISTENER;
+import com.rumisystem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT.CONNECT_EVENT_LISTENER;
 
 import javax.swing.event.EventListenerList;
 import java.net.InetSocketAddress;
