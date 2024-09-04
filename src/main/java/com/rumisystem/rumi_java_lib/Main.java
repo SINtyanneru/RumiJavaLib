@@ -1,14 +1,41 @@
 package com.rumisystem.rumi_java_lib;
 
+import com.rumisystem.rumi_java_lib.WebSocket.CONNECT_EVENT.CONNECT_EVENT;
+import com.rumisystem.rumi_java_lib.WebSocket.CONNECT_EVENT.CONNECT_EVENT_LISTENER;
+import com.rumisystem.rumi_java_lib.WebSocket.EVENT.CLOSE_EVENT;
+import com.rumisystem.rumi_java_lib.WebSocket.EVENT.MESSAGE_EVENT;
+import com.rumisystem.rumi_java_lib.WebSocket.EVENT.WS_EVENT_LISTENER;
+import com.rumisystem.rumi_java_lib.WebSocket.WebSocketSERVER;
+
 public class Main {
 	public static void main(String[] args) {
-		SQL.CONNECT("192.168.0.130", "3306", "ACCOUNT", "rumiabot", "sin1234zxntv");
+		WebSocketSERVER WSS = new WebSocketSERVER();
 
-		ArrayNode RESULT = SQL.RUN("SELECT * FROM `ACCOUNT` LIMIT 10; ", new Object[]{});
+		WSS.SET_EVENT_VOID(new CONNECT_EVENT_LISTENER() {
+			@Override
+			public void CONNECT_EVENT(CONNECT_EVENT SESSION) {
+				System.out.println("新しい接続");
+				SESSION.SET_EVENT_LISTENER(new WS_EVENT_LISTENER() {
+					@Override
+					public void MESSAGE(MESSAGE_EVENT E) {
+						System.out.println(E.getMessage());
 
-		for(Object ROW:RESULT.asArrayList()){
-			ArrayNode ROOW = (ArrayNode) ROW;
-			System.out.println(ROOW.asObject("UID"));
-		}
+						E.SEND_MESSAGE("あいうえおおえおえお");
+					}
+
+					@Override
+					public void CLOSE(CLOSE_EVENT E) {
+						System.out.println("切断された");
+					}
+
+					@Override
+					public void EXCEPTION(Exception EX){
+						EX.printStackTrace();
+					}
+				});
+			}
+		});
+
+		WSS.START(8000);
 	}
 }
