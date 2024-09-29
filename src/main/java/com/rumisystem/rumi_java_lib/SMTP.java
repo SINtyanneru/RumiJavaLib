@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
@@ -16,7 +17,9 @@ import javax.naming.directory.Attribute;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.Hashtable;
+import java.util.Locale;
 
 public class SMTP {
 	private String MAIL_DOMAIN = null;
@@ -48,10 +51,11 @@ public class SMTP {
 		StringBuilder MAIL_DATA = new StringBuilder();
 		MAIL_DATA.append("From: " + MAIL_FROM + "\r\n");
 		MAIL_DATA.append("To: " + MAIL_TO + "\r\n");
+		MAIL_DATA.append("Date: " + new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH).format(new Date()) + "\r\n");
 		MAIL_DATA.append("Subject: =?UTF-8?B?" + BASE64(MAIL_SUB) + "?=\r\n");
 		MAIL_DATA.append("MIME-Version: 1.0\r\n");
 		MAIL_DATA.append("Content-Type: text/plain; charset=UTF-8\r\n");
-		MAIL_DATA.append("Content-Transfer-Encoding: 7bit\r\n");
+		MAIL_DATA.append("Content-Transfer-Encoding: base64\r\n");
 		MAIL_DATA.append("\r\n");
 		MAIL_DATA.append(BASE64(MAIL_TEXT) + "\r\n");
 
@@ -140,15 +144,17 @@ public class SMTP {
 
 	private String WAIT_MSG(BufferedReader BR, BufferedWriter BW) throws IOException {
 		StringBuilder RESULT = new StringBuilder();
-		char[] BUFFER = new char[1024];
-		//相手が送信し終わっていないか、何も読み込んでいない場合は続ける
-		while (BR.ready() || RESULT.length() == 0) {
-			int CHARS_READ = BR.read(BUFFER);
-			if (CHARS_READ > 0) {
-				RESULT.append(BUFFER, 0, CHARS_READ);
-			} else {
-				//ストリームの終わりに達した
-				break;
+		String LINE;
+
+		while ((LINE = BR.readLine()) != null) {
+			RESULT.append(LINE);
+
+			//長さは4以上ある
+			if (LINE.length() > 4) {
+				//ステータスコードの後が-ではない(例：X200-aaaa ○200 aaaa)
+				if (!String.valueOf(LINE.charAt(3)).equals("-")) {
+					break;
+				}
 			}
 		}
 
