@@ -21,6 +21,8 @@ dependencies {
 
 	//WebSocket
 	implementation("org.java-websocket:Java-WebSocket:1.5.2")
+
+	implementation("org.apache.sshd:sshd-core:2.14.0")
 }
 
 jar {
