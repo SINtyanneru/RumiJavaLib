@@ -33,8 +33,9 @@ public class SMTP {
 	private int PORT = 25;
 	private Socket SOCKET;
 
-	public SMTP(String DOMAIN, String FROM, String TO) throws IOException {
+	public SMTP(String DOMAIN, int PORT, String FROM, String TO) throws IOException {
 		this.MAIL_DOMAIN = DOMAIN;
+		this.PORT = PORT;
 		this.MAIL_FROM = FROM;
 		this.MAIL_TO = TO;
 	}
