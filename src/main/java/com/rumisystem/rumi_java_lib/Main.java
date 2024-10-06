@@ -9,13 +9,37 @@ import com.rumisystem.rumi_java_lib.Socket.Server.EVENT.CONNECT_EVENT;
 import com.rumisystem.rumi_java_lib.Socket.Server.EVENT.MESSAGE_EVENT;
 import com.rumisystem.rumi_java_lib.Socket.Server.SocketSERVER;
 
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 public class Main {
 	public static void main(String[] args) {
 		try {
-			SMTP smtp = new SMTP("192.168.100.120", "noreply@rumiserver.com", "rumisan@rumiserver.com");
-			smtp.SET_SUBJECT("テスト");
-			smtp.ADD_TEXT("aaaaaaaaaa");
-			smtp.SEND();
+			TSL SSL = new TSL(
+					"/home/rumisan/source/fullchain.pem",
+					"/home/rumisan/source/privkey.pem",
+					"smtp.rumiserver.com"
+			);
+
+			SSLServerSocket SS = SSL.CreateSocket(4545);
+			while (true) {
+				SSLSocket SOCKET = (SSLSocket) SS.accept();
+				System.out.println("NEW Client");
+
+				BufferedReader BR = new BufferedReader(new InputStreamReader(SOCKET.getInputStream()));
+				BufferedWriter BW = new BufferedWriter(new OutputStreamWriter(SOCKET.getOutputStream()));
+
+				String LINE;
+				while ((LINE = BR.readLine()) != null) {
+					System.out.println("←" + LINE);
+				}
+			}
 
 			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
