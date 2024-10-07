@@ -55,18 +55,18 @@ public class SSHServer {
 
 		SSHD.setShellFactory(new ShellFactory() {
 			@Override
-			public Command createShell(ChannelSession channelSession) throws IOException {
+			public Command createShell(ChannelSession SESSION) throws IOException {
 				return new Command() {
 					private InputStream BR;
 					private PrintStream BW;
 
 					@Override
-					public void setExitCallback(ExitCallback exitCallback) {
+					public void setExitCallback(ExitCallback ExitCB) {
 
 					}
 
 					@Override
-					public void setErrorStream(OutputStream outputStream) {
+					public void setErrorStream(OutputStream EOS) {
 
 					}
 
@@ -81,11 +81,12 @@ public class SSHServer {
 					}
 
 					@Override
-					public void start(ChannelSession channelSession, Environment environment) throws IOException {
+					public void start(ChannelSession CS, Environment ENV) throws IOException {
 						//新規接続
 						String ID = UUID.randomUUID().toString();
 
 						HashMap<String, Object> INFO = new HashMap<>();
+						INFO.put("SESSION", SESSION);
 						INFO.put("BR", BR);
 						INFO.put("BW", BW);
 
@@ -101,13 +102,13 @@ public class SSHServer {
 							@Override
 							public void run() {
 								try {
-									int DATA;
-									while ((DATA = BR.read()) != -1) {
+									int C;
+									while ((C = BR.read()) != -1) {
 										//イベント着火
 										EVENT_LISTENER[] LISTENER_LIST = EL_LIST.getListeners(EVENT_LISTENER.class);
 										for(EVENT_LISTENER LISTENER:LISTENER_LIST){
 											if (SESSION_LIST.get(ID).get("ELL").equals(LISTENER.hashCode())) {
-												LISTENER.Send(new SendEvent(ID, String.valueOf((char) DATA)));
+												LISTENER.Send(new SendEvent(ID, String.valueOf((char) C)));
 											}
 										}
 									}

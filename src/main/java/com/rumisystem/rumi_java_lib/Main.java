@@ -35,62 +35,48 @@ public class Main {
 			SSHD.SET_EVENT_LISTENER(new Connect_EVENT_LISTENER() {
 				@Override
 				public void CONNECT(CONNECT_EVENT SESSION) {
-					System.out.println("新しい接続");
+					try {
+						StringBuilder LINE = new StringBuilder();
+						System.out.println("新しい接続");
 
-					SESSION.Send("るみSSHdへようこそ\r\n");
-					SESSION.Send(">");
-
-					StringBuilder LINE = new StringBuilder();
-					SESSION.SET_EVENT_LISTENER(new EVENT_LISTENER() {
-						@Override
-						public void Send(SendEvent E) {
-							try {
-								switch (E.getTEXT()) {
-									//改行
-									case "\r":
-									case "\n": {
-										SESSION.Send("\r\n");
-										SESSION.Send("Command:" + LINE);
-										SESSION.Send("\r\n");
-										SESSION.Send(">");
-
-										LINE.delete(0, LINE.length());
-										break;
-									}
-
-									case "\033": {
-										if (E.MoreRead().equals("[")) {
-											switch (String.valueOf(E.MoreRead())) {
-												case "A":
-												case "B": {
-													break;
-												}
-											}
-										}
-										break;
-									}
-
-									case "\b": {
-										break;
-									}
-
-									default: {
+						//イベント登録
+						SESSION.SET_EVENT_LISTENER(new EVENT_LISTENER() {
+							@Override
+							public void Send(SendEvent E) {
+								try {
+									if (!(E.getTEXT().equals("\r") || E.getTEXT().equals("\n"))) {
 										LINE.append(E.getTEXT());
 										SESSION.Send(E.getTEXT());
+									} else {
+										SESSION.Send("あなたは「" + LINE + "」を選択しました！\r\n");
+										LINE.delete(0, LINE.length());
 									}
+								} catch (Exception EX) {
+									EX.printStackTrace();
 								}
-							} catch (Exception EX) {
-								EX.printStackTrace();
 							}
-						}
 
-						@Override
-						public void Close() {
-							System.out.println("切断された");
-						}
-					});
+							@Override
+							public void Close() {
+								System.out.println("切断された");
+							}
+						});
+
+						SESSION.Send("るみSSHへようこそ\r\n");
+						SESSION.Send("何をしますか？\r\n");
+						SESSION.Send("\r\n");
+						SESSION.Send("1：合同会社るみしすてむへのお問い合わせ\r\n");
+						SESSION.Send("2：るみさーばーの著作権侵害申立\r\n");
+						SESSION.Send("3：その他\r\n");
+						SESSION.Send("\r\n");
+						SESSION.Send("※数字で選択してください\r\n");
+
+					} catch (Exception EX) {
+						EX.printStackTrace();
+					}
 				}
 			});
+
 
 			SSHD.START();
 
