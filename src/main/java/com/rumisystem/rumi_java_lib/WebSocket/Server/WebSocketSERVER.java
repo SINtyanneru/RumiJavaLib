@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public class WebSocketSERVER {
 										WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
 										for (WS_EVENT_LISTENER EL:ELL) {
 											if (CEL_LIST.get(EL.hashCode()).equals(CMD[1])) {
-												EL.MESSAGE(new MESSAGE_EVENT(Base64.getDecoder().decode(CMD[2]).toString()));
+												EL.MESSAGE(new MESSAGE_EVENT(new String(Base64.getDecoder().decode(CMD[2].getBytes(StandardCharsets.UTF_8)))));
 											}
 										}
 										break;
