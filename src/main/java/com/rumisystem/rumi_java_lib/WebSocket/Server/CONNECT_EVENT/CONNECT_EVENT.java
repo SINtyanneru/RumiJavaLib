@@ -1,8 +1,11 @@
 package com.rumisystem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT;
 
 import com.rumisystem.rumi_java_lib.WebSocket.Server.EVENT.WS_EVENT_LISTENER;
-import static com.rumisystem.rumi_java_lib.WebSocket.Server.WebSocketSERVER.EL_LIST;
-import static com.rumisystem.rumi_java_lib.WebSocket.Server.WebSocketSERVER.CEL_LIST;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+import static com.rumisystem.rumi_java_lib.WebSocket.Server.WebSocketSERVER.*;
 
 public class CONNECT_EVENT {
 	private String IP = null;
@@ -13,8 +16,16 @@ public class CONNECT_EVENT {
 		this.ID = ID;
 	}
 
+	public String getIP() {
+		return IP;
+	}
+
 	public void SET_EVENT_LISTENER(WS_EVENT_LISTENER WEL){
 		EL_LIST.add(WS_EVENT_LISTENER.class, WEL);
 		CEL_LIST.put(WEL.hashCode(), ID);
+	}
+
+	public void SendMessage(String TEXT) {
+		RunCMD("SEND " + ID + " " + Base64.getEncoder().encodeToString(TEXT.getBytes(StandardCharsets.UTF_8)));
 	}
 }

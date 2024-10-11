@@ -1,7 +1,5 @@
 package com.rumisystem.rumi_java_lib.WebSocket.Client.EVENT;
 
-import com.rumisystem.rumi_java_lib.WebSocket.Client.WS_HS;
-
 public class CLOSE_EVENT {
 	private String REASON = null;
 	private int CODE = 0;
