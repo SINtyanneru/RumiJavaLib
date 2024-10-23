@@ -10,32 +10,79 @@ import com.rumisystem.rumi_java_lib.Socket.Server.SocketServer;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			SocketServer SS = new SocketServer();
-
-			SS.setEventListener(new CONNECT_EVENT_LISTENER() {
+			new Thread(new Runnable() {
 				@Override
-				public void CONNECT(CONNECT_EVENT SESSION) {
+				public void run() {
+					SocketServer SS = new SocketServer();
+
+					SS.setEventListener(new CONNECT_EVENT_LISTENER() {
+						@Override
+						public void CONNECT(CONNECT_EVENT SESSION) {
+							try {
+								System.out.println("New SESSION 81:" + SESSION.getIP());
+								SESSION.sendMessage("a\n");
+
+								SESSION.setEventListener(new EVENT_LISTENER() {
+									@Override
+									public void Message(MessageEvent E) {
+										System.out.println("受信：" + E.getString());
+									}
+
+									@Override
+									public void Close(CloseEvent E) {
+
+									}
+								});
+							} catch (Exception EX) {
+								EX.printStackTrace();
+							}
+						}
+					});
+
 					try {
-						SESSION.sendMessage("a\n");
-
-						SESSION.setEventListener(new EVENT_LISTENER() {
-							@Override
-							public void Message(MessageEvent E) {
-								System.out.println("受信：" + E.getString());
-							}
-
-							@Override
-							public void Close(CloseEvent E) {
-
-							}
-						});
+						SS.START(8081);
 					} catch (Exception EX) {
 						EX.printStackTrace();
 					}
 				}
-			});
+			}).start();
 
-			SS.START(8081);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					SocketServer SS = new SocketServer();
+
+					SS.setEventListener(new CONNECT_EVENT_LISTENER() {
+						@Override
+						public void CONNECT(CONNECT_EVENT SESSION) {
+							try {
+								System.out.println("New SESSION 82:" + SESSION.getIP());
+								SESSION.sendMessage("a\n");
+
+								SESSION.setEventListener(new EVENT_LISTENER() {
+									@Override
+									public void Message(MessageEvent E) {
+										System.out.println("受信：" + E.getString());
+									}
+
+									@Override
+									public void Close(CloseEvent E) {
+
+									}
+								});
+							} catch (Exception EX) {
+								EX.printStackTrace();
+							}
+						}
+					});
+
+					try {
+						SS.START(8082);
+					} catch (Exception EX) {
+						EX.printStackTrace();
+					}
+				}
+			}).start();
 
 			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");

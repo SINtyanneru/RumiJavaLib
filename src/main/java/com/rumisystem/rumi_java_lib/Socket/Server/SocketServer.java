@@ -20,9 +20,9 @@ import java.util.Set;
 
 
 public class SocketServer {
-	public static EventListenerList CONNECT_EL_LIST = new EventListenerList();
-	public static EventListenerList EL_LIST = new EventListenerList();
-	public static HashMap<Integer, String> CEL_LIST = new HashMap<>();		//接続後のイベントリスナーのhashCodeとUUIDを保存
+	public EventListenerList CONNECT_EL_LIST = new EventListenerList();
+	public EventListenerList EL_LIST = new EventListenerList();
+	public HashMap<Integer, String> CEL_LIST = new HashMap<>();		//接続後のイベントリスナーのhashCodeとUUIDを保存
 
 	public void setEventListener(CONNECT_EVENT_LISTENER EL) {
 		//追加
@@ -63,7 +63,7 @@ public class SocketServer {
 					//接続されたイベントを発行
 					CONNECT_EVENT_LISTENER[] ELL = CONNECT_EL_LIST.getListeners(CONNECT_EVENT_LISTENER.class);
 					for (CONNECT_EVENT_LISTENER EL:ELL) {
-						EL.CONNECT(new CONNECT_EVENT(String.valueOf(SES.hashCode()), SES));
+						EL.CONNECT(new CONNECT_EVENT(String.valueOf(SES.hashCode()), SES, EL_LIST, CEL_LIST));
 					}
 				} else if (KEY.isReadable()) {
 					SocketChannel SES = (SocketChannel) KEY.channel();
@@ -96,12 +96,20 @@ public class SocketServer {
 						byte[] DATA = new byte[BUFFER.remaining()];
 						BUFFER.get(DATA);
 
-						//イベント発火
-						EVENT_LISTENER[] ELL = EL_LIST.getListeners(EVENT_LISTENER.class);
-						for (EVENT_LISTENER EL:ELL) {
-							if (CEL_LIST.get(EL.hashCode()) != null) {
-								if (CEL_LIST.get(EL.hashCode()).equals(String.valueOf(SES.hashCode()))) {
-									EL.Message(new MessageEvent(DATA));
+						//文字列に変換(そして語尾の改行コードを潰す)
+						String S = new String(DATA).replaceAll("[\r\n]+$", "");
+						String[] ULINE = S.split("\\r?\\n");
+
+						//改行で分けたやつを順番にイベント発火
+						for (String LINE:ULINE) {
+							byte[] BYTE_DATA = LINE.getBytes();
+							//イベント発火
+							EVENT_LISTENER[] ELL = EL_LIST.getListeners(EVENT_LISTENER.class);
+							for (EVENT_LISTENER EL:ELL) {
+								if (CEL_LIST.get(EL.hashCode()) != null) {
+									if (CEL_LIST.get(EL.hashCode()).equals(String.valueOf(SES.hashCode()))) {
+										EL.Message(new MessageEvent(BYTE_DATA));
+									}
 								}
 							}
 						}

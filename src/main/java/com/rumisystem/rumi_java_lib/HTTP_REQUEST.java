@@ -1,5 +1,7 @@
 package com.rumisystem.rumi_java_lib;
 
+import com.rumisystem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
+
 import java.io.InputStream;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -9,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.rumisystem.rumi_java_lib.LOG_PRINT.Main.LOG;
 
 public class HTTP_REQUEST {
 	private URL REQIEST_URI = null;
@@ -59,7 +63,6 @@ public class HTTP_REQUEST {
 	}
 
 	public String POST(String POST_BODY) throws IOException {
-		System.out.println("[  ***  ]POST:" + REQIEST_URI.toString());
 		HttpURLConnection HUC = (HttpURLConnection) REQIEST_URI.openConnection();
 
 		//ヘッダーを入れる
@@ -92,7 +95,6 @@ public class HTTP_REQUEST {
 		}
 
 		BR.close();
-		System.out.println("[  OK   ]POST");
 		return RES_STRING.toString();
 	}
 
