@@ -63,7 +63,7 @@ public class SocketServer {
 					//接続されたイベントを発行
 					CONNECT_EVENT_LISTENER[] ELL = CONNECT_EL_LIST.getListeners(CONNECT_EVENT_LISTENER.class);
 					for (CONNECT_EVENT_LISTENER EL:ELL) {
-						EL.CONNECT(new CONNECT_EVENT(String.valueOf(SES.hashCode()), SES, EL_LIST, CEL_LIST));
+						EL.CONNECT(new CONNECT_EVENT(String.valueOf(SES.hashCode()), SES, EL_LIST, CEL_LIST, this));
 					}
 				} else if (KEY.isReadable()) {
 					SocketChannel SES = (SocketChannel) KEY.channel();
@@ -74,22 +74,7 @@ public class SocketServer {
 						//切断
 						SES.close();
 
-						//イベント発火
-						EVENT_LISTENER[] ELL = EL_LIST.getListeners(EVENT_LISTENER.class);
-						for (EVENT_LISTENER EL:ELL) {
-							if (CEL_LIST.get(EL.hashCode()) != null) {
-								if (CEL_LIST.get(EL.hashCode()).equals(String.valueOf(SES.hashCode()))) {
-									EL.Close(new CloseEvent());
-								}
-							}
-						}
-
-						//CEL_LISTから削除
-						for (int K:CEL_LIST.keySet()) {
-							if (CEL_LIST.get(K).equals(String.valueOf(SES.hashCode()))) {
-								CEL_LIST.remove(K);
-							}
-						}
+						Close(SES);
 					} else {
 						//受信
 						BUFFER.flip();
@@ -116,6 +101,31 @@ public class SocketServer {
 					}
 				}
 				ITERATOR.remove();
+			}
+		}
+	}
+
+	//切断時に必要な処理
+	public void Close(SocketChannel SES) {
+		//イベント発火
+		EVENT_LISTENER[] ELL = EL_LIST.getListeners(EVENT_LISTENER.class);
+		for (EVENT_LISTENER EL:ELL) {
+			if (CEL_LIST.get(EL.hashCode()) != null) {
+				if (CEL_LIST.get(EL.hashCode()).equals(String.valueOf(SES.hashCode()))) {
+					EL.Close(new CloseEvent());
+				}
+			}
+		}
+
+		//CEL_LISTのイテレーターを作る(之をしないとエラー出る(java.util.ConcurrentModificationException))
+		Iterator<HashMap.Entry<Integer, String>> CEL_ITERATOR = CEL_LIST.entrySet().iterator();
+
+		//CEL_LISTから削除
+		while (CEL_ITERATOR.hasNext()) {
+			HashMap.Entry<Integer, String> ENTRY = CEL_ITERATOR.next();
+			if (String.valueOf(SES.hashCode()).equals(ENTRY)) {
+				//イテレーターを介することで、例のエラーは出なくなる
+				CEL_ITERATOR.remove();
 			}
 		}
 	}
