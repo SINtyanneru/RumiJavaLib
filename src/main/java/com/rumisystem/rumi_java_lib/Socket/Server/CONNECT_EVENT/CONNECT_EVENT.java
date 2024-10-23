@@ -44,4 +44,12 @@ public class CONNECT_EVENT {
 	public String getIP() throws IOException {
 		return  SES.getRemoteAddress().toString();
 	}
+
+	public void close() {
+		try {
+			SES.close();
+		} catch (Exception EX) {
+			//握り潰すことにした
+		}
+	}
 }
