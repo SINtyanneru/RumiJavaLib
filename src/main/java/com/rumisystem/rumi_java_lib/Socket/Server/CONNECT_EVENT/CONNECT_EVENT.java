@@ -45,6 +45,9 @@ public class CONNECT_EVENT {
 		return  SES.getRemoteAddress().toString();
 	}
 
+	/**
+	 * 接続を切断します
+	 */
 	public void close() {
 		try {
 			SES.close();
