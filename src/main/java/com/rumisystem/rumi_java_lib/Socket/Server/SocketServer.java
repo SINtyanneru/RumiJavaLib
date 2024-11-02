@@ -83,7 +83,14 @@ public class SocketServer {
 
 						//文字列に変換(そして語尾の改行コードを潰す)
 						String S = new String(DATA).replaceAll("[\r\n]+$", "");
-						String[] ULINE = S.split("\\r?\\n");
+						String[] ULINE = null;
+
+						//\rが有るなら\r\nで分割
+						if (S.contains("\r")) {
+							ULINE = S.split("\r\n");
+						} else {
+							ULINE = S.split("\n");
+						}
 
 						//改行で分けたやつを順番にイベント発火
 						for (String LINE:ULINE) {

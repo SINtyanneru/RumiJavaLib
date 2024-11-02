@@ -5,6 +5,8 @@ import com.rumisystem.rumi_java_lib.Socket.Server.SocketServer;
 
 import javax.swing.event.EventListenerList;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
@@ -45,7 +47,10 @@ public class CONNECT_EVENT {
 	 * @throws IOException
 	 */
 	public String getIP() throws IOException {
-		return  SES.getRemoteAddress().toString();
+		InetSocketAddress CLIENT_ADDRESS = (InetSocketAddress) SES.getRemoteAddress();
+		InetAddress ADDRESS = CLIENT_ADDRESS.getAddress();
+
+		return ADDRESS.getHostAddress();
 	}
 
 	/**
