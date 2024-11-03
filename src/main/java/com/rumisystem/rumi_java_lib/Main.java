@@ -2,6 +2,7 @@ package com.rumisystem.rumi_java_lib;
 
 import com.rumisystem.rumi_java_lib.Misskey.Builder.NoteBuilder;
 import com.rumisystem.rumi_java_lib.Misskey.Event.EVENT_LISTENER;
+import com.rumisystem.rumi_java_lib.Misskey.Event.NewFollower;
 import com.rumisystem.rumi_java_lib.Misskey.Event.NewNoteEvent;
 import com.rumisystem.rumi_java_lib.Misskey.MisskeyClient;
 import com.rumisystem.rumi_java_lib.Misskey.RESULT.LOGIN_RESULT;
@@ -15,7 +16,7 @@ public class Main {
 	public static void main(String[] args) {
 		try {
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
-			if (MC.TOKEN_LOGIN("4LfqJNO9w8x1x6rD") == LOGIN_RESULT.DONE) {
+			if (MC.TOKEN_LOGIN(args[0]) == LOGIN_RESULT.DONE) {
 				MC.SET_EVENT_LISTENER(new EVENT_LISTENER() {
 					@Override
 					public void onReady() {
@@ -28,7 +29,20 @@ public class Main {
 
 					@Override
 					public void onNewNote(NewNoteEvent E) {
-						System.out.println(E.getUSER().getNAME() + "さんのノート「" + E.getNOTE().getTEXT() + "」");
+						if (!E.getNOTE().isRN()) {
+							if (!E.getNOTE().isKaiMention()) {
+								System.out.println(E.getUSER().getNAME() + "さんのノート「" + E.getNOTE().getTEXT() + "」");
+							} else {
+								System.out.println(E.getUSER().getNAME() + "さんにメンションされました「" + E.getNOTE().getTEXT() + "」");
+							}
+						} else {
+							System.out.println(E.getUSER().getNAME() + "さんがリノートしました");
+						}
+					}
+
+					@Override
+					public void onNewFollower(NewFollower E) {
+						System.out.println("新しいフォロワー");
 					}
 				});
 			} else {

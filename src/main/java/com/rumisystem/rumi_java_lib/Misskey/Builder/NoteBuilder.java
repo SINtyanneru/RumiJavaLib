@@ -23,15 +23,16 @@ public class NoteBuilder {
 
 	public Note Build() {
 		Note NOTE = new Note(
-				false,
-				null,
-				null,
-				TEXT,
-				null,
-				VIS,
-				null,
-				null,
-				CW_TEXT
+			false,
+			null,
+			null,
+			TEXT,
+			null,
+			VIS,
+			null,
+			null,
+			CW_TEXT,
+			false
 		);
 
 		return NOTE;

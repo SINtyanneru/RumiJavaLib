@@ -12,10 +12,11 @@ public class Note {
 	private String REPLY_ID;
 	private boolean CW = false;
 	private String CW_TEXT;
+	private boolean KaiMention = false;
 
 	private boolean BUILD = false;
 
-	public Note(boolean BUILD, User USER, String  ID, String TEXT, OffsetDateTime DATE, NoteVis VIS, String RENOTE_ID, String REPLY_ID, String CW_TEXT) {
+	public Note(boolean BUILD, User USER, String  ID, String TEXT, OffsetDateTime DATE, NoteVis VIS, String RENOTE_ID, String REPLY_ID, String CW_TEXT, boolean KaiMention) {
 		this.BUILD = BUILD;
 		this.USER = USER;
 		this.ID = ID;
@@ -30,6 +31,8 @@ public class Note {
 			CW = true;
 			this.CW_TEXT = CW_TEXT;
 		}
+
+		this.KaiMention = KaiMention;
 	}
 
 	public User getUSER() {
@@ -62,6 +65,10 @@ public class Note {
 
 	public boolean isCW() {
 		return CW;
+	}
+
+	public boolean isKaiMention() {
+		return KaiMention;
 	}
 
 	public String getCW() {

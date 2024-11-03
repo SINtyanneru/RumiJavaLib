@@ -2,11 +2,13 @@ package com.rumisystem.rumi_java_lib.Misskey;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.rumisystem.rumi_java_lib.Misskey.API.CreateNote;
+import com.rumisystem.rumi_java_lib.Misskey.API.I;
 import com.rumisystem.rumi_java_lib.Misskey.API.LOGIN;
 import com.rumisystem.rumi_java_lib.Misskey.API.SHOW;
 import com.rumisystem.rumi_java_lib.Misskey.TYPE.Note;
 import com.rumisystem.rumi_java_lib.Misskey.Event.EVENT_LISTENER;
 import com.rumisystem.rumi_java_lib.Misskey.RESULT.LOGIN_RESULT;
+import com.rumisystem.rumi_java_lib.Misskey.TYPE.User;
 
 import javax.swing.event.EventListenerList;
 import java.io.IOException;
@@ -16,6 +18,7 @@ public class MisskeyClient {
 	private String INSTANCE_DOMAIN = null;
 	private String TOKEN = null;
 	private WSS SAPI = null;
+	private User Kai = null;
 	public static EventListenerList EL_LIST = new EventListenerList();
 
 	public MisskeyClient(String INSTANCE_DOMAIN) {
@@ -54,6 +57,9 @@ public class MisskeyClient {
 					if (RESULT != null) {
 						TOKEN = RESULT;
 
+						//自分の情報を取得
+						getI();
+
 						//WSS接続
 						CONNECT_WSS();
 
@@ -75,6 +81,10 @@ public class MisskeyClient {
 	public LOGIN_RESULT TOKEN_LOGIN(String TOKEN) {
 		try {
 			this.TOKEN = TOKEN;
+
+			//自分の情報を取得
+			getI();
+
 			CONNECT_WSS();
 
 			return LOGIN_RESULT.DONE;
@@ -85,7 +95,7 @@ public class MisskeyClient {
 	}
 
 	private void CONNECT_WSS() throws URISyntaxException {
-		SAPI = new WSS(INSTANCE_DOMAIN, TOKEN);
+		SAPI = new WSS(INSTANCE_DOMAIN, TOKEN, Kai);
 	}
 
 	/**
@@ -93,10 +103,21 @@ public class MisskeyClient {
 	 * @return トークン
 	 */
 	public String getTOKEN() {
+		//
 		return TOKEN;
 	}
 
 	public void PostNote(Note NOTE) throws IOException {
 		CreateNote.Post(INSTANCE_DOMAIN, TOKEN, NOTE);
+	}
+
+	private void getI() throws IOException {
+		JsonNode RESULT = I.Main(TOKEN, INSTANCE_DOMAIN);
+		Kai = new User(
+			RESULT.get("id").asText(),
+			RESULT.get("username").asText(),
+			RESULT.get("name").asText(),
+			RESULT.get("avatarUrl").asText()
+		);
 	}
 }

@@ -19,7 +19,7 @@ import java.time.OffsetDateTime;
 import static com.rumisystem.rumi_java_lib.Misskey.MisskeyClient.EL_LIST;
 
 public class WSS {
-	public WSS(String DOMAIN, String TOKEN) throws URISyntaxException {
+	public WSS(String DOMAIN, String TOKEN, User Kai) throws URISyntaxException {
 		WebSocketClient WSC = new WebSocketClient();
 		WSC.SET_EVENT_LISTENER(new WS_EVENT_LISTENER() {
 			@Override
@@ -40,6 +40,17 @@ public class WSS {
 					JsonNode MSG = new ObjectMapper().readTree(E.getMessage());
 					switch (MSG.get("body").get("id").asText()) {
 						case "main": {
+							switch (MSG.get("body").get("type").asText()) {
+								//メンション
+								case "mention":{
+									break;
+								}
+
+								//フォローされた
+								case "followed": {
+									break;
+								}
+							}
 							break;
 						}
 
@@ -54,6 +65,7 @@ public class WSS {
 								String RN_ID = null;
 								String REPLY_ID = null;
 								String CW = null;
+								boolean KaiMention = false;
 
 								//公開範囲
 								switch (NOTE_DATA.get("visibility").asText()) {
@@ -93,6 +105,16 @@ public class WSS {
 									CW = NOTE_DATA.get("cw").asText();
 								}
 
+								//自分がメンションされているか
+								if (NOTE_DATA.get("mentions") != null) {
+									for (int I = 0; I < NOTE_DATA.get("mentions").size(); I++) {
+										if (NOTE_DATA.get("mentions").get(I).asText().equals(Kai.getID())) {
+											KaiMention = true;
+											break;
+										}
+									}
+								}
+
 								User USER = new User(
 										USER_DATA.get("id").asText(),
 										USER_DATA.get("username").asText(),
@@ -108,7 +130,8 @@ public class WSS {
 										VIS,
 										RN_ID,
 										REPLY_ID,
-										CW
+										CW,
+										KaiMention
 								);
 
 								//イベント着火
