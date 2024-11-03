@@ -16,6 +16,10 @@ import com.rumisystem.rumi_java_lib.WebSocket.Client.WebSocketClient;
 
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.rumisystem.rumi_java_lib.Misskey.MisskeyClient.EL_LIST;
 
@@ -33,6 +37,15 @@ public class WSS {
 				for(EVENT_LISTENER LISTENER:LISTENER_LIST){
 					LISTENER.onReady();
 				}
+
+				ScheduledExecutorService SHE = Executors.newScheduledThreadPool(1);
+				Runnable PING = new Runnable() {
+					@Override
+					public void run() {
+						E.SEND("h");
+					}
+				};
+				SHE.scheduleAtFixedRate(PING, 0, 1, TimeUnit.MINUTES);
 			}
 
 			@Override
@@ -167,6 +180,8 @@ public class WSS {
 
 			@Override
 			public void CLOSE(CLOSE_EVENT E) {
+				//WebSocket接続
+				WSC.CONNECT("wss://" + DOMAIN + "/streaming?i=" + TOKEN);
 			}
 
 			@Override
