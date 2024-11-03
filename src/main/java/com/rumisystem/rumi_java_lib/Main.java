@@ -43,6 +43,7 @@ public class Main {
 					@Override
 					public void onNewFollower(NewFollower E) {
 						System.out.println("新しいフォロワー");
+						System.out.println(E.getUser().Follow());
 					}
 				});
 			} else {

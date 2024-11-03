@@ -2,6 +2,7 @@ package com.rumisystem.rumi_java_lib.Misskey;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rumisystem.rumi_java_lib.Misskey.Event.NewFollower;
 import com.rumisystem.rumi_java_lib.Misskey.TYPE.Note;
 import com.rumisystem.rumi_java_lib.Misskey.TYPE.NoteVis;
 import com.rumisystem.rumi_java_lib.Misskey.TYPE.User;
@@ -48,6 +49,20 @@ public class WSS {
 
 								//フォローされた
 								case "followed": {
+									User FROM = new User(
+										MSG.get("body").get("body").get("id").asText(),
+										MSG.get("body").get("body").get("username").asText(),
+										MSG.get("body").get("body").get("name").asText(),
+										MSG.get("body").get("body").get("avatarUrl").asText(),
+										DOMAIN,
+										TOKEN
+									);
+
+									//イベント着火
+									EVENT_LISTENER[] LISTENER_LIST = EL_LIST.getListeners(EVENT_LISTENER.class);
+									for(EVENT_LISTENER LISTENER:LISTENER_LIST){
+										LISTENER.onNewFollower(new NewFollower(FROM));
+									}
 									break;
 								}
 							}
@@ -119,7 +134,9 @@ public class WSS {
 										USER_DATA.get("id").asText(),
 										USER_DATA.get("username").asText(),
 										USER_DATA.get("name").asText(),
-										USER_DATA.get("avatarUrl").asText()
+										USER_DATA.get("avatarUrl").asText(),
+										DOMAIN,
+										TOKEN
 								);
 								Note NOTE = new Note(
 										false,
