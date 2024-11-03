@@ -1,6 +1,4 @@
-package com.rumisystem.rumi_java_lib.Misskey.Class;
-
-import java.time.OffsetDateTime;
+package com.rumisystem.rumi_java_lib.Misskey.TYPE;
 
 public class User {
 	private String ID;

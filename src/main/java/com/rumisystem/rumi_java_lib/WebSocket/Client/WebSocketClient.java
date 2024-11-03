@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Base64;
 
@@ -53,6 +54,7 @@ public class WebSocketClient {
 
 								switch (CMD[0]) {
 									case "OPEN": {
+										RunCMD("SEND " + Base64.getEncoder().encodeToString("ちんちん".getBytes(StandardCharsets.UTF_8)));
 										WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
 										for (WS_EVENT_LISTENER EL:ELL) {
 											EL.CONNECT(new CONNECT_EVENT());
@@ -61,9 +63,10 @@ public class WebSocketClient {
 									}
 
 									case "RECEIVE": {
+										byte[] DECODE_DATA = Base64.getDecoder().decode(CMD[1]);
 										WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
 										for (WS_EVENT_LISTENER EL:ELL) {
-											EL.MESSAGE(new MESSAGE_EVENT(Base64.getDecoder().decode(CMD[1]).toString()));
+											EL.MESSAGE(new MESSAGE_EVENT(new String(DECODE_DATA)));
 										}
 										break;
 									}
@@ -82,6 +85,8 @@ public class WebSocketClient {
 						}
 					}
 				}).start();
+
+				RunCMD("CONNECT " + Base64.getEncoder().encodeToString(URL.getBytes(StandardCharsets.UTF_8)));
 			} else {
 				throw new Error("JS file ga nai");
 			}

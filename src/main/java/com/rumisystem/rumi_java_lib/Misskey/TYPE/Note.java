@@ -1,4 +1,4 @@
-package com.rumisystem.rumi_java_lib.Misskey.Class;
+package com.rumisystem.rumi_java_lib.Misskey.TYPE;
 
 import java.time.OffsetDateTime;
 

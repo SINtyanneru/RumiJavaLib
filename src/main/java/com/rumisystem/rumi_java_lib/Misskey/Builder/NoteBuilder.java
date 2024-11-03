@@ -1,9 +1,7 @@
 package com.rumisystem.rumi_java_lib.Misskey.Builder;
 
-import com.rumisystem.rumi_java_lib.Misskey.Class.Note;
-import com.rumisystem.rumi_java_lib.Misskey.Class.NoteVis;
-
-import java.time.OffsetDateTime;
+import com.rumisystem.rumi_java_lib.Misskey.TYPE.Note;
+import com.rumisystem.rumi_java_lib.Misskey.TYPE.NoteVis;
 
 public class NoteBuilder {
 	private String TEXT = "";

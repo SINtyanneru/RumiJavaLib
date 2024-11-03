@@ -10,6 +10,6 @@ public class CONNECT_EVENT {
 	}
 
 	public void SEND(String TEXT) {
-		RunCMD("SEND" + Base64.getEncoder().encodeToString(TEXT.getBytes(StandardCharsets.UTF_8)));
+		RunCMD("SEND " + Base64.getEncoder().encodeToString(TEXT.getBytes(StandardCharsets.UTF_8)));
 	}
 }

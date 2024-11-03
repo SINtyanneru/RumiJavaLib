@@ -2,9 +2,9 @@ package com.rumisystem.rumi_java_lib.Misskey;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rumisystem.rumi_java_lib.Misskey.Class.Note;
-import com.rumisystem.rumi_java_lib.Misskey.Class.NoteVis;
-import com.rumisystem.rumi_java_lib.Misskey.Class.User;
+import com.rumisystem.rumi_java_lib.Misskey.TYPE.Note;
+import com.rumisystem.rumi_java_lib.Misskey.TYPE.NoteVis;
+import com.rumisystem.rumi_java_lib.Misskey.TYPE.User;
 import com.rumisystem.rumi_java_lib.Misskey.Event.EVENT_LISTENER;
 import com.rumisystem.rumi_java_lib.Misskey.Event.NewNoteEvent;
 import com.rumisystem.rumi_java_lib.WebSocket.Client.EVENT.CLOSE_EVENT;

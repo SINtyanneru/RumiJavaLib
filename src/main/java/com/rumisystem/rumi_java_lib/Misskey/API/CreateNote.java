@@ -3,7 +3,7 @@ package com.rumisystem.rumi_java_lib.Misskey.API;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rumisystem.rumi_java_lib.HTTP_REQUEST;
-import com.rumisystem.rumi_java_lib.Misskey.Class.Note;
+import com.rumisystem.rumi_java_lib.Misskey.TYPE.Note;
 
 import java.io.IOException;
 

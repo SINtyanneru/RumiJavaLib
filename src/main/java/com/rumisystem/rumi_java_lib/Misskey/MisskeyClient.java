@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.rumisystem.rumi_java_lib.Misskey.API.CreateNote;
 import com.rumisystem.rumi_java_lib.Misskey.API.LOGIN;
 import com.rumisystem.rumi_java_lib.Misskey.API.SHOW;
-import com.rumisystem.rumi_java_lib.Misskey.Class.Note;
+import com.rumisystem.rumi_java_lib.Misskey.TYPE.Note;
 import com.rumisystem.rumi_java_lib.Misskey.Event.EVENT_LISTENER;
 import com.rumisystem.rumi_java_lib.Misskey.RESULT.LOGIN_RESULT;
 
