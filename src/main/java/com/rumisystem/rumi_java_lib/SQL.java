@@ -57,14 +57,14 @@ public class SQL {
 				//型に寄って動作をかえる
 				if(PARAM instanceof String){
 					//Stringなら
-					STMT.setString(I + 1, PARAM.toString());
+					STMT.setString(I + 1, (String)PARAM);
 				} else if(PARAM instanceof Integer){
 					//Intなら
-					STMT.setInt(I + 1, Integer.parseInt(PARAM.toString()));
+					STMT.setInt(I + 1, (int)PARAM);
 				} else if (PARAM instanceof Long) {
-					STMT.setLong(I + 1, Long.parseLong(PARAM.toString()));
+					STMT.setLong(I + 1, (long)PARAM);
 				} else if (PARAM instanceof  Boolean) {
-					STMT.setBoolean(I + 1, Boolean.parseBoolean(PARAM.toString()));
+					STMT.setBoolean(I + 1, (boolean)PARAM);
 				}
 			}
 
@@ -112,10 +112,12 @@ public class SQL {
 			//型に寄って動作をかえる
 			if(PARAM instanceof String){//Stringなら
 				STMT.setString(I + 1, PARAM.toString());
-			}
-
-			if(PARAM instanceof Integer){//Intなら
-				STMT.setInt(I + 1, Integer.parseInt(PARAM.toString()));
+			} else if(PARAM instanceof Integer){//Intなら
+				STMT.setInt(I + 1, (int)PARAM);
+			} else if (PARAM instanceof Long) {
+				STMT.setLong(I + 1, (long)PARAM);
+			} else if (PARAM instanceof  Boolean) {
+				STMT.setBoolean(I + 1, (boolean)PARAM);
 			}
 		}
 
