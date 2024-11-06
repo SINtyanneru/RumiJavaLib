@@ -43,7 +43,7 @@ public class ArrayNode {
 		//キーはStringもしくはintか？
 		if(KEY instanceof String || KEY instanceof Integer){
 			//指定されたキーの値はStringかIntなら値を返す
-			if(NODE_DATA.get(KEY) instanceof String || NODE_DATA.get(KEY) instanceof Integer){
+			if(NODE_DATA.get(KEY) instanceof String || NODE_DATA.get(KEY) instanceof Integer || NODE_DATA.get(KEY) instanceof Long){
 				return NODE_DATA.get(KEY).toString();
 			} else {
 				throw new RuntimeException("型がStringもしくはIntではありません");
@@ -61,7 +61,22 @@ public class ArrayNode {
 				return (int) NODE_DATA.get(KEY);
 			} else {
 				//Intじゃない
-				throw new RuntimeException("型がはIntではありません");
+				throw new RuntimeException("型がIntではありません");
+			}
+		} else {
+			throw new RuntimeException("キーはStringかiniしか使えません");
+		}
+	}
+
+	public long asLong(Object KEY){
+		//キーはStringもしくはintか？
+		if(KEY instanceof String || KEY instanceof Integer){
+			//指定されたキーの値はIntなら値を返す
+			if(NODE_DATA.get(KEY) instanceof Long){
+				return (long) NODE_DATA.get(KEY);
+			} else {
+				//Intじゃない
+				throw new RuntimeException("型がLongではありません");
 			}
 		} else {
 			throw new RuntimeException("キーはStringかiniしか使えません");
@@ -76,7 +91,7 @@ public class ArrayNode {
 				return (boolean) NODE_DATA.get(KEY);
 			} else {
 				//Boolじゃない
-				throw new RuntimeException("型がはBoolではありません");
+				throw new RuntimeException("型がBoolではありません");
 			}
 		} else {
 			throw new RuntimeException("キーはStringかiniしか使えません");
