@@ -55,12 +55,16 @@ public class SQL {
 				Object PARAM = PARAMS[I];
 
 				//型に寄って動作をかえる
-				if(PARAM instanceof String){//Stringなら
+				if(PARAM instanceof String){
+					//Stringなら
 					STMT.setString(I + 1, PARAM.toString());
-				}
-
-				if(PARAM instanceof Integer){//Intなら
-					STMT.setInt(I + 1, Integer.parseInt((String) PARAM.toString()));
+				} else if(PARAM instanceof Integer){
+					//Intなら
+					STMT.setInt(I + 1, Integer.parseInt(PARAM.toString()));
+				} else if (PARAM instanceof Long) {
+					STMT.setLong(I + 1, Long.parseLong(PARAM.toString()));
+				} else if (PARAM instanceof  Boolean) {
+					STMT.setBoolean(I + 1, Boolean.parseBoolean(PARAM.toString()));
 				}
 			}
 
