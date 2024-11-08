@@ -15,10 +15,6 @@ import com.rumisystem.rumi_java_lib.WebSocket.Client.WebSocketClient;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			while (true) {
-				System.out.println(SnowFlake.GEN());
-				Thread.sleep(1000);
-			}
 			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
 			if (MC.TOKEN_LOGIN(args[0]) == LOGIN_RESULT.DONE) {

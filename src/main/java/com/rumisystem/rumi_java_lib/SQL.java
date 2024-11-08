@@ -11,11 +11,10 @@ import static com.rumisystem.rumi_java_lib.LOG_PRINT.Main.LOG;
 
 public class SQL {
 	public static Connection CONNECT = null;
-	public static PreparedStatement STMT = null;
 
 	public static void CONNECT(String IP, String PORT, String DB, String USER, String PASS){
 		//接続文字列
-		String URL = "jdbc:mariadb://" + IP + ":" + PORT + "/" + DB;
+		String URL = "jdbc:mariadb://" + IP + ":" + PORT + "/" + DB + "?cachePrepStmts=false";
 
 		try {
 			//MariaDBへ接続
@@ -49,7 +48,7 @@ public class SQL {
 
 		try{
 			//SELECT文の実行
-			STMT = CONNECT.prepareStatement(SQL_SCRIPT);
+			PreparedStatement STMT = CONNECT.prepareStatement(SQL_SCRIPT);
 
 			for(int I = 0; I < PARAMS.length; I++){
 				Object PARAM = PARAMS[I];
@@ -105,7 +104,7 @@ public class SQL {
 
 	public static void UP_RUN(String SQL_SCRIPT, Object[] PARAMS) throws SQLException {
 		//SELECT文の実行
-		STMT = CONNECT.prepareStatement(SQL_SCRIPT);
+		PreparedStatement STMT = CONNECT.prepareStatement(SQL_SCRIPT);
 
 		for(int I = 0; I < PARAMS.length; I++){
 			Object PARAM = PARAMS[I];
