@@ -80,7 +80,7 @@ public class SQL {
 				ArrayNode ROW = new ArrayNode();
 
 				for (int I = 1; I <= COLUM_COUNT; I++) {
-					String COLUM_NAME = META_DATA.getColumnName(I);
+					String COLUM_NAME = META_DATA.getColumnLabel(I);
 					Object VAL = SQL_RESULT.getObject(I);
 
 					ROW.setDATA(COLUM_NAME, VAL);
