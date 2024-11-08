@@ -9,6 +9,7 @@ import com.rumisystem.rumi_java_lib.Socket.Server.EVENT.MessageEvent;
 import javax.swing.event.EventListenerList;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -66,45 +67,51 @@ public class SocketServer {
 						EL.CONNECT(new CONNECT_EVENT(String.valueOf(SES.hashCode()), SES, EL_LIST, CEL_LIST, this));
 					}
 				} else if (KEY.isReadable()) {
-					SocketChannel SES = (SocketChannel) KEY.channel();
-					ByteBuffer BUFFER = ByteBuffer.allocate(256);
-					int BYTE_READ = SES.read(BUFFER);
+					try {
+						SocketChannel SES = (SocketChannel) KEY.channel();
+						ByteBuffer BUFFER = ByteBuffer.allocate(256);
+						int BYTE_READ = SES.read(BUFFER);
 
-					if (BYTE_READ == -1) {
-						//切断
-						SES.close();
+						if (BYTE_READ == -1) {
+							//切断
+							SES.close();
 
-						Close(SES);
-					} else {
-						//受信
-						BUFFER.flip();
-						byte[] DATA = new byte[BUFFER.remaining()];
-						BUFFER.get(DATA);
-
-						//文字列に変換(そして語尾の改行コードを潰す)
-						String S = new String(DATA).replaceAll("[\r\n]+$", "");
-						String[] ULINE = null;
-
-						//\rが有るなら\r\nで分割
-						if (S.contains("\r")) {
-							ULINE = S.split("\r\n");
+							Close(SES);
 						} else {
-							ULINE = S.split("\n");
-						}
+							//受信
+							BUFFER.flip();
+							byte[] DATA = new byte[BUFFER.remaining()];
+							BUFFER.get(DATA);
 
-						//改行で分けたやつを順番にイベント発火
-						for (String LINE:ULINE) {
-							byte[] BYTE_DATA = LINE.getBytes();
-							//イベント発火
-							EVENT_LISTENER[] ELL = EL_LIST.getListeners(EVENT_LISTENER.class);
-							for (EVENT_LISTENER EL:ELL) {
-								if (CEL_LIST.get(EL.hashCode()) != null) {
-									if (CEL_LIST.get(EL.hashCode()).equals(String.valueOf(SES.hashCode()))) {
-										EL.Message(new MessageEvent(BYTE_DATA));
+							//文字列に変換(そして語尾の改行コードを潰す)
+							String S = new String(DATA).replaceAll("[\r\n]+$", "");
+							String[] ULINE = null;
+
+							//\rが有るなら\r\nで分割
+							if (S.contains("\r")) {
+								ULINE = S.split("\r\n");
+							} else {
+								ULINE = S.split("\n");
+							}
+
+							//改行で分けたやつを順番にイベント発火
+							for (String LINE:ULINE) {
+								byte[] BYTE_DATA = LINE.getBytes();
+								//イベント発火
+								EVENT_LISTENER[] ELL = EL_LIST.getListeners(EVENT_LISTENER.class);
+								for (EVENT_LISTENER EL:ELL) {
+									if (CEL_LIST.get(EL.hashCode()) != null) {
+										if (CEL_LIST.get(EL.hashCode()).equals(String.valueOf(SES.hashCode()))) {
+											EL.Message(new MessageEvent(BYTE_DATA));
+										}
 									}
 								}
 							}
 						}
+					} catch (SocketException EX) {
+						//接続が切れた
+					}catch (Exception EX) {
+						EX.printStackTrace();
 					}
 				}
 				ITERATOR.remove();
