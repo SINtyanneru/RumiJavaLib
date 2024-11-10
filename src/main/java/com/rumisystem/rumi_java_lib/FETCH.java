@@ -33,6 +33,9 @@ public class FETCH {
 			//GETリクエストだと主張する
 			HUC.setRequestMethod("GET");
 
+			//接続
+			HUC.connect();
+
 			//ヘッダーを入れる
 			for(HashMap<String, String> HEADER:HEADER_LIST){
 				HUC.setRequestProperty(HEADER.get("KEY"), HEADER.get("VAL"));
@@ -40,13 +43,23 @@ public class FETCH {
 
 			//レスポンスコード
 			int RES_CODE = HUC.getResponseCode();
-
-			InputStream IS = HUC.getInputStream();
+			//応答内容
 			ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
-			byte[] BUFFER = new byte[1024];
-			int BYTE_READ;
-			while ((BYTE_READ = IS.read(BUFFER, 0, BUFFER.length)) != -1) {
-				BAOS.write(BUFFER, 0, BYTE_READ);
+
+			if (RES_CODE == HttpURLConnection.HTTP_OK) {
+				InputStream IS = HUC.getInputStream();
+				byte[] BUFFER = new byte[1024];
+				int BYTE_READ;
+				while ((BYTE_READ = IS.read(BUFFER, 0, BUFFER.length)) != -1) {
+					BAOS.write(BUFFER, 0, BYTE_READ);
+				}
+			} else {
+				InputStream IS = HUC.getErrorStream();
+				byte[] BUFFER = new byte[1024];
+				int BYTE_READ;
+				while ((BYTE_READ = IS.read(BUFFER, 0, BUFFER.length)) != -1) {
+					BAOS.write(BUFFER, 0, BYTE_READ);
+				}
 			}
 
 			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray());
@@ -68,6 +81,7 @@ public class FETCH {
 			HUC.setDoInput(true);
 			HUC.setDoOutput(true);
 
+			//接続
 			HUC.connect();
 
 			//リクエストボディに送信したいデータを書き込む
@@ -82,13 +96,23 @@ public class FETCH {
 
 			//レスポンスコード
 			int RES_CODE = HUC.getResponseCode();
-
-			InputStream IS = HUC.getInputStream();
+			//応答内容
 			ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
-			byte[] BUFFER = new byte[1024];
-			int BYTE_READ;
-			while ((BYTE_READ = IS.read(BUFFER, 0, BUFFER.length)) != -1) {
-				BAOS.write(BUFFER, 0, BYTE_READ);
+
+			if (RES_CODE == HttpURLConnection.HTTP_OK) {
+				InputStream IS = HUC.getInputStream();
+				byte[] BUFFER = new byte[1024];
+				int BYTE_READ;
+				while ((BYTE_READ = IS.read(BUFFER, 0, BUFFER.length)) != -1) {
+					BAOS.write(BUFFER, 0, BYTE_READ);
+				}
+			} else {
+				InputStream IS = HUC.getErrorStream();
+				byte[] BUFFER = new byte[1024];
+				int BYTE_READ;
+				while ((BYTE_READ = IS.read(BUFFER, 0, BUFFER.length)) != -1) {
+					BAOS.write(BUFFER, 0, BYTE_READ);
+				}
 			}
 
 			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray());
