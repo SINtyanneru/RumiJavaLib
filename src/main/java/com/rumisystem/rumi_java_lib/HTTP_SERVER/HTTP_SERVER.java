@@ -80,6 +80,7 @@ public class HTTP_SERVER {
 						POST_DATA_SB.append(LINE);
 					}
 					POST_DATA = POST_DATA_SB.toString();
+					ISR.close();
 				}
 
 				//リクエストヘッダーを取得

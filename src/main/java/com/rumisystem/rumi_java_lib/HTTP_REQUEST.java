@@ -98,6 +98,42 @@ public class HTTP_REQUEST {
 		return RES_STRING.toString();
 	}
 
+	public String BIN_POST(byte[] POST_BODY) throws IOException {
+		HttpURLConnection HUC = (HttpURLConnection) REQIEST_URI.openConnection();
+
+		//ヘッダーを入れる
+		for(HashMap<String, String> HEADER:HEADER_LIST){
+			HUC.setRequestProperty(HEADER.get("KEY"), HEADER.get("VAL"));
+		}
+
+		//POSTだと主張する
+		HUC.setRequestMethod("POST");
+
+		//POST可能に
+		HUC.setDoInput(true);
+		HUC.setDoOutput(true);
+
+		HUC.connect();
+
+		//リクエストボディに送信したいデータを書き込む
+		PrintStream PS = new PrintStream(HUC.getOutputStream());
+		PS.write(POST_BODY);
+		PS.close();
+
+		//レスポンスコード
+		int RES_CODE = HUC.getResponseCode();
+		BufferedReader BR = new BufferedReader(new InputStreamReader(HUC.getInputStream(), StandardCharsets.UTF_8));
+		StringBuilder RES_STRING = new StringBuilder();
+
+		String INPUT_LINE;
+		while ((INPUT_LINE = BR.readLine()) != null){
+			RES_STRING.append(INPUT_LINE);
+		}
+
+		BR.close();
+		return RES_STRING.toString();
+	}
+
 	//ダウンロード
 	public void DOWNLOAD(String PATH) throws IOException {
 		//名前が長すぎるので切り落としたよ
