@@ -70,7 +70,7 @@ public class HTTP_SERVER {
 
 				//POSTされたデータ
 				String POST_DATA = null;
-				if ("POST".equals(EXCHANGE.getRequestMethod())) {
+				if ("POST".equals(EXCHANGE.getRequestMethod()) || "PATCH".equals(EXCHANGE.getRequestMethod())) {
 					//リクエストのInputStreamからデータを読み取る
 					InputStreamReader ISR = new InputStreamReader(EXCHANGE.getRequestBody(), StandardCharsets.UTF_8);
 					BufferedReader BR = new BufferedReader(ISR);
