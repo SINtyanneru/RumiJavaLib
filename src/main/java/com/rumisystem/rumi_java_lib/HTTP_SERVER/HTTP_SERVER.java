@@ -7,9 +7,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import javax.swing.event.EventListenerList;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -69,18 +67,16 @@ public class HTTP_SERVER {
 				}
 
 				//POSTされたデータ
-				String POST_DATA = null;
+				byte[] POST_DATA = null;
 				if ("POST".equals(EXCHANGE.getRequestMethod()) || "PATCH".equals(EXCHANGE.getRequestMethod())) {
-					//リクエストのInputStreamからデータを読み取る
-					InputStreamReader ISR = new InputStreamReader(EXCHANGE.getRequestBody(), StandardCharsets.UTF_8);
-					BufferedReader BR = new BufferedReader(ISR);
-					StringBuilder POST_DATA_SB = new StringBuilder();
-					String LINE;
-					while ((LINE = BR.readLine()) != null) {
-						POST_DATA_SB.append(LINE);
+					InputStream IS = EXCHANGE.getRequestBody();
+					ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
+					byte[] BUFFER = new byte[1024];
+					int BYTE_READ;
+					while ((BYTE_READ = IS.read(BUFFER, 0, BUFFER.length)) != -1) {
+						BAOS.write(BUFFER, 0, BYTE_READ);
 					}
-					POST_DATA = POST_DATA_SB.toString();
-					ISR.close();
+					POST_DATA = BAOS.toByteArray();
 				}
 
 				//リクエストヘッダーを取得

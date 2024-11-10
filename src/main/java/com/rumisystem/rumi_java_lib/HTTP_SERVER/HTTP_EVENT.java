@@ -14,11 +14,11 @@ import java.util.HashMap;
 public class HTTP_EVENT extends EventObject {
 	private static HttpExchange EXCHANGE;
 	private static HashMap<String, String> URI_PARAM;
-	private static String POST_DATA;
+	private static byte[] POST_DATA;
 	private static HashMap<String, String> HEADER_DATA;
 	private static Headers RES_HEADER;
 
-	public HTTP_EVENT(Object source, HttpExchange EXCHANGE, HashMap<String, String> URI_PARAM, String POST_DATA, HashMap<String, String> HEADER_DATA) {
+	public HTTP_EVENT(Object source, HttpExchange EXCHANGE, HashMap<String, String> URI_PARAM, byte[] POST_DATA, HashMap<String, String> HEADER_DATA) {
 		super(source);
 
 		this.EXCHANGE = EXCHANGE;
@@ -38,6 +38,10 @@ public class HTTP_EVENT extends EventObject {
 	}
 
 	public String getPOST_DATA(){
+		return new String(POST_DATA, StandardCharsets.UTF_8);
+	}
+
+	public byte[] getPOST_DATA_BIN(){
 		return POST_DATA;
 	}
 
