@@ -15,7 +15,7 @@ public class SEARCH_ENGINE {
 		this.BASE_SQL_SCRIPT = SQL_SCRIPT;
 	}
 
-	public ArrayNode SEARCH(String[] QUELI_LIST) {
+	public ArrayNode SEARCH(String[] QUELI_LIST, String KARAM) {
 		String SQL_SCRIPT = BASE_SQL_SCRIPT + "\n";
 
 		//タグ検索
@@ -32,14 +32,14 @@ public class SEARCH_ENGINE {
 
 			if (QUELI.startsWith("-")) {
 				//マイナス検索
-				SS += PREFIX + " `ILANES_TAG`.`NAME` NOT LIKE ?\n";
+				SS += PREFIX + " " + KARAM + " NOT LIKE ?\n";
 				PARAM.add(QUELI.replaceFirst("-", ""));
 			} else if (QUELI.startsWith("\"") && QUELI.endsWith("\"")) {
 				//絶対検索
-				SS += PREFIX + " `ILANES_TAG`.`NAME` LIKE ?\n";
+				SS += PREFIX + " " + KARAM + " LIKE ?\n";
 				PARAM.add(QUELI.replaceAll("\"", ""));
 			} else {
-				SS += PREFIX + " `ILANES_TAG`.`NAME` LIKE ?\n";
+				SS += PREFIX + " " + KARAM + " LIKE ?\n";
 				PARAM.add("%" + QUELI + "%");
 			}
 		}
