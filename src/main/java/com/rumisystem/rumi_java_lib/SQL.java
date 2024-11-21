@@ -1,6 +1,7 @@
 package com.rumisystem.rumi_java_lib;
 
 import com.rumisystem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
+import com.rumisystem.rumi_java_lib.Misskey.API.I;
 
 import java.sql.*;
 import java.util.concurrent.Executors;
@@ -10,9 +11,21 @@ import java.util.concurrent.TimeUnit;
 import static com.rumisystem.rumi_java_lib.LOG_PRINT.Main.LOG;
 
 public class SQL {
-	public static Connection CONNECT = null;
+	private static Connection CONNECT = null;
+	private static String SQL_IP;
+	private static String SQL_PORT;
+	private static String SQL_DB;
+	private static String SQL_USER;
+	private static String SQL_PASS;
 
 	public static void CONNECT(String IP, String PORT, String DB, String USER, String PASS){
+		//接続情報をSQLに
+		SQL_IP = IP;
+		SQL_PORT = PORT;
+		SQL_DB = DB;
+		SQL_USER = USER;
+		SQL_PASS = PASS;
+
 		//接続文字列
 		String URL = "jdbc:mariadb://" + IP + ":" + PORT + "/" + DB + "?cachePrepStmts=false";
 
@@ -42,9 +55,54 @@ public class SQL {
 		}
 	}
 
-	public static ArrayNode RUN(String SQL_SCRIPT, Object[] PARAMS) {
+	private static void ReCONNECT() throws SQLException {
+		//MariaDBへ接続
+		CONNECT = (Connection) DriverManager.getConnection(
+			"jdbc:mariadb://" + SQL_IP + ":" + SQL_PORT + "/" + SQL_DB + "?cachePrepStmts=false",
+			SQL_USER,
+			SQL_PASS
+		);
+
+		//自動コミットOFF
+		CONNECT.setAutoCommit(false);
+
+		LOG(LOG_TYPE.OK, "SQL ReConnected");
+	}
+
+	private static synchronized boolean GetConnect() {
+		int RETRY = 0;
+		int MAX_RETRY = 5;
+		long DELAY = 5000; // 5秒
+
+		while (RETRY < MAX_RETRY) {
+			try {
+				if (CONNECT == null || CONNECT.isClosed() || !CONNECT.isValid(2)) {
+					ReCONNECT();
+					return true;
+				} else {
+					return true;
+				}
+			} catch (Exception ex) {
+				RETRY++;
+				LOG(LOG_TYPE.FAILED, "Retrying SQL connection... (" + MAX_RETRY + "/" + RETRY + ")");
+				try {
+					Thread.sleep(DELAY);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
+		}
+
+		LOG(LOG_TYPE.FAILED, "Failed to reconnect to SQL after " + MAX_RETRY + " attempts.");
+		return false;
+	}
+
+	public static synchronized ArrayNode RUN(String SQL_SCRIPT, Object[] PARAMS) {
 		//SQLの実行結果を入れる変数
 		ResultSet SQL_RESULT = null;
+
+		//接続チェック
+		GetConnect();
 
 		try{
 			//SELECT文の実行
@@ -102,7 +160,10 @@ public class SQL {
 		}
 	}
 
-	public static void UP_RUN(String SQL_SCRIPT, Object[] PARAMS) throws SQLException {
+	public static synchronized void UP_RUN(String SQL_SCRIPT, Object[] PARAMS) throws SQLException {
+		//接続チェック
+		GetConnect();
+
 		//SELECT文の実行
 		PreparedStatement STMT = CONNECT.prepareStatement(SQL_SCRIPT);
 
