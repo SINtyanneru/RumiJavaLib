@@ -1,5 +1,6 @@
 package com.rumisystem.rumi_java_lib.HTTP_SERVER;
 
+import com.rumisystem.rumi_java_lib.EXCEPTION_READER;
 import com.rumisystem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -102,6 +103,24 @@ public class HTTP_SERVER {
 			} catch (Exception EX) {
 				LOG(LOG_TYPE.FAILED, "HTTP Server ERR");
 				EX.printStackTrace();
+
+				//エラーをクライアントにも送りつける
+				String EX_TEXT = EXCEPTION_READER.READ(EX);
+				byte[] EX_RES = ("System Err\n" + EX_TEXT).getBytes();
+				try {
+					//ステータスコードと文字数
+					EXCHANGE.sendResponseHeaders(500, EX_RES.length);
+					//書き込むやつ
+					OutputStream OS = EXCHANGE.getResponseBody();
+					//文字列を書き込む
+					OS.write(EX_RES);
+					//フラッシュする
+					OS.flush();
+					//終了
+					OS.close();
+				} catch (Exception EX2) {
+					//知らんふりする
+				}
 			}
 		}
 	}
