@@ -18,36 +18,19 @@ public class SQL {
 	private static String SQL_USER;
 	private static String SQL_PASS;
 
+	private static final String SQL_PARAM = "?useServerPrepStmts=false&cachePrepStmts=false";
+
 	public static void CONNECT(String IP, String PORT, String DB, String USER, String PASS){
-		//接続情報をSQLに
-		SQL_IP = IP;
-		SQL_PORT = PORT;
-		SQL_DB = DB;
-		SQL_USER = USER;
-		SQL_PASS = PASS;
-
-		//接続文字列
-		String URL = "jdbc:mariadb://" + IP + ":" + PORT + "/" + DB + "?cachePrepStmts=false";
-
 		try {
-			//MariaDBへ接続
-			CONNECT = (Connection) DriverManager.getConnection(URL, USER, PASS);
+			//接続情報をSQLに
+			SQL_IP = IP;
+			SQL_PORT = PORT;
+			SQL_DB = DB;
+			SQL_USER = USER;
+			SQL_PASS = PASS;
 
-			//自動コミットOFF
-			CONNECT.setAutoCommit(false);
-
-			LOG(LOG_TYPE.OK, "SQL Connected");
-
-			ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
-
-			//1秒ごとに実行されるタスク
-			Runnable TASK = () -> {
-				LOG(LOG_TYPE.INFO, "SQL PING");
-
-				RUN("SHOW TABLES;", new Object[]{});
-			};
-
-			SCHEDULER.scheduleAtFixedRate(TASK, 0, 5, TimeUnit.HOURS);
+			//接続
+			CONNECT();
 		} catch (SQLException E) {
 			//エラー
 			LOG(LOG_TYPE.FAILED, "SQL Connection Error");
@@ -55,16 +38,25 @@ public class SQL {
 		}
 	}
 
-	private static void ReCONNECT() throws SQLException {
+	private static void CONNECT() throws SQLException {
+		//接続文字列
+		String URL = "jdbc:mariadb://" + SQL_IP + ":" + SQL_PORT + "/" + SQL_DB + SQL_PARAM;
+
 		//MariaDBへ接続
-		CONNECT = (Connection) DriverManager.getConnection(
-			"jdbc:mariadb://" + SQL_IP + ":" + SQL_PORT + "/" + SQL_DB + "?cachePrepStmts=false",
-			SQL_USER,
-			SQL_PASS
-		);
+		CONNECT = (Connection) DriverManager.getConnection(URL, SQL_USER, SQL_PASS);
 
 		//自動コミットOFF
 		CONNECT.setAutoCommit(false);
+
+		//分離レベルをCOMMITTEDに
+		CONNECT.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+
+		LOG(LOG_TYPE.OK, "SQL Connected");
+	}
+
+	private static void ReCONNECT() throws SQLException {
+		//MariaDBへ接続
+		CONNECT();
 
 		LOG(LOG_TYPE.OK, "SQL ReConnected");
 	}
@@ -98,9 +90,6 @@ public class SQL {
 	}
 
 	public static synchronized ArrayNode RUN(String SQL_SCRIPT, Object[] PARAMS) {
-		//SQLの実行結果を入れる変数
-		ResultSet SQL_RESULT = null;
-
 		//接続チェック
 		GetConnect();
 
@@ -125,7 +114,8 @@ public class SQL {
 				}
 			}
 
-			SQL_RESULT = STMT.executeQuery();
+			//SQLを実行し、結果を入れる
+			ResultSet SQL_RESULT = STMT.executeQuery();
 
 			//SQLの結果をArrayNode化する
 			ArrayNode ARRAY_NODE = new ArrayNode();
@@ -150,6 +140,10 @@ public class SQL {
 				//AI
 				ARRAY_NODE_I++;
 			}
+
+			//色々閉じる
+			STMT.close();
+			SQL_RESULT.close();
 
 			return ARRAY_NODE;
 		} catch (SQLException e) {
