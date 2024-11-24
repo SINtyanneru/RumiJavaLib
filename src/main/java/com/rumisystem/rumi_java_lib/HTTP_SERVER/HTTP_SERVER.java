@@ -62,7 +62,11 @@ public class HTTP_SERVER {
 					//?以降の文字列を取得
 					String[] URI_PARAM_ARRAY = EXCHANGE.getRequestURI().toString().substring(MARK_INDEX + 1).split("&");
 					for (String URI_PARAM : URI_PARAM_ARRAY) {
-						URI_PARAM_HM.put(URI_PARAM.split("=")[0], URI_PARAM.split("=")[1]);
+						String[] SPLIT = URI_PARAM.split("=");
+						//ヌルチェック
+						if (SPLIT[0] != null && SPLIT[1] != null) {
+							URI_PARAM_HM.put(SPLIT[0], SPLIT[1]);
+						}
 					}
 				}
 
