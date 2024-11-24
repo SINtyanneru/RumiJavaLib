@@ -94,6 +94,9 @@ public class SQL {
 		GetConnect();
 
 		try{
+			//コミット(最新の状態に)
+			CONNECT.commit();
+
 			//SELECT文の実行
 			PreparedStatement STMT = CONNECT.prepareStatement(SQL_SCRIPT);
 
