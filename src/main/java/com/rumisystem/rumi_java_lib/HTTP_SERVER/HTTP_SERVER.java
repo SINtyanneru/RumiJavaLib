@@ -64,7 +64,7 @@ public class HTTP_SERVER {
 					for (String URI_PARAM : URI_PARAM_ARRAY) {
 						String[] SPLIT = URI_PARAM.split("=");
 						//ヌルチェック
-						if (SPLIT[0] != null && SPLIT[1] != null) {
+						if (SPLIT.length == 2) {
 							URI_PARAM_HM.put(SPLIT[0], SPLIT[1]);
 						}
 					}
