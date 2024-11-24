@@ -122,4 +122,48 @@ public class FETCH {
 			return null;
 		}
 	}
+
+	public FETCH_RESULT DELETE() {
+		try {
+			HttpURLConnection HUC = (HttpURLConnection) URI.openConnection();
+
+			//GETリクエストだと主張する
+			HUC.setRequestMethod("DELETE");
+
+			//接続
+			HUC.connect();
+
+			//ヘッダーを入れる
+			for(HashMap<String, String> HEADER:HEADER_LIST){
+				HUC.setRequestProperty(HEADER.get("KEY"), HEADER.get("VAL"));
+			}
+
+			//レスポンスコード
+			int RES_CODE = HUC.getResponseCode();
+			//応答内容
+			ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
+
+			if (RES_CODE == HttpURLConnection.HTTP_OK) {
+				InputStream IS = HUC.getInputStream();
+				byte[] BUFFER = new byte[1024];
+				int BYTE_READ;
+				while ((BYTE_READ = IS.read(BUFFER, 0, BUFFER.length)) != -1) {
+					BAOS.write(BUFFER, 0, BYTE_READ);
+				}
+			} else {
+				InputStream IS = HUC.getErrorStream();
+				byte[] BUFFER = new byte[1024];
+				int BYTE_READ;
+				while ((BYTE_READ = IS.read(BUFFER, 0, BUFFER.length)) != -1) {
+					BAOS.write(BUFFER, 0, BYTE_READ);
+				}
+			}
+
+			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray());
+			return RESULT;
+		} catch (Exception EX) {
+			//あ
+			return null;
+		}
+	}
 }
