@@ -36,6 +36,11 @@ public class Main {
 								} else {
 									System.out.println(E.getUSER().getNAME() + "さんにメンションされました「" + E.getNOTE().getTEXT() + "」");
 									MC.CreateReaction(E.getNOTE(), ":1039992459209490513:");
+									NoteBuilder NB = new NoteBuilder();
+									NB.setTEXT("はい！！");
+									NB.setREPLY(E.getNOTE());
+
+									MC.PostNote(NB.Build());
 								}
 							} else {
 								System.out.println(E.getUSER().getNAME() + "さんがリノートしました");

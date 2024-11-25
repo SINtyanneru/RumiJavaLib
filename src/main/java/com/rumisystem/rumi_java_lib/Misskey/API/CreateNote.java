@@ -24,6 +24,11 @@ public class CreateNote {
 		POST_DATA.put("visibility", "public");
 		POST_DATA.put("reactionAcceptance", null);
 
+		//リプライ
+		if (NOTE.isREPLY()) {
+			POST_DATA.put("replyId", NOTE.getReply().getID());
+		}
+
 		JsonNode RESULT = new ObjectMapper().readTree(NOTE_AJAX.POST(OM.writeValueAsString(POST_DATA)));
 	}
 }

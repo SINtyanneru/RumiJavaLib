@@ -11,14 +11,14 @@ public class Note {
 	private OffsetDateTime DATE;
 	private NoteVis VIS;
 	private String RENOTE_ID;
-	private String REPLY_ID;
+	private Note REPLY_NOTE;
 	private boolean CW = false;
 	private String CW_TEXT;
 	private boolean KaiMention = false;
 
 	private boolean BUILD = false;
 
-	public Note(boolean BUILD, User USER, String  ID, String TEXT, OffsetDateTime DATE, NoteVis VIS, String RENOTE_ID, String REPLY_ID, String CW_TEXT, boolean KaiMention) {
+	public Note(boolean BUILD, User USER, String  ID, String TEXT, OffsetDateTime DATE, NoteVis VIS, String RENOTE_ID, Note REPLY_NOTE, String CW_TEXT, boolean KaiMention) {
 		this.BUILD = BUILD;
 		this.USER = USER;
 		this.ID = ID;
@@ -26,7 +26,7 @@ public class Note {
 		this.DATE = DATE;
 		this.VIS = VIS;
 		this.RENOTE_ID = RENOTE_ID;
-		this.REPLY_ID = REPLY_ID;
+		this.REPLY_NOTE = REPLY_NOTE;
 
 		//CW
 		if (CW_TEXT != null) {
@@ -57,8 +57,12 @@ public class Note {
 		}
 	}
 
+	public Note getReply() {
+		return REPLY_NOTE;
+	}
+
 	public boolean isREPLY() {
-		if (REPLY_ID != null) {
+		if (REPLY_NOTE != null) {
 			return true;
 		} else {
 			return false;

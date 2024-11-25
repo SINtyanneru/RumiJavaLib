@@ -8,17 +8,26 @@ public class NoteBuilder {
 	private String[] FILE = null;
 	private NoteVis VIS = NoteVis.PUBLIC;
 	private String CW_TEXT = null;
+	private Note REPLY_NOTE = null;
 
 	public void setTEXT(String TEXT) {
+		//a
 		this.TEXT = TEXT;
 	}
 
 	public void setVIS(NoteVis VIS) {
+		//a
 		this.VIS = VIS;
 	}
 
 	public void setCW(String CW_TEXT) {
+		//a
 		this.CW_TEXT = CW_TEXT;
+	}
+
+	public void setREPLY(Note NOTE) {
+		//a
+		this.REPLY_NOTE = NOTE;
 	}
 
 	public Note Build() {
@@ -30,7 +39,7 @@ public class NoteBuilder {
 			null,
 			VIS,
 			null,
-			null,
+			REPLY_NOTE,
 			CW_TEXT,
 			false
 		);

@@ -91,7 +91,7 @@ public class WSS {
 
 								NoteVis VIS = null;
 								String RN_ID = null;
-								String REPLY_ID = null;
+								Note REPLY_NOTE = null;
 								String CW = null;
 								boolean KaiMention = false;
 
@@ -125,7 +125,7 @@ public class WSS {
 
 								//返信
 								if (REPLY_DATA != null) {
-									REPLY_ID = REPLY_DATA.get("id").asText();
+									REPLY_NOTE = null;
 								}
 
 								//CW
@@ -159,7 +159,7 @@ public class WSS {
 										OffsetDateTime.parse(NOTE_DATA.get("createdAt").asText()),
 										VIS,
 										RN_ID,
-										REPLY_ID,
+										REPLY_NOTE,
 										CW,
 										KaiMention
 								);
