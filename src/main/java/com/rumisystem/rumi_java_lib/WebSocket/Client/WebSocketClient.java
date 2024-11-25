@@ -1,106 +1,101 @@
 package com.rumisystem.rumi_java_lib.WebSocket.Client;
 
-import com.rumisystem.rumi_java_lib.FILER;
 import com.rumisystem.rumi_java_lib.WebSocket.Client.EVENT.CLOSE_EVENT;
 import com.rumisystem.rumi_java_lib.WebSocket.Client.EVENT.CONNECT_EVENT;
 import com.rumisystem.rumi_java_lib.WebSocket.Client.EVENT.MESSAGE_EVENT;
 import com.rumisystem.rumi_java_lib.WebSocket.Client.EVENT.WS_EVENT_LISTENER;
-
+import kotlin.text.Charsets;
+import okhttp3.*;
+import okio.ByteString;
 import javax.swing.event.EventListenerList;
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.Base64;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WebSocketClient {
-	public static EventListenerList EL_LIST = new EventListenerList();
-
-	private static BufferedReader BR = null;
-	private static PrintWriter BW  = null;
+	private EventListenerList EL_LIST = new EventListenerList();
+	private BufferedReader BR = null;
+	private PrintWriter BW  = null;
+	private List<HEADER_TYPE> HEADER_LIST = new ArrayList<>();
 
 	public void CONNECT(String URL) {
 		try {
-			String User_HomeDIR = System.getProperty("user.home");
-			String BINARY_PATH = User_HomeDIR + "/.bun/bin/bun";
-			StringBuilder CODE = new StringBuilder();
+			//クライアントを準備
+			OkHttpClient CLIENT = new OkHttpClient();
+			Request.Builder REQUEST = new Request.Builder();
+			REQUEST.url(URL);
 
-			InputStream IS = WebSocketClient.class.getClassLoader().getResourceAsStream("WebSocketClient.js");
-			BufferedReader CODE_BR = new BufferedReader(new InputStreamReader(IS));
-			String LINE;
-			while ((LINE = CODE_BR.readLine()) != null) {
-				CODE.append(LINE + "\n");
+			for (HEADER_TYPE HEADER:HEADER_LIST) {
+				REQUEST.addHeader(HEADER.GetKEY(), HEADER.GetVAL());
 			}
 
-			if (!CODE.isEmpty()) {
-				ProcessBuilder processBuilder = new ProcessBuilder(BINARY_PATH, "-e", CODE.toString());
-				processBuilder.redirectErrorStream(true);
-
-				Process P = processBuilder.start();
-
-				BR = new BufferedReader(new InputStreamReader(P.getInputStream()));
-				BW = new PrintWriter(P.getOutputStream());
-
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							String LINE;
-							while ((LINE = BR.readLine()) != null) {
-								String[] CMD = LINE.split(" ");
-
-								switch (CMD[0]) {
-									case "OPEN": {
-										RunCMD("SEND " + Base64.getEncoder().encodeToString("ちんちん".getBytes(StandardCharsets.UTF_8)));
-										WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
-										for (WS_EVENT_LISTENER EL:ELL) {
-											EL.CONNECT(new CONNECT_EVENT());
-										}
-										break;
-									}
-
-									case "RECEIVE": {
-										byte[] DECODE_DATA = Base64.getDecoder().decode(CMD[1]);
-										WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
-										for (WS_EVENT_LISTENER EL:ELL) {
-											EL.MESSAGE(new MESSAGE_EVENT(new String(DECODE_DATA)));
-										}
-										break;
-									}
-
-									case "CLOSE": {
-										WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
-										for (WS_EVENT_LISTENER EL:ELL) {
-											EL.CLOSE(new CLOSE_EVENT("", 0));
-										}
-										break;
-									}
-								}
-							}
-						} catch (Exception EX) {
-							EX.printStackTrace();
-						}
+			//イベントリスナー
+			WebSocketListener WSL = new WebSocketListener() {
+				@Override
+				public void onOpen(WebSocket SESSION, Response RES) {
+					//接続
+					WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
+					for (WS_EVENT_LISTENER EL:ELL) {
+						EL.CONNECT(new CONNECT_EVENT(SESSION));
 					}
-				}).start();
+				}
 
-				RunCMD("CONNECT " + Base64.getEncoder().encodeToString(URL.getBytes(StandardCharsets.UTF_8)));
-			} else {
-				throw new Error("JS file ga nai");
-			}
+				@Override
+				public void onMessage(WebSocket SESSION, String TEXT) {
+					//受信(文字列)
+					WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
+					for (WS_EVENT_LISTENER EL:ELL) {
+						EL.MESSAGE(new MESSAGE_EVENT(TEXT.getBytes(Charsets.UTF_8), SESSION));
+					}
+				}
+
+				@Override
+				public void onMessage(WebSocket SESSION, ByteString BYTES) {
+					//受信(バイト)
+					WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
+					for (WS_EVENT_LISTENER EL:ELL) {
+						EL.MESSAGE(new MESSAGE_EVENT(BYTES.toByteArray(), SESSION));
+					}
+				}
+
+				@Override
+				public void onClosing(WebSocket SESSION, int CODE, String REASON) {
+					//切断
+					SESSION.close(1000, null);
+
+					WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
+					for (WS_EVENT_LISTENER EL:ELL) {
+						EL.CLOSE(new CLOSE_EVENT(REASON, CODE));
+					}
+				}
+
+				@Override
+				public void onFailure(WebSocket SESSION, Throwable T, Response RES) {
+					//エラー
+				}
+			};
+
+			//接続
+			WebSocket WS = CLIENT.newWebSocket(REQUEST.build(), WSL);
+
+			//アプリ終了時に切断処理
+			Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+				@Override
+				public void run() {
+					CLIENT.dispatcher().executorService().shutdown();
+				}
+			}));
 		} catch (Exception EX) {
 			EX.printStackTrace();
 		}
 	}
 
-	public static void RunCMD(String CMD) {
-		BW.println(CMD);
-		BW.flush();
-	}
-
 	public void SET_EVENT_LISTENER(WS_EVENT_LISTENER EVENT_LISTENER) {
 		EL_LIST.add(WS_EVENT_LISTENER.class, EVENT_LISTENER);
+	}
+
+	public void SetHEADER(String KEY, String VAL) {
+		HEADER_LIST.add(new HEADER_TYPE(KEY, VAL));
 	}
 }

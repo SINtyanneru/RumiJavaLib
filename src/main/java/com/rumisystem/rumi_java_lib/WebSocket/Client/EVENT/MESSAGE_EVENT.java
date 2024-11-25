@@ -1,22 +1,28 @@
 package com.rumisystem.rumi_java_lib.WebSocket.Client.EVENT;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import okhttp3.WebSocket;
+import okio.ByteString;
 
-import static com.rumisystem.rumi_java_lib.WebSocket.Client.WebSocketClient.RunCMD;
+import java.nio.charset.StandardCharsets;
 
 public class MESSAGE_EVENT {
-	private String TEXT = null;
+	private byte[] DATA;
+	private WebSocket SESSION;
 
-	public MESSAGE_EVENT(String TEXT) {
-		this.TEXT = TEXT;
+	public MESSAGE_EVENT(byte[] DATA, WebSocket SESSION) {
+		this.DATA = DATA;
+		this.SESSION = SESSION;
 	}
 
 	public void SEND(String TEXT) {
-		RunCMD("SEND" + Base64.getEncoder().encodeToString(TEXT.getBytes(StandardCharsets.UTF_8)));
+		SESSION.send(TEXT);
+	}
+
+	public void SEND(byte[] BYTES) {
+		SESSION.send(ByteString.of(BYTES));
 	}
 
 	public String getMessage() {
-		return TEXT;
+		return new String(DATA, StandardCharsets.UTF_8);
 	}
 }

@@ -15,7 +15,6 @@ import com.rumisystem.rumi_java_lib.WebSocket.Client.WebSocketClient;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
 			if (MC.TOKEN_LOGIN(args[0]) == LOGIN_RESULT.DONE) {
 				MC.SET_EVENT_LISTENER(new EVENT_LISTENER() {
@@ -49,7 +48,7 @@ public class Main {
 				});
 			} else {
 				System.out.println("ログイン失敗");
-			}*/
+			}
 		} catch (Exception EX) {
 			EX.printStackTrace();
 		}
