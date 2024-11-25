@@ -33,13 +33,13 @@ public class FETCH {
 			//GETリクエストだと主張する
 			HUC.setRequestMethod("GET");
 
-			//接続
-			HUC.connect();
-
 			//ヘッダーを入れる
 			for(HashMap<String, String> HEADER:HEADER_LIST){
 				HUC.setRequestProperty(HEADER.get("KEY"), HEADER.get("VAL"));
 			}
+
+			//接続
+			HUC.connect();
 
 			//レスポンスコード
 			int RES_CODE = HUC.getResponseCode();
@@ -81,6 +81,11 @@ public class FETCH {
 			HUC.setDoInput(true);
 			HUC.setDoOutput(true);
 
+			//ヘッダーを入れる
+			for(HashMap<String, String> HEADER:HEADER_LIST){
+				HUC.setRequestProperty(HEADER.get("KEY"), HEADER.get("VAL"));
+			}
+
 			//接続
 			HUC.connect();
 
@@ -88,11 +93,6 @@ public class FETCH {
 			PrintStream PS = new PrintStream(HUC.getOutputStream());
 			PS.write(BODY);
 			PS.close();
-
-			//ヘッダーを入れる
-			for(HashMap<String, String> HEADER:HEADER_LIST){
-				HUC.setRequestProperty(HEADER.get("KEY"), HEADER.get("VAL"));
-			}
 
 			//レスポンスコード
 			int RES_CODE = HUC.getResponseCode();
@@ -119,6 +119,7 @@ public class FETCH {
 			return RESULT;
 		} catch (Exception EX) {
 			//あ
+			EX.printStackTrace();
 			return null;
 		}
 	}
