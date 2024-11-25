@@ -1,10 +1,7 @@
 package com.rumisystem.rumi_java_lib.Misskey;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rumisystem.rumi_java_lib.Misskey.API.CreateNote;
-import com.rumisystem.rumi_java_lib.Misskey.API.I;
-import com.rumisystem.rumi_java_lib.Misskey.API.LOGIN;
-import com.rumisystem.rumi_java_lib.Misskey.API.SHOW;
+import com.rumisystem.rumi_java_lib.Misskey.API.*;
 import com.rumisystem.rumi_java_lib.Misskey.TYPE.Note;
 import com.rumisystem.rumi_java_lib.Misskey.Event.EVENT_LISTENER;
 import com.rumisystem.rumi_java_lib.Misskey.RESULT.LOGIN_RESULT;
@@ -109,6 +106,10 @@ public class MisskeyClient {
 
 	public void PostNote(Note NOTE) throws IOException {
 		CreateNote.Post(INSTANCE_DOMAIN, TOKEN, NOTE);
+	}
+
+	public void CreateReaction(Note NOTE, String ReactionText) throws IOException {
+		NoteReaction.Create(NOTE, ReactionText, TOKEN, INSTANCE_DOMAIN);
 	}
 
 	private void getI() throws IOException {

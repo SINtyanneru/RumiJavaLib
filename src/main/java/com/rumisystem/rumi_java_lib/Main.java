@@ -29,14 +29,19 @@ public class Main {
 
 					@Override
 					public void onNewNote(NewNoteEvent E) {
-						if (!E.getNOTE().isRN()) {
-							if (!E.getNOTE().isKaiMention()) {
-								System.out.println(E.getUSER().getNAME() + "さんのノート「" + E.getNOTE().getTEXT() + "」");
+						try{
+							if (!E.getNOTE().isRN()) {
+								if (!E.getNOTE().isKaiMention()) {
+									System.out.println(E.getUSER().getNAME() + "さんのノート「" + E.getNOTE().getTEXT() + "」");
+								} else {
+									System.out.println(E.getUSER().getNAME() + "さんにメンションされました「" + E.getNOTE().getTEXT() + "」");
+									MC.CreateReaction(E.getNOTE(), ":1039992459209490513:");
+								}
 							} else {
-								System.out.println(E.getUSER().getNAME() + "さんにメンションされました「" + E.getNOTE().getTEXT() + "」");
+								System.out.println(E.getUSER().getNAME() + "さんがリノートしました");
 							}
-						} else {
-							System.out.println(E.getUSER().getNAME() + "さんがリノートしました");
+						} catch (Exception EX) {
+							EX.printStackTrace();
 						}
 					}
 

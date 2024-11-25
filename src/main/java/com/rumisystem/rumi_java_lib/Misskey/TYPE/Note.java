@@ -1,5 +1,7 @@
 package com.rumisystem.rumi_java_lib.Misskey.TYPE;
 
+import com.rumisystem.rumi_java_lib.Misskey.API.NoteReaction;
+
 import java.time.OffsetDateTime;
 
 public class Note {
