@@ -55,7 +55,7 @@ public class HTTP_EVENT extends EventObject {
 	 * @param VAL 内容
 	 */
 	public void setHEADER(String KEY, String VAL){
-		RES_HEADER.set(KEY, VAL);
+		RES_HEADER.add(KEY, VAL);
 	}
 
 	/**
@@ -63,16 +63,23 @@ public class HTTP_EVENT extends EventObject {
 	 * @throws IOException 例外
 	 */
 	public void REPLY_BYTE(int STATUS, byte[] BODY) throws IOException {
-		//ステータスコードと文字数
-		EXCHANGE.sendResponseHeaders(STATUS, BODY.length);
-		//書き込むやつ
-		OutputStream OS = EXCHANGE.getResponseBody();
-		//文字列を書き込む
-		OS.write(BODY);
-		//フラッシュする
-		OS.flush();
-		//終了
-		OS.close();
+		//HEAD以外での動作
+		if (!EXCHANGE.getRequestMethod().equals("HEAD")) {
+			//ステータスコードと文字数
+			EXCHANGE.sendResponseHeaders(STATUS, BODY.length);
+			//書き込むやつ
+			OutputStream OS = EXCHANGE.getResponseBody();
+			//文字列を書き込む
+			OS.write(BODY);
+			//フラッシュする
+			OS.flush();
+			//終了
+			OS.close();
+		} else {
+			//HEADの場合の動作(ステータスコードとかを返して閉じるだけ)
+			EXCHANGE.sendResponseHeaders(STATUS, BODY.length);
+			EXCHANGE.getResponseBody().close();
+		}
 	}
 
 	/**
@@ -82,15 +89,22 @@ public class HTTP_EVENT extends EventObject {
 	public void REPLY_String(int STATUS, String BODY) throws IOException {
 		byte[] BS = BODY.getBytes(StandardCharsets.UTF_8);
 
-		//ステータスコードと文字数
-		EXCHANGE.sendResponseHeaders(STATUS, BS.length);
-		//書き込むやつ
-		OutputStream OS = EXCHANGE.getResponseBody();
-		//文字列を書き込む
-		OS.write(BS);
-		//フラッシュする
-		OS.flush();
-		//終了
-		OS.close();
+		//HEAD以外での動作
+		if (!EXCHANGE.getRequestMethod().equals("HEAD")) {
+			//ステータスコードと文字数
+			EXCHANGE.sendResponseHeaders(STATUS, BS.length);
+			//書き込むやつ
+			OutputStream OS = EXCHANGE.getResponseBody();
+			//文字列を書き込む
+			OS.write(BS);
+			//フラッシュする
+			OS.flush();
+			//終了
+			OS.close();
+		} else {
+			//HEADの場合の動作(ステータスコードとかを返して閉じるだけ)
+			EXCHANGE.sendResponseHeaders(STATUS, BS.length);
+			EXCHANGE.getResponseBody().close();
+		}
 	}
 }
