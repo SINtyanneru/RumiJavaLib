@@ -39,6 +39,18 @@ public class ArrayNode {
 		}
 	}
 
+	public boolean isNull(Object KEY) {
+		if(KEY instanceof String || KEY instanceof Integer){
+			if (NODE_DATA.get(KEY) == null) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			throw new RuntimeException("キーはStringかiniしか使えません");
+		}
+	}
+
 	public String asString(Object KEY){
 		//キーはStringもしくはintか？
 		if(KEY instanceof String || KEY instanceof Integer){
