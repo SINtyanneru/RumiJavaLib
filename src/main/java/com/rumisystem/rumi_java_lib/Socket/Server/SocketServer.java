@@ -5,6 +5,7 @@ import com.rumisystem.rumi_java_lib.Socket.Server.CONNECT_EVENT.CONNECT_EVENT_LI
 import com.rumisystem.rumi_java_lib.Socket.Server.EVENT.CloseEvent;
 import com.rumisystem.rumi_java_lib.Socket.Server.EVENT.EVENT_LISTENER;
 import com.rumisystem.rumi_java_lib.Socket.Server.EVENT.MessageEvent;
+import com.rumisystem.rumi_java_lib.Socket.Server.EVENT.ReceiveEvent;
 
 import javax.swing.event.EventListenerList;
 import java.io.IOException;
@@ -24,6 +25,7 @@ public class SocketServer {
 	public EventListenerList CONNECT_EL_LIST = new EventListenerList();
 	public EventListenerList EL_LIST = new EventListenerList();
 	public HashMap<Integer, String> CEL_LIST = new HashMap<>();		//接続後のイベントリスナーのhashCodeとUUIDを保存
+	private HashMap<SocketChannel, StringBuilder> RECEIVE_BUFFER = new HashMap<>();
 
 	public void setEventListener(CONNECT_EVENT_LISTENER EL) {
 		//追加
@@ -82,27 +84,42 @@ public class SocketServer {
 							BUFFER.flip();
 							byte[] DATA = new byte[BUFFER.remaining()];
 							BUFFER.get(DATA);
+							EVENT_LISTENER[] ELL = EL_LIST.getListeners(EVENT_LISTENER.class);
 
-							//文字列に変換(そして語尾の改行コードを潰す)
-							String S = new String(DATA).replaceAll("[\r\n]+$", "");
-							String[] ULINE = null;
-
-							//\rが有るなら\r\nで分割
-							if (S.contains("\r")) {
-								ULINE = S.split("\r\n");
-							} else {
-								ULINE = S.split("\n");
+							//受信イベント発火
+							for (EVENT_LISTENER EL:ELL) {
+								if (CEL_LIST.get(EL.hashCode()) != null) {
+									if (CEL_LIST.get(EL.hashCode()).equals(String.valueOf(SES.hashCode()))) {
+										EL.Receive(new ReceiveEvent(DATA));
+									}
+								}
 							}
 
-							//改行で分けたやつを順番にイベント発火
-							for (String LINE:ULINE) {
-								byte[] BYTE_DATA = LINE.getBytes();
-								//イベント発火
-								EVENT_LISTENER[] ELL = EL_LIST.getListeners(EVENT_LISTENER.class);
-								for (EVENT_LISTENER EL:ELL) {
-									if (CEL_LIST.get(EL.hashCode()) != null) {
-										if (CEL_LIST.get(EL.hashCode()).equals(String.valueOf(SES.hashCode()))) {
-											EL.Message(new MessageEvent(BYTE_DATA));
+							//バッファーにばぼーん
+							StringBuilder RECEIVE_SB = RECEIVE_BUFFER.getOrDefault(SES, new StringBuilder());
+							RECEIVE_SB.append(new String(DATA));
+
+							//最後が改行で終わってるなら、Messageイベントを発火する
+							if (RECEIVE_SB.lastIndexOf("\n") != -1) {
+								String S = RECEIVE_SB.toString();
+								String[] ULINE = null;
+
+								//\rが有るなら\r\nで分割
+								if (S.contains("\r\n")) {
+									ULINE = S.split("\r\n");
+								} else {
+									ULINE = S.split("\n");
+								}
+
+								//改行で分けたやつを順番にイベント発火
+								for (String LINE:ULINE) {
+									byte[] BYTE_DATA = LINE.getBytes();
+									//イベント発火
+									for (EVENT_LISTENER EL:ELL) {
+										if (CEL_LIST.get(EL.hashCode()) != null) {
+											if (CEL_LIST.get(EL.hashCode()).equals(String.valueOf(SES.hashCode()))) {
+												EL.Message(new MessageEvent(BYTE_DATA));
+											}
 										}
 									}
 								}
