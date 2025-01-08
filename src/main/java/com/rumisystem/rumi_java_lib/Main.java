@@ -6,6 +6,7 @@ import com.rumisystem.rumi_java_lib.Misskey.Event.NewFollower;
 import com.rumisystem.rumi_java_lib.Misskey.Event.NewNoteEvent;
 import com.rumisystem.rumi_java_lib.Misskey.MisskeyClient;
 import com.rumisystem.rumi_java_lib.Misskey.RESULT.LOGIN_RESULT;
+import com.rumisystem.rumi_java_lib.RESOURCE.RESOURCE_MANAGER;
 import com.rumisystem.rumi_java_lib.WebSocket.Client.EVENT.CLOSE_EVENT;
 import com.rumisystem.rumi_java_lib.WebSocket.Client.EVENT.CONNECT_EVENT;
 import com.rumisystem.rumi_java_lib.WebSocket.Client.EVENT.MESSAGE_EVENT;
