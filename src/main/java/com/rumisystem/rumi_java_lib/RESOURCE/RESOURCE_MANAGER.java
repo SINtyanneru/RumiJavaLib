@@ -43,7 +43,7 @@ public class RESOURCE_MANAGER {
 				JarEntry ROW = ENTRIE.nextElement();
 				String ENTRIE_NAME = "/" + ROW.getName();
 
-				if (("/" + ENTRIE_NAME).startsWith(PATH)) {
+				if ((ENTRIE_NAME).startsWith(PATH)) {
 					RESOURCE_ENTRIE.TYPE TYPE = RESOURCE_ENTRIE.TYPE.FILE;
 					//ディレクトリならDIR
 					if (ROW.isDirectory()) {
