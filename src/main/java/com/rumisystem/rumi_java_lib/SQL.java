@@ -118,6 +118,8 @@ public class SQL {
 					STMT.setBytes(I + 1, (byte[])PARAM);
 				} else if (PARAM instanceof Byte) {
 					STMT.setByte(I + 1, (byte) PARAM);
+				} else {
+					System.out.println(PARAM.getClass().getSimpleName() + "は非対応です");
 				}
 			}
 
@@ -179,6 +181,12 @@ public class SQL {
 				STMT.setLong(I + 1, (long)PARAM);
 			} else if (PARAM instanceof  Boolean) {
 				STMT.setBoolean(I + 1, (boolean)PARAM);
+			} else if (PARAM instanceof byte[]) {
+				STMT.setBytes(I + 1, (byte[])PARAM);
+			} else if (PARAM instanceof Byte) {
+				STMT.setByte(I + 1, (byte) PARAM);
+			} else {
+				System.out.println(PARAM.getClass().getSimpleName() + "は非対応です");
 			}
 		}
 
