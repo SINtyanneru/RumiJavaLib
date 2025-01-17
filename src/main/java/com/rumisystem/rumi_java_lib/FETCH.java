@@ -75,7 +75,7 @@ public class FETCH {
 			HttpURLConnection HUC = (HttpURLConnection) URI.openConnection();
 
 			//GETリクエストだと主張する
-			HUC.setRequestMethod("GET");
+			HUC.setRequestMethod("POST");
 
 			//POST可能に
 			HUC.setDoInput(true);
