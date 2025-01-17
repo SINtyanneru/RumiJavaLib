@@ -114,6 +114,10 @@ public class SQL {
 					STMT.setLong(I + 1, (long)PARAM);
 				} else if (PARAM instanceof  Boolean) {
 					STMT.setBoolean(I + 1, (boolean)PARAM);
+				} else if (PARAM instanceof byte[]) {
+					STMT.setBytes(I + 1, (byte[])PARAM);
+				} else if (PARAM instanceof Byte) {
+					STMT.setByte(I + 1, (byte) PARAM);
 				}
 			}
 
