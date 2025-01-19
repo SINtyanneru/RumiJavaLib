@@ -86,12 +86,12 @@ public class HTTP_SERVER {
 
 				//リクエストヘッダーを取得
 				Map<String, List<String>> HEADER_TEMP = EXCHANGE.getRequestHeaders();
-				HashMap<String, String> HEADER_DATA = new HashMap<String, String>();
+				HashMap<String, String> HEADER_DATA = new HashMap<>();
 				for (Map.Entry<String, List<String>> entry : HEADER_TEMP.entrySet()) {
 					String HEADER_KEY = entry.getKey();
 					List<String> HEADER_VAL = entry.getValue();
 					//データをhashMapに入れるのだちんちんまーんこ
-					HEADER_DATA.put(HEADER_KEY.toUpperCase(), HEADER_VAL.get(0).toString());
+					HEADER_DATA.put(HEADER_KEY.toUpperCase(), String.join(", ", HEADER_VAL));
 				}
 
 
