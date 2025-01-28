@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'rumi_java_lib'
-version = '11.4'
+version = '13'
 
 repositories {
 	mavenCentral()
@@ -28,7 +28,7 @@ dependencies {
 
 jar {
 	manifest {
-		attributes 'Main-Class': 'com.rumisystem.rumi_java_lib.Main'
+		attributes 'Main-Class': 'su.rumishistem.rumi_java_lib.Main'
 	}
 }
 
