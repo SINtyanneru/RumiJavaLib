@@ -18,11 +18,20 @@ import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
 
 public class HTTP_SERVER {
 	private int PORT;
+	private boolean VERBOSE = false;
 
 	EventListenerList EL_LIST = new EventListenerList();
 
 	public HTTP_SERVER(int PORT){
 		this.PORT = PORT;
+	}
+
+	/**
+	 * 詳細なログを吐くかを設定します
+	 * @param VERBOSE
+	 */
+	public void setVERBOSE(boolean VERBOSE) {
+		this.VERBOSE = VERBOSE;
 	}
 
 
@@ -48,11 +57,14 @@ public class HTTP_SERVER {
 		@Override
 		public void handle(HttpExchange EXCHANGE) {
 			try {
-				//禁止ワードが含まれていないならログを吐く
-				if(!EXCHANGE.getRequestURI().toString().contains("SESSION")){
-					LOG(LOG_TYPE.INFO, "HTTP Request:" + EXCHANGE.getRequestMethod() + " " + EXCHANGE.getRequestURI());
-				} else {
-					LOG(LOG_TYPE.INFO, "HTTP Request:" + EXCHANGE.getRequestMethod() + " ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+				//詳細なログを求めているならログを吐く
+				if (VERBOSE) {
+					//禁止ワードが含まれていないならログを吐く
+					if(!EXCHANGE.getRequestURI().toString().contains("SESSION")){
+						LOG(LOG_TYPE.INFO, "HTTP Request:" + EXCHANGE.getRequestMethod() + " " + EXCHANGE.getRequestURI());
+					} else {
+						LOG(LOG_TYPE.INFO, "HTTP Request:" + EXCHANGE.getRequestMethod() + " ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+					}
 				}
 
 				//URIパラメーターを解析するやつ
@@ -100,25 +112,13 @@ public class HTTP_SERVER {
 					LISTENER.REQUEST_EVENT(new HTTP_EVENT(this, EXCHANGE, URI_PARAM_HM, POST_DATA, HEADER_DATA));
 				}
 			} catch (Exception EX) {
-				LOG(LOG_TYPE.FAILED, "HTTP Server ERR");
-				EX.printStackTrace();
-
-				//エラーをクライアントにも送りつける
-				String EX_TEXT = EXCEPTION_READER.READ(EX);
-				byte[] EX_RES = ("System Err\n" + EX_TEXT).getBytes();
-				try {
-					//ステータスコードと文字数
-					EXCHANGE.sendResponseHeaders(500, EX_RES.length);
-					//書き込むやつ
-					OutputStream OS = EXCHANGE.getResponseBody();
-					//文字列を書き込む
-					OS.write(EX_RES);
-					//フラッシュする
-					OS.flush();
-					//終了
-					OS.close();
-				} catch (Exception EX2) {
-					//知らんふりする
+				if (VERBOSE) {
+					String EX_TEXT = EXCEPTION_READER.READ(EX);
+					LOG(LOG_TYPE.FAILED, "----------<HTTP Err!>----------");
+					for (String LINE:EX_TEXT.split("\n")) {
+						LOG(LOG_TYPE.FAILED, LINE);
+					}
+					LOG(LOG_TYPE.FAILED, "-------------------------------");
 				}
 			}
 		}
