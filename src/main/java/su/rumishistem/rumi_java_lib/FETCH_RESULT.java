@@ -11,14 +11,19 @@ import java.nio.charset.StandardCharsets;
 public class FETCH_RESULT {
 	private int STATUS_CODE = 0;
 	private byte[] BODY = null;
+	private int PING = 0;
 
-	public FETCH_RESULT(int STATUS_CODE, byte[] BODY) {
+	public FETCH_RESULT(int STATUS_CODE, byte[] BODY, int PING) {
 		this.STATUS_CODE = STATUS_CODE;
 		this.BODY = BODY;
 	}
 
 	public int GetSTATUS_CODE() {
 		return STATUS_CODE;
+	}
+
+	public int GetPING() {
+		return PING;
 	}
 
 	public byte[] GetRAW() {

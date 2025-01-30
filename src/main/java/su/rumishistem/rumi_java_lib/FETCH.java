@@ -28,6 +28,8 @@ public class FETCH {
 
 	public FETCH_RESULT GET() {
 		try {
+			long START = System.currentTimeMillis();
+
 			HttpURLConnection HUC = (HttpURLConnection) URI.openConnection();
 
 			//GETリクエストだと主張する
@@ -62,7 +64,9 @@ public class FETCH {
 				}
 			}
 
-			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray());
+			long END = System.currentTimeMillis();
+
+			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray(), (int) (END - START));
 			return RESULT;
 		} catch (Exception EX) {
 			//あ
@@ -72,6 +76,8 @@ public class FETCH {
 
 	public FETCH_RESULT POST(byte[] BODY) {
 		try {
+			long START = System.currentTimeMillis();
+
 			HttpURLConnection HUC = (HttpURLConnection) URI.openConnection();
 
 			//GETリクエストだと主張する
@@ -116,7 +122,9 @@ public class FETCH {
 				BAOS.write(BUFFER, 0, BYTE_READ);
 			}
 
-			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray());
+			long END = System.currentTimeMillis();
+
+			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray(), (int) (END - START));
 			return RESULT;
 		} catch (Exception EX) {
 			//あ
@@ -127,6 +135,8 @@ public class FETCH {
 
 	public FETCH_RESULT DELETE() {
 		try {
+			long START = System.currentTimeMillis();
+
 			HttpURLConnection HUC = (HttpURLConnection) URI.openConnection();
 
 			//GETリクエストだと主張する
@@ -161,7 +171,9 @@ public class FETCH {
 				}
 			}
 
-			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray());
+			long END = System.currentTimeMillis();
+
+			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray(), (int) (END - START));
 			return RESULT;
 		} catch (Exception EX) {
 			//あ
