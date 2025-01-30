@@ -84,7 +84,7 @@ public class HTTP_SERVER {
 
 				//POSTされたデータ
 				byte[] POST_DATA = null;
-				if ("POST".equals(EXCHANGE.getRequestMethod()) || "PATCH".equals(EXCHANGE.getRequestMethod())) {
+				if ("POST".equals(EXCHANGE.getRequestMethod()) || "PATCH".equals(EXCHANGE.getRequestMethod()) || "PUT".equals(EXCHANGE.getRequestMethod())) {
 					InputStream IS = EXCHANGE.getRequestBody();
 					ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
 					byte[] BUFFER = new byte[1024];
