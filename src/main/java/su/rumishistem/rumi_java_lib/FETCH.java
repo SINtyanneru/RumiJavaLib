@@ -66,7 +66,7 @@ public class FETCH {
 
 			long END = System.currentTimeMillis();
 
-			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray(), (int) (END - START));
+			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray(), (END - START));
 			return RESULT;
 		} catch (Exception EX) {
 			//あ
@@ -124,7 +124,7 @@ public class FETCH {
 
 			long END = System.currentTimeMillis();
 
-			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray(), (int) (END - START));
+			FETCH_RESULT RESULT = new FETCH_RESULT(RES_CODE, BAOS.toByteArray(), (END - START));
 			return RESULT;
 		} catch (Exception EX) {
 			//あ
