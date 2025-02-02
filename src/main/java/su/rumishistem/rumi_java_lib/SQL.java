@@ -112,6 +112,8 @@ public class SQL {
 					STMT.setBytes(I + 1, (byte[])PARAM);
 				} else if (PARAM instanceof Byte) {
 					STMT.setByte(I + 1, (byte) PARAM);
+				} else if (PARAM == null) {
+					STMT.setNull(I + 1, Types.NULL);
 				} else {
 					System.out.println(PARAM.getClass().getSimpleName() + "は非対応です");
 				}
@@ -179,6 +181,8 @@ public class SQL {
 				STMT.setBytes(I + 1, (byte[])PARAM);
 			} else if (PARAM instanceof Byte) {
 				STMT.setByte(I + 1, (byte) PARAM);
+			} else if (PARAM == null) {
+				STMT.setNull(I + 1, Types.NULL);
 			} else {
 				System.out.println(PARAM.getClass().getSimpleName() + "は非対応です");
 			}
