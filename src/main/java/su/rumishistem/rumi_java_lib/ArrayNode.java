@@ -3,6 +3,7 @@ package su.rumishistem.rumi_java_lib;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.checkerframework.checker.units.qual.K;
 
@@ -94,5 +95,14 @@ public class ArrayNode {
 
 		//結果を返す
 		return ARRAYLIST;
+	}
+
+	public Object[] getKeyList() {
+		List<Object> RESULT = new ArrayList<>();
+		Set<Object> KEY_LIST = NODE_DATA.keySet();
+		for (Object KEY:KEY_LIST) {
+			RESULT.add(KEY);
+		}
+		return RESULT.toArray();
 	}
 }
