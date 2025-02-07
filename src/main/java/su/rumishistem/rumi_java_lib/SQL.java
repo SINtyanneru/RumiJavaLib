@@ -136,7 +136,7 @@ public class SQL {
 					String COLUM_NAME = META_DATA.getColumnLabel(I);
 					Object VAL = SQL_RESULT.getObject(I);
 
-					ROW.setDATA(COLUM_NAME, VAL);
+					ROW.setDATA(COLUM_NAME, new ArrayData(VAL));
 				}
 
 				//ArrayNodeに追加

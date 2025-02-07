@@ -6,8 +6,17 @@ import java.util.List;
 
 import org.checkerframework.checker.units.qual.K;
 
+/**
+ * `ArrayNode`はJacksonのJsonNodeを丸パクリしたやつです
+ */
 public class ArrayNode {
 	private HashMap<Object, Object> NODE_DATA = new HashMap<>();
+
+	private void KeyCheck(Object KEY) {
+		if(!(KEY instanceof String || KEY instanceof Integer)) {
+			throw new RuntimeException("キーはStringかiniしか使えません");
+		}
+	}
 
 	/**
 	 * 値をセットします
@@ -15,30 +24,42 @@ public class ArrayNode {
 	 * @param DATA 内容
 	 */
 	public void setDATA(Object KEY, Object DATA){
-		if(KEY instanceof String || KEY instanceof Integer){
-			NODE_DATA.put(KEY, DATA);
+		KeyCheck(KEY);
+		if(DATA instanceof ArrayNode){
+			NODE_DATA.put(KEY, (ArrayNode) DATA);
 		} else {
-			throw new RuntimeException("キーはStringかiniしか使えません");
+			NODE_DATA.put(KEY, (ArrayData) DATA);
 		}
 	}
 
 	/**
-	 * 値を取得します
+	 * 配列を取得します
 	 * @param KEY String int
-	 * @return
+	 * @return 値
 	 */
 	public ArrayNode get(Object KEY){
-		if(KEY instanceof String || KEY instanceof Integer){
-			if(NODE_DATA.get(KEY) instanceof ArrayNode){
-				return (ArrayNode) NODE_DATA.get(KEY);
-			} else {
-				throw new RuntimeException("getは、型がArrayNodeの場合のみに使えます");
-			}
+		KeyCheck(KEY);
+		if(NODE_DATA.get(KEY) instanceof ArrayNode){
+			return (ArrayNode) NODE_DATA.get(KEY);
 		} else {
-			throw new RuntimeException("キーはStringかiniしか使えません");
+			return null;
 		}
 	}
 
+	public ArrayData getData(Object KEY) {
+		KeyCheck(KEY);
+		if(NODE_DATA.get(KEY) instanceof ArrayData){
+			return (ArrayData) NODE_DATA.get(KEY);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * 指定したキーがNullかを取得します
+ 	 * @param KEY キー
+	 * @return Nullならtrue
+	 */
 	public boolean isNull(Object KEY) {
 		if(KEY instanceof String || KEY instanceof Integer){
 			if (NODE_DATA.get(KEY) == null) {
@@ -51,75 +72,10 @@ public class ArrayNode {
 		}
 	}
 
-	public String asString(Object KEY){
-		//キーはStringもしくはintか？
-		if(KEY instanceof String || KEY instanceof Integer){
-			//指定されたキーの値はStringかIntなら値を返す
-			if(NODE_DATA.get(KEY) instanceof String || NODE_DATA.get(KEY) instanceof Integer || NODE_DATA.get(KEY) instanceof Long){
-				return NODE_DATA.get(KEY).toString();
-			} else {
-				throw new RuntimeException("型がStringもしくはIntではありません");
-			}
-		} else {
-			throw new RuntimeException("キーはStringかiniしか使えません");
-		}
-	}
-
-	public int asInt(Object KEY){
-		//キーはStringもしくはintか？
-		if(KEY instanceof String || KEY instanceof Integer){
-			//指定されたキーの値はIntなら値を返す
-			if(NODE_DATA.get(KEY) instanceof Integer){
-				return (int) NODE_DATA.get(KEY);
-			} else {
-				//Intじゃない
-				throw new RuntimeException("型がIntではありません");
-			}
-		} else {
-			throw new RuntimeException("キーはStringかiniしか使えません");
-		}
-	}
-
-	public long asLong(Object KEY){
-		//キーはStringもしくはintか？
-		if(KEY instanceof String || KEY instanceof Integer){
-			//指定されたキーの値はIntなら値を返す
-			if(NODE_DATA.get(KEY) instanceof Long){
-				return (long) NODE_DATA.get(KEY);
-			} else {
-				//Intじゃない
-				throw new RuntimeException("型がLongではありません");
-			}
-		} else {
-			throw new RuntimeException("キーはStringかiniしか使えません");
-		}
-	}
-
-	public boolean asBool(Object KEY){
-		//キーはStringもしくはintか？
-		if(KEY instanceof String || KEY instanceof Integer){
-			//指定されたキーの値はIntなら値を返す
-			if(NODE_DATA.get(KEY) instanceof Boolean){
-				return (boolean) NODE_DATA.get(KEY);
-			} else {
-				//Boolじゃない
-				throw new RuntimeException("型がBoolではありません");
-			}
-		} else {
-			throw new RuntimeException("キーはStringかiniしか使えません");
-		}
-	}
-
-	public Object asObject(Object KEY){
-		//キーはStringもしくはintか？
-		if(KEY instanceof String || KEY instanceof Integer){
-			//そのまま返す
-			return NODE_DATA.get(KEY);
-		} else {
-			throw new RuntimeException("キーはStringかiniしか使えません");
-		}
-	}
-
+	/**
+	 * ArrayListで取得します
+	 * @return ObjectのArrayList
+	 */
 	public List<Object> asArrayList(){
 		int I = 0;
 		List<Object> ARRAYLIST = new ArrayList<>();
