@@ -34,6 +34,8 @@ public class Main {
 				}
 			});
 
+			SH.SetResourceDir("/SCRIPT/", "/");
+
 			//エラー
 			SH.SetError("/", ERRORCODE.PAGE_NOT_FOUND, new Function<HTTP_REQUEST, HTTP_RESULT>() {
 				@Override

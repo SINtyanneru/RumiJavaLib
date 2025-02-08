@@ -7,6 +7,7 @@ import javax.swing.event.EventListenerList;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.EventObject;
 import java.util.HashMap;
@@ -47,6 +48,10 @@ public class HTTP_EVENT extends EventObject {
 
 	public HashMap<String, String> getHEADER_DATA(){
 		return HEADER_DATA;
+	}
+
+	public URI getURI() {
+		return EXCHANGE.getRequestURI();
 	}
 
 	public HashMap<String, String> getCookie() {

@@ -4,6 +4,7 @@ import su.rumishistem.rumi_java_lib.EXCEPTION_READER;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_SERVER;
+import su.rumishistem.rumi_java_lib.RESOURCE.RESOURCE_MANAGER;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +26,11 @@ public class SmartHTTP {
 		this.PORT = PORT;
 	}
 
+	/**
+	 * エンドポイントを設定します
+	 * @param PATH パス(*と:が使えます)
+	 * @param RESULT エンドポイントとなる関数を設定して
+	 */
 	public void SetRoute(String PATH, Function<HTTP_REQUEST, HTTP_RESULT> RESULT) {
 		PATH = SlasshFucker(PATH);
 
@@ -36,6 +42,59 @@ public class SmartHTTP {
 		EP_LIST.put(REGEX, RESULT);
 	}
 
+	/**
+	 * パスとリソースフォルダを関連付けます
+	 * @param PATH リクエストのパス(StartWithです)
+	 * @param ResourcePath リソースフォルダのパス
+	 */
+	public void SetResourceDir(String PATH, String ResourcePath) {
+		//語尾に/が無いなら追加する
+		if (!PATH.endsWith("/")) {
+			PATH = PATH + "/";
+		}
+		if (!ResourcePath.endsWith("/")) {
+			ResourcePath = ResourcePath + "/";
+		}
+
+		String PATHPATH = PATH;//←Javaのクソ仕様
+		String ResourcePathPath = ResourcePath;
+		SetRoute(PATH + "*", new Function<HTTP_REQUEST, HTTP_RESULT>() {
+			@Override
+			public HTTP_RESULT apply(HTTP_REQUEST e) {
+				try {
+					RESOURCE_MANAGER RM = new RESOURCE_MANAGER();
+					String REQUEST_FILE = e.GetEVENT().getURI().getPath().replaceFirst(PATHPATH, "");
+					String RESOURCE_FILE = ResourcePathPath + REQUEST_FILE;
+
+					//リソースファイルがあるか
+					if (RM.Exists(RESOURCE_FILE)) {
+						//ファイルを返す
+						return new HTTP_RESULT(200, RM.getResourceData(RESOURCE_FILE), "application/octet-stream");
+					} else {
+						//ファイルならないなら404
+						HashMap<String, String> PARAM_LIST = new HashMap<>();
+						PARAM_LIST.put("EX", "404");
+						ReturnErrorPage(e.GetEVENT(), PARAM_LIST, e.GetEVENT().getURI().getPath(), ERRORCODE.PAGE_NOT_FOUND, 404);
+
+						return null;
+					}
+				} catch (Exception EX) {
+					//エラー
+					HashMap<String, String> PARAM_LIST = new HashMap<>();
+					PARAM_LIST.put("EX", EXCEPTION_READER.READ(EX));
+					ReturnErrorPage(e.GetEVENT(), PARAM_LIST, e.GetEVENT().getURI().getPath(), ERRORCODE.INTERNAL_SERVER_ERROR, 500);
+					return null;
+				}
+			}
+		});
+	}
+
+	/**
+	 * エラー画面を設定します
+	 * @param PATH パス(StartWithでチェックしてる)
+	 * @param CODE エラーコード
+	 * @param RESULT エンドポイントとなる関数を設定して
+	 */
 	public void SetError(String PATH, ERRORCODE CODE, Function<HTTP_REQUEST, HTTP_RESULT> RESULT) {
 		String NAME = SlasshFucker(PATH) + ":" + CODE.name();
 		ERROR_EP_LIST.put(NAME, RESULT);
@@ -69,11 +128,16 @@ public class SmartHTTP {
 								Function<HTTP_REQUEST, HTTP_RESULT> VOID = EP_LIST.get(PATH);
 								HTTP_RESULT RESULT = VOID.apply(new HTTP_REQUEST(E, PARAM_LIST));
 
-								if (RESULT.MIME != null) {
-									E.setHEADER("Content-Type", RESULT.MIME);
-								}
+								if (RESULT != null) {
+									if (RESULT.MIME != null) {
+										E.setHEADER("Content-Type", RESULT.MIME);
+									}
 
-								E.REPLY_BYTE(RESULT.STATUS, RESULT.DATA);
+									E.REPLY_BYTE(RESULT.STATUS, RESULT.DATA);
+								} else {
+									//Nullなら切断
+									E.getEXCHANGE().close();
+								}
 								return;
 							}
 						}
