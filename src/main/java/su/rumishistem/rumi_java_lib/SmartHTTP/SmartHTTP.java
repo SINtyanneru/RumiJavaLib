@@ -1,0 +1,134 @@
+package su.rumishistem.rumi_java_lib.SmartHTTP;
+
+import su.rumishistem.rumi_java_lib.EXCEPTION_READER;
+import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT;
+import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT_LISTENER;
+import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_SERVER;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class SmartHTTP {
+	private int PORT;
+	private HTTP_SERVER HS;
+	private LinkedHashMap<String, Function<HTTP_REQUEST, HTTP_RESULT>> EP_LIST = new LinkedHashMap<>();
+	private LinkedHashMap<String, Function<HTTP_REQUEST, HTTP_RESULT>> ERROR_EP_LIST = new LinkedHashMap<>();
+
+	public SmartHTTP(int PORT) {
+		//
+		this.PORT = PORT;
+	}
+
+	public void SetRoute(String PATH, Function<HTTP_REQUEST, HTTP_RESULT> RESULT) {
+		PATH = SlasshFucker(PATH);
+
+		//正規表現に変換する
+		String REGEX = "^";
+		REGEX += PATH.replaceAll("\\*", ".*").replaceAll(":(\\w+)", "(?<$1>[^/]+)");
+		REGEX += "$";
+
+		EP_LIST.put(REGEX, RESULT);
+	}
+
+	public void SetError(String PATH, ERRORCODE CODE, Function<HTTP_REQUEST, HTTP_RESULT> RESULT) {
+		String NAME = SlasshFucker(PATH) + ":" + CODE.name();
+		ERROR_EP_LIST.put(NAME, RESULT);
+	}
+
+	public void Start() throws IOException {
+		HS = new HTTP_SERVER(PORT);
+		HS.setVERBOSE(true);
+		HS.SET_EVENT_VOID(new HTTP_EVENT_LISTENER() {
+			@Override
+			public void REQUEST_EVENT(HTTP_EVENT E) {
+				try {
+					String REQUEST_PATH = E.getEXCHANGE().getRequestURI().getPath();
+					REQUEST_PATH = SlasshFucker(REQUEST_PATH);
+
+					//エンドポイント一覧を回す
+					for (String PATH:EP_LIST.keySet()) {
+						Pattern PATTERN = Pattern.compile(PATH);
+						Matcher MATCHER = PATTERN.matcher(REQUEST_PATH);
+						//見つけろ(ちなみに最初にfindを実行しないとgroupでエラー出るからな)
+						if (MATCHER.find()) {
+							HashMap<String, String> PARAM_LIST = new HashMap<>();
+
+							//パラメーターを取得する
+							for (String GROUP_NAME:PATTERN.namedGroups().keySet()) {
+								PARAM_LIST.put(GROUP_NAME, MATCHER.group(GROUP_NAME));
+							}
+
+							//関数を実行
+							if (MATCHER.matches()) {
+								Function<HTTP_REQUEST, HTTP_RESULT> VOID = EP_LIST.get(PATH);
+								HTTP_RESULT RESULT = VOID.apply(new HTTP_REQUEST(E, PARAM_LIST));
+
+								if (RESULT.MIME != null) {
+									E.setHEADER("Content-Type", RESULT.MIME);
+								}
+
+								E.REPLY_BYTE(RESULT.STATUS, RESULT.DATA);
+								return;
+							}
+						}
+					}
+
+					HashMap<String, String> PARAM_LIST = new HashMap<>();
+					PARAM_LIST.put("EX", "404");
+					ReturnErrorPage(E, PARAM_LIST, E.getEXCHANGE().getRequestURI().getPath(), ERRORCODE.PAGE_NOT_FOUND, 404);
+				} catch (Exception EX) {
+					//500エラー
+					HashMap<String, String> PARAM_LIST = new HashMap<>();
+					PARAM_LIST.put("EX", EXCEPTION_READER.READ(EX));
+					ReturnErrorPage(E, PARAM_LIST, E.getEXCHANGE().getRequestURI().getPath(), ERRORCODE.INTERNAL_SERVER_ERROR, 500);
+				}
+			}
+		});
+		HS.START_HTTPSERVER();
+	}
+
+	private void ReturnErrorPage(HTTP_EVENT E, HashMap<String, String> PARAM_LIST, String PATH, ERRORCODE ERRCODE, int CODE) {
+		try {
+			Function<HTTP_REQUEST, HTTP_RESULT> ERROR_EP = GetErrorEP(PATH, ERRCODE);
+			if (ERROR_EP != null) {
+				HTTP_RESULT RESULT = ERROR_EP.apply(new HTTP_REQUEST(E, PARAM_LIST));
+
+				if (RESULT.MIME != null) {
+					E.setHEADER("Content-Type", RESULT.MIME);
+				}
+
+				E.REPLY_BYTE(CODE, RESULT.DATA);
+			} else {
+				E.setHEADER("Content-Type", "text/plain; charset=UTF-8");
+				E.REPLY_BYTE(CODE, ERRCODE.name().getBytes());
+			}
+		} catch (Exception EX2) {
+			//もみ消す
+		}
+	}
+
+	private Function<HTTP_REQUEST, HTTP_RESULT> GetErrorEP(String PATH, ERRORCODE CODE) {
+		for (String ROW:ERROR_EP_LIST.keySet()) {
+			String ROW_PATH = ROW.split(":")[0];
+			String ROW_ERR = ROW.split(":")[1];
+			if (PATH.startsWith(ROW_PATH) && ROW_ERR.equals(CODE.name())) {
+				return ERROR_EP_LIST.get(ROW);
+			}
+		}
+		return null;
+	}
+
+	//先頭が/なら破壊
+	private String SlasshFucker(String PATH) {
+		if (PATH.startsWith("/")) {
+			PATH = PATH.replaceFirst("/", "");
+		}
+		return PATH;
+	}
+}
