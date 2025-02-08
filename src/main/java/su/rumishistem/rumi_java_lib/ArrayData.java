@@ -13,6 +13,23 @@ public class ArrayData {
 		}
 	}
 
+	/**
+	 * 指定したキーがNullかを取得します
+	 * @param KEY キー
+	 * @return Nullならtrue
+	 */
+	public boolean isNull(Object KEY) {
+		if(KEY instanceof String || KEY instanceof Integer){
+			if (DATA == null) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			throw new RuntimeException("キーはStringかiniしか使えません");
+		}
+	}
+
 	public Object asObject() {
 		return DATA;
 	}

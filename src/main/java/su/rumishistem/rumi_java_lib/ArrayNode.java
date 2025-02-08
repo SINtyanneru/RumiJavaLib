@@ -60,23 +60,6 @@ public class ArrayNode {
 	}
 
 	/**
-	 * 指定したキーがNullかを取得します
- 	 * @param KEY キー
-	 * @return Nullならtrue
-	 */
-	public boolean isNull(Object KEY) {
-		if(KEY instanceof String || KEY instanceof Integer){
-			if (NODE_DATA.get(KEY) == null) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			throw new RuntimeException("キーはStringかiniしか使えません");
-		}
-	}
-
-	/**
 	 * ArrayListで取得します
 	 * @return ObjectのArrayList
 	 */
