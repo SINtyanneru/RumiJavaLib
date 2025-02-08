@@ -55,7 +55,7 @@ public class ArrayNode {
 		if(NODE_DATA.get(KEY) instanceof ArrayData){
 			return (ArrayData) NODE_DATA.get(KEY);
 		} else {
-			return null;
+			return new ArrayData(null);
 		}
 	}
 
