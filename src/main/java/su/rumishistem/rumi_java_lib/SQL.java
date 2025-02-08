@@ -134,7 +134,7 @@ public class SQL {
 
 				for (int I = 1; I <= COLUM_COUNT; I++) {
 					String COLUM_NAME = META_DATA.getColumnLabel(I);
-					Object VAL = SQL_RESULT.getObject(I);
+					Object VAL = SQL_RESULT.getObject(COLUM_NAME);
 
 					ROW.setDATA(COLUM_NAME, new ArrayData(VAL));
 				}

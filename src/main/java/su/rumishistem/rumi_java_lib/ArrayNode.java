@@ -28,9 +28,12 @@ public class ArrayNode {
 		KeyCheck(KEY);
 		if(DATA instanceof ArrayNode){
 			NODE_DATA.put(KEY, (ArrayNode) DATA);
-		} else {
+		} else if (DATA instanceof ArrayData) {
 			NODE_DATA.put(KEY, (ArrayData) DATA);
+		} else {
+			throw new Error("ArrayNodeかArrayData以外入りません");
 		}
+		//System.out.println("SetDATA: " + KEY + " -> " + NODE_DATA.get(KEY));
 	}
 
 	/**

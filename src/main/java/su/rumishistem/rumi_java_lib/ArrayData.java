@@ -1,10 +1,16 @@
 package su.rumishistem.rumi_java_lib;
 
+import java.sql.Blob;
+
 public class ArrayData {
 	private Object DATA = null;
 
 	public ArrayData(Object DATA) {
 		this.DATA = DATA;
+
+		if (DATA instanceof ArrayData) {
+			throw new Error("ArrayDataにArrayDataを入れ子にすることはできません");
+		}
 	}
 
 	public Object asObject() {
@@ -29,5 +35,9 @@ public class ArrayData {
 
 	public boolean asBool() {
 		return (boolean) DATA;
+	}
+
+	public Blob asBlob() {
+		return (Blob) DATA;
 	}
 }
