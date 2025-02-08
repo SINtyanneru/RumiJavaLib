@@ -15,7 +15,7 @@ public class RDO {
 				String KEY = S.split("=")[0];
 				String VAL = S.split("=")[1];
 
-				DATA.setDATA(KEY, VAL);
+				DATA.setDATA(KEY, new ArrayData(VAL));
 			}
 
 			RESULT.setDATA(I, DATA);

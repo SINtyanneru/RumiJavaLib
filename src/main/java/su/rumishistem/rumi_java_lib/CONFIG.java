@@ -42,17 +42,17 @@ public class CONFIG {
 								TEXT.append(C);
 							}
 
-							DATA.get(SEKSHON).setDATA(KEY, TEXT.toString());
+							DATA.get(SEKSHON).setDATA(KEY, new ArrayData(TEXT.toString()));
 						} else if(VAL.equals("true") || VAL.equals("false")) {
 							if(VAL.equals("true")){
-								DATA.get(SEKSHON).setDATA(KEY, true);
+								DATA.get(SEKSHON).setDATA(KEY, new ArrayData(true));
 							} else {
-								DATA.get(SEKSHON).setDATA(KEY, true);
+								DATA.get(SEKSHON).setDATA(KEY, new ArrayData(false));
 							}
 						} else if(VAL.matches("-?\\d+(\\.\\d+)?")) {
-							DATA.get(SEKSHON).setDATA(KEY, Integer.parseInt(VAL));
+							DATA.get(SEKSHON).setDATA(KEY, new ArrayData(Integer.parseInt(VAL)));
 						} else {
-							DATA.get(SEKSHON).setDATA(KEY, VAL);
+							DATA.get(SEKSHON).setDATA(KEY, new ArrayData(VAL));
 						}
 					}
 				}
