@@ -24,15 +24,20 @@ public class ArrayNode {
 	 * @param KEY String int
 	 * @param DATA 内容
 	 */
-	public void setDATA(Object KEY, Object DATA){
+	public void setDATA(Object KEY, ArrayNode DATA){
 		KeyCheck(KEY);
-		if(DATA instanceof ArrayNode){
-			NODE_DATA.put(KEY, (ArrayNode) DATA);
-		} else if (DATA instanceof ArrayData) {
-			NODE_DATA.put(KEY, (ArrayData) DATA);
-		} else {
-			throw new Error("ArrayNodeかArrayData以外入りません");
-		}
+		NODE_DATA.put(KEY, DATA);
+		//System.out.println("SetArray: " + KEY + " -> " + NODE_DATA.get(KEY));
+	}
+
+	/**
+	 * 値をセットします
+	 * @param KEY String int
+	 * @param DATA 内容
+	 */
+	public void setDATA(Object KEY, ArrayData DATA){
+		KeyCheck(KEY);
+		NODE_DATA.put(KEY, DATA);
 		//System.out.println("SetDATA: " + KEY + " -> " + NODE_DATA.get(KEY));
 	}
 
