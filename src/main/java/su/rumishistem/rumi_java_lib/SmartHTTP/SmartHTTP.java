@@ -68,8 +68,17 @@ public class SmartHTTP {
 
 					//リソースファイルがあるか
 					if (RM.Exists(RESOURCE_FILE)) {
+						String MIME = "application/octet-stream";
+						if (RESOURCE_FILE.endsWith(".html") || RESOURCE_FILE.endsWith(".htm")) {
+							MIME = "text/html; charset=UTF-8";
+						} else if (RESOURCE_FILE.endsWith(".css")) {
+							MIME = "text/css; charset=UTF-8";
+						} else if (RESOURCE_FILE.endsWith(".js")) {
+							MIME = "text/javascript; charset=UTF-8";
+						}
+
 						//ファイルを返す
-						return new HTTP_RESULT(200, RM.getResourceData(RESOURCE_FILE), "application/octet-stream");
+						return new HTTP_RESULT(200, RM.getResourceData(RESOURCE_FILE), MIME);
 					} else {
 						//ファイルならないなら404
 						HashMap<String, String> PARAM_LIST = new HashMap<>();
