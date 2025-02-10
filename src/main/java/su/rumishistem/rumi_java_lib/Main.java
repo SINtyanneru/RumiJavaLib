@@ -11,13 +11,47 @@ import su.rumishistem.rumi_java_lib.SmartHTTP.ERRORCODE;
 import su.rumishistem.rumi_java_lib.SmartHTTP.HTTP_REQUEST;
 import su.rumishistem.rumi_java_lib.SmartHTTP.HTTP_RESULT;
 import su.rumishistem.rumi_java_lib.SmartHTTP.SmartHTTP;
+import su.rumishistem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT.CONNECT_EVENT;
+import su.rumishistem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT.CONNECT_EVENT_LISTENER;
+import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.CLOSE_EVENT;
+import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.MESSAGE_EVENT;
+import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.WS_EVENT_LISTENER;
+import su.rumishistem.rumi_java_lib.WebSocket.Server.WebSocketSERVER;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.function.Function;
 
 public class Main {
 	public static void main(String[] args) {
 		try {
+			WebSocketSERVER WS = new WebSocketSERVER();
+			WS.SET_EVENT_VOID(new CONNECT_EVENT_LISTENER() {
+				@Override
+				public void CONNECT_EVENT(CONNECT_EVENT SESSION) {
+					SESSION.SendMessage("{\"STATUS\": true}");
+
+					SESSION.SET_EVENT_LISTENER(new WS_EVENT_LISTENER() {
+						@Override
+						public void MESSAGE(MESSAGE_EVENT E) {
+							System.out.println(E.getMessage());
+							SESSION.SendMessage("{\"STATUS\": true, \"TYPE\":\"OK\"}");
+						}
+
+						@Override
+						public void CLOSE(CLOSE_EVENT E) {
+							System.out.println("切断");
+						}
+
+						@Override
+						public void EXCEPTION(Exception EX) {
+							System.out.println(EX.getMessage());
+						}
+					});
+				}
+			});
+			WS.START(3011);
+			/*
 			SmartHTTP SH = new SmartHTTP(8088);
 
 			SH.SetRoute("/", new Function<HTTP_REQUEST, HTTP_RESULT>() {
@@ -45,6 +79,7 @@ public class Main {
 			});
 
 			SH.Start();
+			*/
 			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
 			if (MC.TOKEN_LOGIN(args[0]) == LOGIN_RESULT.DONE) {

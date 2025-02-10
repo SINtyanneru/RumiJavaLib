@@ -1,5 +1,8 @@
 package su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 public class MESSAGE_EVENT {
 	private String MESSAGE = null;
 
@@ -8,6 +11,6 @@ public class MESSAGE_EVENT {
 	}
 
 	public String getMessage(){
-		return MESSAGE;
+		return new String(Base64.getDecoder().decode(MESSAGE), StandardCharsets.UTF_8);
 	}
 }

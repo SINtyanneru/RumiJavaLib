@@ -1,59 +1,36 @@
-const WebSocket = require('ws');
+const WebSocket = require("ws");
+const net = require("net");
+const encodeBase64 = (str) => Buffer.from(str, "utf-8").toString("base64");
+const decodeBase64 = (str) => Buffer.from(str, "base64").toString("utf-8");
 
-let IDI = 0;
-
-//標準入力をUTF-8に設定
-process.stdin.setEncoding("utf8");
-
-process.stdin.addListener("data", (DATA) => {
-	let CMD = DATA.replaceAll("\r", "").replaceAll("\n", "").split(" ");
-
-	if (CMD[0] === "START") {
-		StartServer(CMD[1]);
-	}
-});
+StartServer(Number.parseInt(process.argv[2]));
 
 function StartServer(PORT) {
+	console.log("Stating WebSocketServer " + (PORT));
+	console.log("Connecting Telnet " + (PORT + 1));
+
 	const WSS = new WebSocket.Server({ port: PORT });
 
-	console.log(`port [${PORT}] de server start`);
-
 	WSS.on("connection", (SOCKET, REQ) => {
-		let ID = IDI;
+		const TelnetClient = net.createConnection({host: "localhost", port:PORT + 1})
 
-		console.log(`NEW ${ID} ${REQ.remoteAddress}`);
+		TelnetClient.on("data", (DATA)=>{
+			SOCKET.send(decodeBase64(DATA.toString()));
+		});
 
-		//インクリ
-		IDI++;
-
-		//標準入力を受信
-		function stdinReceive(DATA) {
-			let CMD = DATA.replaceAll("\r", "").replaceAll("\n", "").split(" ");
-
-			switch(CMD[0]) {
-				case "SEND": {
-					if (CMD[1] == ID) {
-						SOCKET.send(decodeURIComponent(escape(atob(CMD[2]))));
-					}
-					break;
-				}
-			}
-		}
-
-		//標準入力のイベントリスナーを登録する
-		process.stdin.addListener("data", stdinReceive);
+		TelnetClient.on("end", () => {
+			SOCKET.close();
+		});
 
 		SOCKET.on("message", (message) => {
 			//メッセージを受信したことを知らせる
-			console.log(`RECEIVE ${ID} ${btoa(unescape(encodeURIComponent(message)))}`);
+			const MSG = encodeBase64(message);
+			TelnetClient.write(MSG + "\r\n");
 		});
 
 		SOCKET.on("close", () => {
 			//通信が閉じたことを知らせる
-			console.log(`CLOSE ${ID}`);
-
-			//標準入力のイベントリスナーを消す
-			process.stdin.removeListener("data", stdinReceive);
+			TelnetClient.destroy();
 		});
 	});
 }

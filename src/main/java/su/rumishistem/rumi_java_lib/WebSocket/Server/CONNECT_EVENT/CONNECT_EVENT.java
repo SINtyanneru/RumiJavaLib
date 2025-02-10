@@ -26,6 +26,12 @@ public class CONNECT_EVENT {
 	}
 
 	public void SendMessage(String TEXT) {
-		RunCMD("SEND " + ID + " " + Base64.getEncoder().encodeToString(TEXT.getBytes(StandardCharsets.UTF_8)));
+		try {
+			if (SESSION_LIST.get(ID) != null) {
+				SESSION_LIST.get(ID).sendMessage(Base64.getEncoder().encodeToString((TEXT + "\r\n").getBytes()));
+			}
+		} catch (Exception EX) {
+			//もみ消す
+		}
 	}
 }
