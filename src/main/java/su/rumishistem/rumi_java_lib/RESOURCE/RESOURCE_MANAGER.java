@@ -16,6 +16,11 @@ import java.util.stream.Stream;
 
 public class RESOURCE_MANAGER {
 	private boolean ECLIPSE = false;
+	private Class ResourceClass;
+
+	public  RESOURCE_MANAGER(Class ResourceClass) {
+		this.ResourceClass = ResourceClass;
+	}
 
 	/**
 	 * エクリプスのエミュレーター上で動作させていることを設定する
@@ -35,7 +40,7 @@ public class RESOURCE_MANAGER {
 		List<RESOURCE_ENTRIE> LIST = new ArrayList<>();
 
 		if (!ECLIPSE) {
-			JarURLConnection JUC = (JarURLConnection) RESOURCE_MANAGER.class.getResource(PATH).openConnection();
+			JarURLConnection JUC = (JarURLConnection) ResourceClass.getResource(PATH).openConnection();
 			JarFile JAR = JUC.getJarFile();
 			Enumeration<JarEntry> ENTRIE = JAR.entries();
 
@@ -59,7 +64,7 @@ public class RESOURCE_MANAGER {
 				}
 			}
 		} else {//Eclipseのエミュでしか動かなかったコード
-			Path DIR_PATH = Paths.get(RESOURCE_MANAGER.class.getResource(PATH).toURI());
+			Path DIR_PATH = Paths.get(ResourceClass.getResource(PATH).toURI());
 			Stream<Path> FL_STREAM = Files.list(DIR_PATH);
 
 			for (Path FILE:FL_STREAM.collect(Collectors.toList())) {
@@ -91,7 +96,7 @@ public class RESOURCE_MANAGER {
 	 * @throws IOException
 	 */
 	public byte[] getResourceData(String PATH) throws IOException {
-		InputStream IS = RESOURCE_MANAGER.class.getResourceAsStream(PATH);
+		InputStream IS = ResourceClass.getResourceAsStream(PATH);
 		ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
 
 		//Nullチェック
@@ -114,7 +119,7 @@ public class RESOURCE_MANAGER {
 	 * @return
 	 */
 	public boolean Exists(String PATH) {
-		if (RESOURCE_MANAGER.class.getResourceAsStream(PATH) != null) {
+		if (ResourceClass.getResourceAsStream(PATH) != null) {
 			return true;
 		} else {
 			return false;

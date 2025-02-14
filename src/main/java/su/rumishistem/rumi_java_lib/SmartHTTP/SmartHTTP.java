@@ -47,7 +47,7 @@ public class SmartHTTP {
 	 * @param PATH リクエストのパス(StartWithです)
 	 * @param ResourcePath リソースフォルダのパス
 	 */
-	public void SetResourceDir(String PATH, String ResourcePath) {
+	public void SetResourceDir(String PATH, String ResourcePath, Class ResourceClass) {
 		//語尾に/が無いなら追加する
 		if (!PATH.endsWith("/")) {
 			PATH = PATH + "/";
@@ -62,7 +62,7 @@ public class SmartHTTP {
 			@Override
 			public HTTP_RESULT apply(HTTP_REQUEST e) {
 				try {
-					RESOURCE_MANAGER RM = new RESOURCE_MANAGER();
+					RESOURCE_MANAGER RM = new RESOURCE_MANAGER(ResourceClass);
 					String REQUEST_FILE = e.GetEVENT().getURI().getPath().replaceFirst(PATHPATH, "");
 					String RESOURCE_FILE = ResourcePathPath + REQUEST_FILE;
 
