@@ -51,6 +51,11 @@ public class WSS {
 			public void MESSAGE(MESSAGE_EVENT E) {
 				try {
 					JsonNode MSG = new ObjectMapper().readTree(E.getMessage());
+
+					if (MSG.get("body").get("id").isNull()) {
+						return;
+					}
+
 					switch (MSG.get("body").get("id").asText()) {
 						case "main": {
 							switch (MSG.get("body").get("type").asText()) {
