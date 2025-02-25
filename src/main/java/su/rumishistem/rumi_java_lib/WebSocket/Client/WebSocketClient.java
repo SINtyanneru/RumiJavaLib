@@ -1,9 +1,6 @@
 package su.rumishistem.rumi_java_lib.WebSocket.Client;
 
-import su.rumishistem.rumi_java_lib.WebSocket.Client.EVENT.CLOSE_EVENT;
-import su.rumishistem.rumi_java_lib.WebSocket.Client.EVENT.CONNECT_EVENT;
-import su.rumishistem.rumi_java_lib.WebSocket.Client.EVENT.MESSAGE_EVENT;
-import su.rumishistem.rumi_java_lib.WebSocket.Client.EVENT.WS_EVENT_LISTENER;
+import su.rumishistem.rumi_java_lib.WebSocket.Client.EVENT.*;
 import kotlin.text.Charsets;
 import okhttp3.*;
 import okio.ByteString;
@@ -20,87 +17,87 @@ public class WebSocketClient {
 	private List<HEADER_TYPE> HEADER_LIST = new ArrayList<>();
 	private WebSocket WS = null;
 	private boolean RECONNECT = true;
+	private OkHttpClient CLIENT = new OkHttpClient();
+	private String URL;
+	private final int MAX_RETRY_DELAY = 60000;
 
 	public void CONNECT(String URL) {
-		try {
-			//クライアントを準備
-			OkHttpClient CLIENT = new OkHttpClient();
-			Request.Builder REQUEST = new Request.Builder();
-			REQUEST.url(URL);
+		this.URL = URL;
+		Connect(0);
+	}
 
-			for (HEADER_TYPE HEADER:HEADER_LIST) {
+	private void Connect(int RetryDelay) {
+		try {
+			Request.Builder REQUEST = new Request.Builder().url(URL);
+			for (HEADER_TYPE HEADER : HEADER_LIST) {
 				REQUEST.addHeader(HEADER.GetKEY(), HEADER.GetVAL());
 			}
 
-			//イベントリスナー
 			WebSocketListener WSL = new WebSocketListener() {
 				@Override
 				public void onOpen(WebSocket SESSION, Response RES) {
-					//接続
+					WS = SESSION;
+
 					WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
-					for (WS_EVENT_LISTENER EL:ELL) {
+					for (WS_EVENT_LISTENER EL : ELL) {
 						EL.CONNECT(new CONNECT_EVENT(SESSION));
 					}
 				}
 
 				@Override
 				public void onMessage(WebSocket SESSION, String TEXT) {
-					//受信(文字列)
 					WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
-					for (WS_EVENT_LISTENER EL:ELL) {
+					for (WS_EVENT_LISTENER EL : ELL) {
 						EL.MESSAGE(new MESSAGE_EVENT(TEXT.getBytes(Charsets.UTF_8), SESSION));
 					}
 				}
 
 				@Override
 				public void onMessage(WebSocket SESSION, ByteString BYTES) {
-					//受信(バイト)
 					WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
-					for (WS_EVENT_LISTENER EL:ELL) {
+					for (WS_EVENT_LISTENER EL : ELL) {
 						EL.MESSAGE(new MESSAGE_EVENT(BYTES.toByteArray(), SESSION));
 					}
 				}
 
 				@Override
 				public void onClosing(WebSocket SESSION, int CODE, String REASON) {
-					//切断
 					SESSION.close(1000, null);
 
 					WS_EVENT_LISTENER[] ELL = EL_LIST.getListeners(WS_EVENT_LISTENER.class);
-					for (WS_EVENT_LISTENER EL:ELL) {
+					for (WS_EVENT_LISTENER EL : ELL) {
 						EL.CLOSE(new CLOSE_EVENT(REASON, CODE));
 					}
 
-					//再接続
 					if (RECONNECT) {
-						try {
-							WS.close(0, "");
-						} catch (Exception EX) {
-							//無視
-						}
-						WS = CLIENT.newWebSocket(REQUEST.build(), this);
+						int NextDelay = Math.min(RetryDelay * 2, MAX_RETRY_DELAY);
+						scheduleReconnect(NextDelay);
 					}
 				}
 
 				@Override
 				public void onFailure(WebSocket SESSION, Throwable T, Response RES) {
-					//エラー
+					if (RECONNECT) {
+						int NextDelay = Math.min((RetryDelay == 0 ? 1000 : RetryDelay * 2), MAX_RETRY_DELAY);
+						scheduleReconnect(NextDelay);
+					}
 				}
 			};
 
-			//接続
 			WS = CLIENT.newWebSocket(REQUEST.build(), WSL);
 
-			//アプリ終了時に切断処理
-			Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-				@Override
-				public void run() {
-					CLIENT.dispatcher().executorService().shutdown();
-				}
-			}));
 		} catch (Exception EX) {
 			EX.printStackTrace();
 		}
+	}
+
+	private void scheduleReconnect(int Delay) {
+		new Thread(() -> {
+			try {
+				Thread.sleep(Delay);
+				Connect(Delay);
+			} catch (InterruptedException ignored) {}
+		}).start();
 	}
 
 	public void SET_EVENT_LISTENER(WS_EVENT_LISTENER EVENT_LISTENER) {
