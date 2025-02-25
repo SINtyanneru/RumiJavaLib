@@ -2,6 +2,7 @@ package su.rumishistem.rumi_java_lib.Misskey;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import su.rumishistem.rumi_java_lib.Misskey.Event.DisconnectEvent;
 import su.rumishistem.rumi_java_lib.Misskey.Event.NewFollower;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.Note;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.NoteVis;
@@ -184,8 +185,11 @@ public class WSS {
 
 			@Override
 			public void CLOSE(CLOSE_EVENT E) {
-				//WebSocket接続
-				WSC.CONNECT("wss://" + DOMAIN + "/streaming?i=" + TOKEN);
+				//イベント着火
+				EVENT_LISTENER[] LISTENER_LIST = EL_LIST.getListeners(EVENT_LISTENER.class);
+				for(EVENT_LISTENER LISTENER:LISTENER_LIST){
+					LISTENER.onDisconnect(new DisconnectEvent());
+				}
 			}
 
 			@Override
