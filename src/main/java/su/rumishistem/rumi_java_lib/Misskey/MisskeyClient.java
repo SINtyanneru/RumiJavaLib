@@ -5,11 +5,13 @@ import su.rumishistem.rumi_java_lib.Misskey.API.*;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.Note;
 import su.rumishistem.rumi_java_lib.Misskey.Event.EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.Misskey.RESULT.LOGIN_RESULT;
+import su.rumishistem.rumi_java_lib.Misskey.TYPE.NoteVis;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.User;
 
 import javax.swing.event.EventListenerList;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
 
 public class MisskeyClient {
 	private String INSTANCE_DOMAIN = null;
@@ -37,7 +39,7 @@ public class MisskeyClient {
 	 */
 	public LOGIN_RESULT LOGIN(String UID, String PASSWORD, String TOTP) {
 		try {
-			JsonNode USER_DATA = SHOW.Main(INSTANCE_DOMAIN, UID);
+			JsonNode USER_DATA = UserSHOW.Main(INSTANCE_DOMAIN, UID);
 
 			//TOTPが有効か
 			if (!USER_DATA.get("twoFactorEnabled").asBoolean()) {
@@ -110,6 +112,73 @@ public class MisskeyClient {
 
 	public void CreateReaction(Note NOTE, String ReactionText) throws IOException {
 		NoteReaction.Create(NOTE, ReactionText, TOKEN, INSTANCE_DOMAIN);
+	}
+
+	public Note GetNote(String ID) throws IOException {
+		JsonNode NoteData = NoteShow.Main(INSTANCE_DOMAIN, TOKEN, ID);
+		NoteVis VIS = null;
+		String RN_ID = null;
+		Note REPLY_NOTE = null;
+		String CW = null;
+		boolean KaiMention = false;
+
+		//公開範囲
+		switch (NoteData.get("visibility").asText()) {
+			case "public": {
+				VIS = NoteVis.PUBLIC;
+				break;
+			}
+
+			case "home": {
+				VIS = NoteVis.HOME;
+				break;
+			}
+
+			case "followers": {
+				VIS = NoteVis.FOLLOWER;
+				break;
+			}
+
+			case "specified": {
+				VIS = NoteVis.DM;
+				break;
+			}
+		}
+
+		//CW
+		if (NoteData.get("cw") != null) {
+			CW = NoteData.get("cw").asText();
+		}
+
+		//自分がメンションされているか
+		if (NoteData.get("mentions") != null) {
+			for (int I = 0; I < NoteData.get("mentions").size(); I++) {
+				if (NoteData.get("mentions").get(I).asText().equals(Kai.getID())) {
+					KaiMention = true;
+					break;
+				}
+			}
+		}
+
+		return new Note(
+			false,
+			new User(
+				NoteData.get("user").get("id").asText(),
+				NoteData.get("user").get("username").asText(),
+				NoteData.get("user").get("name").asText(),
+				NoteData.get("user").get("avatarUrl").asText(),
+				NoteData.get("user").get("host").asText(),
+				null
+			),
+			NoteData.get("id").asText(),
+			NoteData.get("text").asText(),
+			OffsetDateTime.parse(NoteData.get("createdAt").asText()),
+			VIS,
+			RN_ID,
+			REPLY_NOTE,
+			CW,
+			KaiMention
+		);
 	}
 
 	private void getI() throws IOException {
