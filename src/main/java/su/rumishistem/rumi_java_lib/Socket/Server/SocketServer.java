@@ -104,18 +104,11 @@ public class SocketServer {
 								String S = RECEIVE_SB.toString();
 								String[] ULINE = null;
 
-								//\rが有るなら\r\nで分割
-								if (S.contains("\r\n")) {
-									ULINE = S.split("\r\n");
-								} else {
-									ULINE = S.split("\n");
-								}
+								ULINE = S.split("\r?\n");
 
-								//改行で分けたやつを順番にイベント発火
-								for (String LINE:ULINE) {
+								for (String LINE : ULINE) {
 									byte[] BYTE_DATA = LINE.getBytes();
-									//イベント発火
-									for (EVENT_LISTENER EL:ELL) {
+									for (EVENT_LISTENER EL : ELL) {
 										if (CEL_LIST.get(EL.hashCode()) != null) {
 											if (CEL_LIST.get(EL.hashCode()).equals(String.valueOf(SES.hashCode()))) {
 												EL.Message(new MessageEvent(BYTE_DATA));
@@ -123,6 +116,8 @@ public class SocketServer {
 										}
 									}
 								}
+								// メッセージ発火後にバッファーをクリア
+								RECEIVE_BUFFER.put(SES, new StringBuilder());
 							}
 						}
 					} catch (SocketException EX) {
@@ -159,5 +154,7 @@ public class SocketServer {
 				CEL_ITERATOR.remove();
 			}
 		}
+
+		RECEIVE_BUFFER.remove(SES);
 	}
 }

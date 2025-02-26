@@ -73,7 +73,10 @@ public class WSS {
 										MSG.get("body").get("body").get("name").asText(),
 										MSG.get("body").get("body").get("avatarUrl").asText(),
 										DOMAIN,
-										TOKEN
+										TOKEN,
+										false,
+										false,
+										false
 									);
 
 									//イベント着火
@@ -154,7 +157,10 @@ public class WSS {
 										USER_DATA.get("name").asText(),
 										USER_DATA.get("avatarUrl").asText(),
 										DOMAIN,
-										TOKEN
+										TOKEN,
+										false,
+										false,
+										false
 								);
 								Note NOTE = new Note(
 										false,

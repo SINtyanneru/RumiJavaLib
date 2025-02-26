@@ -2,6 +2,7 @@ package su.rumishistem.rumi_java_lib;
 
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT;
 import su.rumishistem.rumi_java_lib.Misskey.Builder.NoteBuilder;
+import su.rumishistem.rumi_java_lib.Misskey.Event.DisconnectEvent;
 import su.rumishistem.rumi_java_lib.Misskey.Event.EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.Misskey.Event.NewFollower;
 import su.rumishistem.rumi_java_lib.Misskey.Event.NewNoteEvent;
@@ -25,62 +26,6 @@ import java.util.function.Function;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			WebSocketSERVER WS = new WebSocketSERVER();
-			WS.SET_EVENT_VOID(new CONNECT_EVENT_LISTENER() {
-				@Override
-				public void CONNECT_EVENT(CONNECT_EVENT SESSION) {
-					SESSION.SendMessage("{\"STATUS\": true}");
-
-					SESSION.SET_EVENT_LISTENER(new WS_EVENT_LISTENER() {
-						@Override
-						public void MESSAGE(MESSAGE_EVENT E) {
-							System.out.println(E.getMessage());
-							SESSION.SendMessage("{\"STATUS\": true, \"TYPE\":\"OK\"}");
-						}
-
-						@Override
-						public void CLOSE(CLOSE_EVENT E) {
-							System.out.println("切断");
-						}
-
-						@Override
-						public void EXCEPTION(Exception EX) {
-							System.out.println(EX.getMessage());
-						}
-					});
-				}
-			});
-			WS.START(3011);
-			/*
-			SmartHTTP SH = new SmartHTTP(8088);
-
-			SH.SetRoute("/", new Function<HTTP_REQUEST, HTTP_RESULT>() {
-				@Override
-				public HTTP_RESULT apply(HTTP_REQUEST REQ) {
-					return new HTTP_RESULT(200, "Hello World".getBytes(), "text/plain; charset=UTF-8");
-				}
-			});
-
-			SH.SetRoute("/hoge/:ID", new Function<HTTP_REQUEST, HTTP_RESULT>() {
-				@Override
-				public HTTP_RESULT apply(HTTP_REQUEST REQ) {
-					return new HTTP_RESULT(200, ("ほげほげなIDは" + REQ.GetParam("ID") + "だ！").getBytes(), "text/plain; charset=UTF-8");
-				}
-			});
-
-			SH.SetResourceDir("/SCRIPT/", "/");
-
-			//エラー
-			SH.SetError("/", ERRORCODE.PAGE_NOT_FOUND, new Function<HTTP_REQUEST, HTTP_RESULT>() {
-				@Override
-				public HTTP_RESULT apply(HTTP_REQUEST httpRequest) {
-					return new HTTP_RESULT(404, "404だ".getBytes(), "text/plain; charset=UTF-8");
-				}
-			});
-
-			SH.Start();
-			*/
-			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
 			if (MC.TOKEN_LOGIN(args[0]) == LOGIN_RESULT.DONE) {
 				MC.SET_EVENT_LISTENER(new EVENT_LISTENER() {
@@ -88,6 +33,7 @@ public class Main {
 					public void onReady() {
 						try {
 							System.out.println("サーバーに接続した");
+							System.out.println(MC.GetNote("a4pozv1dgpu81ndf").getUSER().getNAME());
 						} catch (Exception EX) {
 							EX.printStackTrace();
 						}
@@ -121,10 +67,15 @@ public class Main {
 						System.out.println("新しいフォロワー");
 						System.out.println(E.getUser().Follow());
 					}
+
+					@Override
+					public void onDisconnect(DisconnectEvent e) {
+
+					}
 				});
 			} else {
 				System.out.println("ログイン失敗");
-			}*/
+			}
 		} catch (Exception EX) {
 			EX.printStackTrace();
 		}

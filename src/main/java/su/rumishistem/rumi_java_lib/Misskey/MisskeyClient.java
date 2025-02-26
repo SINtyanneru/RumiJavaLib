@@ -39,10 +39,10 @@ public class MisskeyClient {
 	 */
 	public LOGIN_RESULT LOGIN(String UID, String PASSWORD, String TOTP) {
 		try {
-			JsonNode USER_DATA = UserSHOW.Main(INSTANCE_DOMAIN, UID);
+			User USER_DATA = UserSHOW.GetUID(INSTANCE_DOMAIN, UID);
 
 			//TOTPが有効か
-			if (!USER_DATA.get("twoFactorEnabled").asBoolean()) {
+			if (!USER_DATA.isTwoFactorEnabled()) {
 				String RESULT = LOGIN.Main(INSTANCE_DOMAIN, UID, PASSWORD);
 				if (RESULT != null) {
 					TOKEN = RESULT;
@@ -97,6 +97,21 @@ public class MisskeyClient {
 		SAPI = new WSS(INSTANCE_DOMAIN, TOKEN, Kai);
 	}
 
+	private void getI() throws IOException {
+		JsonNode RESULT = I.Main(TOKEN, INSTANCE_DOMAIN);
+		Kai = new User(
+			RESULT.get("id").asText(),
+			RESULT.get("username").asText(),
+			RESULT.get("name").asText(),
+			RESULT.get("avatarUrl").asText(),
+			INSTANCE_DOMAIN,
+			TOKEN,
+			RESULT.get("twoFactorEnabled").asBoolean(),
+			false,
+			false
+		);
+	}
+
 	/**
 	 * トークンを取得
 	 * @return トークン
@@ -104,6 +119,10 @@ public class MisskeyClient {
 	public String getTOKEN() {
 		//
 		return TOKEN;
+	}
+
+	public User GetSelfUser() {
+		return Kai;
 	}
 
 	public void PostNote(Note NOTE) throws IOException {
@@ -162,14 +181,7 @@ public class MisskeyClient {
 
 		return new Note(
 			false,
-			new User(
-				NoteData.get("user").get("id").asText(),
-				NoteData.get("user").get("username").asText(),
-				NoteData.get("user").get("name").asText(),
-				NoteData.get("user").get("avatarUrl").asText(),
-				NoteData.get("user").get("host").asText(),
-				null
-			),
+			UserSHOW.GetID(INSTANCE_DOMAIN, NoteData.get("user").get("id").asText()),
 			NoteData.get("id").asText(),
 			NoteData.get("text").asText(),
 			OffsetDateTime.parse(NoteData.get("createdAt").asText()),
@@ -181,15 +193,11 @@ public class MisskeyClient {
 		);
 	}
 
-	private void getI() throws IOException {
-		JsonNode RESULT = I.Main(TOKEN, INSTANCE_DOMAIN);
-		Kai = new User(
-			RESULT.get("id").asText(),
-			RESULT.get("username").asText(),
-			RESULT.get("name").asText(),
-			RESULT.get("avatarUrl").asText(),
-			INSTANCE_DOMAIN,
-			TOKEN
-		);
+	public User GetUserID(String ID) throws IOException {
+		return UserSHOW.GetID(INSTANCE_DOMAIN, ID);
+	}
+
+	public User GetUserUID(String UID) throws IOException {
+		return UserSHOW.GetUID(INSTANCE_DOMAIN, UID);
 	}
 }

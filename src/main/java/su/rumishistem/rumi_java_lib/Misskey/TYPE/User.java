@@ -10,8 +10,12 @@ public class User {
 
 	private String DOMAIN;
 	private String TOKEN;
+	private boolean NiFA = false;
 
-	public User(String ID, String UID, String NAME, String ICON_URL, String DOMAIN, String TOKEN) {
+	private boolean isFollowing;
+	private boolean isFollowed;
+
+	public User(String ID, String UID, String NAME, String ICON_URL, String DOMAIN, String TOKEN, boolean NiFA, boolean isFollowing, boolean isFollowed) {
 		this.ID = ID;
 		this.UID = UID;
 		this.NAME = NAME;
@@ -19,6 +23,10 @@ public class User {
 
 		this.DOMAIN = DOMAIN;
 		this.TOKEN = TOKEN;
+		this.NiFA = NiFA;
+
+		this.isFollowing = isFollowing;
+		this.isFollowed = isFollowed;
 	}
 
 	public String getID() {
@@ -35,6 +43,10 @@ public class User {
 
 	public String getICON_URL() {
 		return ICON_URL;
+	}
+
+	public boolean isTwoFactorEnabled() {
+		return NiFA;
 	}
 
 	public boolean Follow() {
