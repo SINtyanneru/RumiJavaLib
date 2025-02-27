@@ -35,11 +35,14 @@ public class NoteBuilder {
 			false,
 			null,
 			null,
+			null,
+			null,
+			null,
 			TEXT,
 			null,
 			VIS,
 			null,
-			REPLY_NOTE,
+			REPLY_NOTE.getID(),
 			CW_TEXT,
 			false
 		);

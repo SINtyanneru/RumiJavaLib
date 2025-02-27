@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import su.rumishistem.rumi_java_lib.Misskey.Event.DisconnectEvent;
 import su.rumishistem.rumi_java_lib.Misskey.Event.NewFollower;
+import su.rumishistem.rumi_java_lib.Misskey.MODULE.ConvertType;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.Note;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.NoteVis;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.User;
@@ -67,17 +68,7 @@ public class WSS {
 
 								//フォローされた
 								case "followed": {
-									User FROM = new User(
-										MSG.get("body").get("body").get("id").asText(),
-										MSG.get("body").get("body").get("username").asText(),
-										MSG.get("body").get("body").get("name").asText(),
-										MSG.get("body").get("body").get("avatarUrl").asText(),
-										DOMAIN,
-										TOKEN,
-										false,
-										false,
-										false
-									);
+									User FROM = ConvertType.ConvertUser(MSG.get("body").get("body"));
 
 									//イベント着火
 									EVENT_LISTENER[] LISTENER_LIST = EL_LIST.getListeners(EVENT_LISTENER.class);
@@ -92,88 +83,9 @@ public class WSS {
 
 						case "homeTL": {
 							if (MSG.get("body").get("type").asText().equals("note")) {
-								JsonNode USER_DATA = MSG.get("body").get("body").get("user");
 								JsonNode NOTE_DATA = MSG.get("body").get("body");
-								JsonNode RN_DATA = MSG.get("body").get("body").get("renote");
-								JsonNode REPLY_DATA = MSG.get("body").get("body").get("reply");
 
-								NoteVis VIS = null;
-								String RN_ID = null;
-								Note REPLY_NOTE = null;
-								String CW = null;
-								boolean KaiMention = false;
-
-								//公開範囲
-								switch (NOTE_DATA.get("visibility").asText()) {
-									case "public": {
-										VIS = NoteVis.PUBLIC;
-										break;
-									}
-
-									case "home": {
-										VIS = NoteVis.HOME;
-										break;
-									}
-
-									case "followers": {
-										VIS = NoteVis.FOLLOWER;
-										break;
-									}
-
-									case "specified": {
-										VIS = NoteVis.DM;
-										break;
-									}
-								}
-
-								//リノート
-								if (RN_DATA != null) {
-									RN_ID = RN_DATA.get("id").asText();
-								}
-
-								//返信
-								if (REPLY_DATA != null) {
-									REPLY_NOTE = null;
-								}
-
-								//CW
-								if (NOTE_DATA.get("cw") != null) {
-									CW = NOTE_DATA.get("cw").asText();
-								}
-
-								//自分がメンションされているか
-								if (NOTE_DATA.get("mentions") != null) {
-									for (int I = 0; I < NOTE_DATA.get("mentions").size(); I++) {
-										if (NOTE_DATA.get("mentions").get(I).asText().equals(Kai.getID())) {
-											KaiMention = true;
-											break;
-										}
-									}
-								}
-
-								User USER = new User(
-										USER_DATA.get("id").asText(),
-										USER_DATA.get("username").asText(),
-										USER_DATA.get("name").asText(),
-										USER_DATA.get("avatarUrl").asText(),
-										DOMAIN,
-										TOKEN,
-										false,
-										false,
-										false
-								);
-								Note NOTE = new Note(
-										false,
-										USER,
-										NOTE_DATA.get("id").asText(),
-										NOTE_DATA.get("text").asText(),
-										OffsetDateTime.parse(NOTE_DATA.get("createdAt").asText()),
-										VIS,
-										RN_ID,
-										REPLY_NOTE,
-										CW,
-										KaiMention
-								);
+								Note NOTE = ConvertType.ConvertNote(NOTE_DATA, Kai, DOMAIN, TOKEN);
 
 								//イベント着火
 								EVENT_LISTENER[] LISTENER_LIST = EL_LIST.getListeners(EVENT_LISTENER.class);

@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import su.rumishistem.rumi_java_lib.FETCH;
 import su.rumishistem.rumi_java_lib.FETCH_RESULT;
-import su.rumishistem.rumi_java_lib.HTTP_REQUEST;
-import su.rumishistem.rumi_java_lib.Misskey.MODULE.ConvertUser;
+import su.rumishistem.rumi_java_lib.Misskey.MODULE.ConvertType;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.User;
 
 import java.io.IOException;
@@ -17,7 +16,7 @@ public class UserSHOW {
 		FETCH_RESULT RESULT = AJAX.POST(("{\"username\":\"" + UID + "\"}").getBytes());
 		JsonNode UserData = new ObjectMapper().readTree(RESULT.GetRAW());
 
-		return ConvertUser.Convert(UserData);
+		return ConvertType.ConvertUser(UserData);
 	}
 
 	public static User GetID(String DOMAIN, String ID) throws IOException {
@@ -26,6 +25,6 @@ public class UserSHOW {
 		FETCH_RESULT RESULT = AJAX.POST(("{\"userId\":\"" + ID + "\"}").getBytes());
 		JsonNode UserData = new ObjectMapper().readTree(RESULT.GetRAW());
 
-		return ConvertUser.Convert(UserData);
+		return ConvertType.ConvertUser(UserData);
 	}
 }

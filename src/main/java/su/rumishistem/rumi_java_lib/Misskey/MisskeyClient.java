@@ -2,6 +2,7 @@ package su.rumishistem.rumi_java_lib.Misskey;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import su.rumishistem.rumi_java_lib.Misskey.API.*;
+import su.rumishistem.rumi_java_lib.Misskey.MODULE.ConvertType;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.Note;
 import su.rumishistem.rumi_java_lib.Misskey.Event.EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.Misskey.RESULT.LOGIN_RESULT;
@@ -126,7 +127,7 @@ public class MisskeyClient {
 	}
 
 	public void PostNote(Note NOTE) throws IOException {
-		CreateNote.Post(INSTANCE_DOMAIN, TOKEN, NOTE);
+		CreateNote.Post(INSTANCE_DOMAIN, TOKEN, Kai, NOTE);
 	}
 
 	public void CreateReaction(Note NOTE, String ReactionText) throws IOException {
@@ -135,62 +136,7 @@ public class MisskeyClient {
 
 	public Note GetNote(String ID) throws IOException {
 		JsonNode NoteData = NoteShow.Main(INSTANCE_DOMAIN, TOKEN, ID);
-		NoteVis VIS = null;
-		String RN_ID = null;
-		Note REPLY_NOTE = null;
-		String CW = null;
-		boolean KaiMention = false;
-
-		//公開範囲
-		switch (NoteData.get("visibility").asText()) {
-			case "public": {
-				VIS = NoteVis.PUBLIC;
-				break;
-			}
-
-			case "home": {
-				VIS = NoteVis.HOME;
-				break;
-			}
-
-			case "followers": {
-				VIS = NoteVis.FOLLOWER;
-				break;
-			}
-
-			case "specified": {
-				VIS = NoteVis.DM;
-				break;
-			}
-		}
-
-		//CW
-		if (NoteData.get("cw") != null) {
-			CW = NoteData.get("cw").asText();
-		}
-
-		//自分がメンションされているか
-		if (NoteData.get("mentions") != null) {
-			for (int I = 0; I < NoteData.get("mentions").size(); I++) {
-				if (NoteData.get("mentions").get(I).asText().equals(Kai.getID())) {
-					KaiMention = true;
-					break;
-				}
-			}
-		}
-
-		return new Note(
-			false,
-			UserSHOW.GetID(INSTANCE_DOMAIN, NoteData.get("user").get("id").asText()),
-			NoteData.get("id").asText(),
-			NoteData.get("text").asText(),
-			OffsetDateTime.parse(NoteData.get("createdAt").asText()),
-			VIS,
-			RN_ID,
-			REPLY_NOTE,
-			CW,
-			KaiMention
-		);
+		return ConvertType.ConvertNote(NoteData, Kai, INSTANCE_DOMAIN, TOKEN);
 	}
 
 	public User GetUserID(String ID) throws IOException {

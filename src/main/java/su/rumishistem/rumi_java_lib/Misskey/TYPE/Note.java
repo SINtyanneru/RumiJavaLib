@@ -1,24 +1,33 @@
 package su.rumishistem.rumi_java_lib.Misskey.TYPE;
 
 import su.rumishistem.rumi_java_lib.Misskey.API.NoteReaction;
+import su.rumishistem.rumi_java_lib.Misskey.API.NoteShow;
+import su.rumishistem.rumi_java_lib.Misskey.MODULE.ConvertType;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 
 public class Note {
+	private User Kai;
+	private String DOMAIN;
+	private String TOKEN;
 	private User USER;
 	private String ID;
 	private String TEXT;
 	private OffsetDateTime DATE;
 	private NoteVis VIS;
 	private String RENOTE_ID;
-	private Note REPLY_NOTE;
+	private String REPLY_ID;
 	private boolean CW = false;
 	private String CW_TEXT;
 	private boolean KaiMention = false;
 
 	private boolean BUILD = false;
 
-	public Note(boolean BUILD, User USER, String  ID, String TEXT, OffsetDateTime DATE, NoteVis VIS, String RENOTE_ID, Note REPLY_NOTE, String CW_TEXT, boolean KaiMention) {
+	public Note(boolean BUILD, User Kai, String DOMAIN, String TOKEN, User USER, String ID, String TEXT, OffsetDateTime DATE, NoteVis VIS, String RENOTE_ID, String REPLY_ID, String CW_TEXT, boolean KaiMention) {
+		this.Kai = Kai;
+		this.DOMAIN = DOMAIN;
+		this.TOKEN = TOKEN;
 		this.BUILD = BUILD;
 		this.USER = USER;
 		this.ID = ID;
@@ -26,7 +35,7 @@ public class Note {
 		this.DATE = DATE;
 		this.VIS = VIS;
 		this.RENOTE_ID = RENOTE_ID;
-		this.REPLY_NOTE = REPLY_NOTE;
+		this.REPLY_ID = REPLY_ID;
 
 		//CW
 		if (CW_TEXT != null) {
@@ -57,12 +66,12 @@ public class Note {
 		}
 	}
 
-	public Note getReply() {
-		return REPLY_NOTE;
+	public Note getReply() throws IOException {
+		return ConvertType.ConvertNote(NoteShow.Main(DOMAIN, TOKEN, REPLY_ID), Kai, DOMAIN, TOKEN);
 	}
 
 	public boolean isREPLY() {
-		if (REPLY_NOTE != null) {
+		if (REPLY_ID != null) {
 			return true;
 		} else {
 			return false;
