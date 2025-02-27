@@ -118,7 +118,6 @@ public class MisskeyClient {
 	 * @return トークン
 	 */
 	public String getTOKEN() {
-		//
 		return TOKEN;
 	}
 
