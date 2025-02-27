@@ -11,20 +11,23 @@ import java.time.OffsetDateTime;
 public class ConvertType {
 	public static User ConvertUser(JsonNode UserData) {
 		boolean NiFA = false;
-		if (UserData.get("twoFactorEnabled") != null) {
-			NiFA = UserData.get("twoFactorEnabled").asBoolean();
+		JsonNode TwoFactorEnabledNode = UserData.get("twoFactorEnabled");
+		if (TwoFactorEnabledNode != null && !TwoFactorEnabledNode.isNull()) {
+			NiFA = TwoFactorEnabledNode.asBoolean();
 		}
 
 		//フォローしている
 		boolean isFollowing = false;
-		if (UserData.get("isFollowing") != null) {
-			isFollowing = UserData.get("isFollowing").asBoolean();
+		JsonNode IsFollowingNode = UserData.get("isFollowing");
+		if (IsFollowingNode != null && !IsFollowingNode.isNull()) {
+			isFollowing = IsFollowingNode.asBoolean();
 		}
 
 		//フォローされてる
 		boolean isFollowed = false;
-		if (UserData.get("isFollowed") != null) {
-			isFollowed = UserData.get("isFollowed").asBoolean();
+		JsonNode IsFollowedNode = UserData.get("isFollowed");
+		if (IsFollowedNode != null && !IsFollowedNode.isNull()) {
+			isFollowed = IsFollowedNode.asBoolean();
 		}
 
 		return new User(
@@ -42,24 +45,28 @@ public class ConvertType {
 
 	public static Note ConvertNote(JsonNode NoteData, User Kai, String DOMAIN, String TOKEN) {
 		String RenoteID = null;
-		if (!NoteData.get("renoteId").isNull()) {
-			RenoteID = NoteData.get("renoteId").asText();
+		JsonNode RenoteNode = NoteData.get("renoteId");
+		if (RenoteNode != null && !RenoteNode.isNull()) {
+			RenoteID = RenoteNode.asText();
 		}
 
 		String ReplyID = null;
-		if (!NoteData.get("replyId").isNull()) {
-			ReplyID = NoteData.get("replyId").asText();
+		JsonNode ReplyNode = NoteData.get("replyId");
+		if (ReplyNode != null && !ReplyNode.isNull()) {
+			ReplyID = ReplyNode.asText();
 		}
 
 		String CW = null;
-		if (NoteData.get("cw") != null) {
-			CW = NoteData.get("cw").asText();
+		JsonNode CWNode = NoteData.get("cw");
+		if (CWNode != null && !CWNode.isNull()) {
+			CW = CWNode.asText();
 		}
 
 		boolean KaiMention = false;
-		if (NoteData.get("mentions") != null) {
-			for (int I = 0; I < NoteData.get("mentions").size(); I++) {
-				if (NoteData.get("mentions").get(I).asText().equals(Kai.getID())) {
+		JsonNode MentionNode = NoteData.get("mentions");
+		if (MentionNode != null && !MentionNode.isNull()) {
+			for (int I = 0; I < MentionNode.size(); I++) {
+				if (MentionNode.get(I).asText().equals(Kai.getID())) {
 					KaiMention = true;
 					break;
 				}
