@@ -32,7 +32,7 @@ public class CreateNote {
 		}
 
 		JsonNode RESULT = new ObjectMapper().readTree(NOTE_AJAX.POST(OM.writeValueAsString(POST_DATA)));
-		if (RESULT.get("error") != null) {
+		if (RESULT.get("error") == null) {
 			return ConvertType.ConvertNote(RESULT, Kai, DOMAIN, TOKEN);
 		} else {
 			throw new Error("ノート投稿エラー" + RESULT.get("error").get("code").asText() + "\n" + RESULT.get("error").get("message").asText());

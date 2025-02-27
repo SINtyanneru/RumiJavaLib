@@ -33,7 +33,9 @@ public class Main {
 					public void onReady() {
 						try {
 							System.out.println("サーバーに接続した");
-							System.out.println(MC.GetNote("a4pozv1dgpu81ndf").getUSER().getNAME());
+							NoteBuilder NB = new NoteBuilder();
+							NB.setTEXT("接続しました");
+							//MC.PostNote(NB.Build());
 						} catch (Exception EX) {
 							EX.printStackTrace();
 						}

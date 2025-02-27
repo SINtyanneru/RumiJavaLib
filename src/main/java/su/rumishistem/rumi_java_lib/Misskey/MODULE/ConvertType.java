@@ -42,12 +42,12 @@ public class ConvertType {
 
 	public static Note ConvertNote(JsonNode NoteData, User Kai, String DOMAIN, String TOKEN) {
 		String RenoteID = null;
-		if (NoteData.get("renoteId") != null) {
+		if (!NoteData.get("renoteId").isNull()) {
 			RenoteID = NoteData.get("renoteId").asText();
 		}
 
 		String ReplyID = null;
-		if (NoteData.get("replyId") != null) {
+		if (!NoteData.get("replyId").isNull()) {
 			ReplyID = NoteData.get("replyId").asText();
 		}
 

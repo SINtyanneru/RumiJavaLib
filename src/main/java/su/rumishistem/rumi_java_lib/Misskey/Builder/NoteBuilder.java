@@ -31,6 +31,11 @@ public class NoteBuilder {
 	}
 
 	public Note Build() {
+		String ReplyID = null;
+		if (REPLY_NOTE != null) {
+			ReplyID = REPLY_NOTE.getID();
+		}
+
 		Note NOTE = new Note(
 			false,
 			null,
@@ -42,7 +47,7 @@ public class NoteBuilder {
 			null,
 			VIS,
 			null,
-			REPLY_NOTE.getID(),
+			ReplyID,
 			CW_TEXT,
 			false
 		);
