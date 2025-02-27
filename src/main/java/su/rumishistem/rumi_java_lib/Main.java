@@ -35,7 +35,7 @@ public class Main {
 							System.out.println("サーバーに接続した");
 							NoteBuilder NB = new NoteBuilder();
 							NB.setTEXT("接続しました");
-							//MC.PostNote(NB.Build());
+							MC.PostNote(NB.Build());
 						} catch (Exception EX) {
 							EX.printStackTrace();
 						}

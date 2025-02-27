@@ -73,27 +73,30 @@ public class ConvertType {
 			}
 		}
 
-		NoteVis VIS = null;
-		//公開範囲
-		switch (NoteData.get("visibility").asText()) {
-			case "public": {
-				VIS = NoteVis.PUBLIC;
-				break;
-			}
+		NoteVis VIS = NoteVis.PUBLIC;
+		JsonNode VisibilityNode = NoteData.get("visibility");
+		if (VisibilityNode != null && !VisibilityNode.isNull()) {
+			//公開範囲
+			switch (NoteData.get("visibility").asText()) {
+				case "public": {
+					VIS = NoteVis.PUBLIC;
+					break;
+				}
 
-			case "home": {
-				VIS = NoteVis.HOME;
-				break;
-			}
+				case "home": {
+					VIS = NoteVis.HOME;
+					break;
+				}
 
-			case "followers": {
-				VIS = NoteVis.FOLLOWER;
-				break;
-			}
+				case "followers": {
+					VIS = NoteVis.FOLLOWER;
+					break;
+				}
 
-			case "specified": {
-				VIS = NoteVis.DM;
-				break;
+				case "specified": {
+					VIS = NoteVis.DM;
+					break;
+				}
 			}
 		}
 
