@@ -126,6 +126,9 @@ public class MisskeyClient {
 	}
 
 	public Note PostNote(Note NOTE) throws IOException {
+		NOTE.SetKai(Kai);
+		NOTE.SetDOMAIN(INSTANCE_DOMAIN);
+		NOTE.SetTOKEN(TOKEN);
 		return CreateNote.Post(INSTANCE_DOMAIN, TOKEN, Kai, NOTE);
 	}
 

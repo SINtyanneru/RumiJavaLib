@@ -3,6 +3,7 @@ package su.rumishistem.rumi_java_lib.Misskey.API;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import su.rumishistem.rumi_java_lib.FETCH;
+import su.rumishistem.rumi_java_lib.FETCH_RESULT;
 import su.rumishistem.rumi_java_lib.HTTP_REQUEST;
 import su.rumishistem.rumi_java_lib.Misskey.MODULE.ConvertType;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.Note;
@@ -32,7 +33,8 @@ public class CreateNote {
 			POST_DATA.put("replyId", NOTE.getReply().getID());
 		}
 
-		JsonNode RESULT = new ObjectMapper().readTree(NOTE_AJAX.POST(OM.writeValueAsString(POST_DATA).getBytes()).GetString());
+		FETCH_RESULT NoteAjaxResult = NOTE_AJAX.POST(OM.writeValueAsString(POST_DATA).getBytes());
+		JsonNode RESULT = new ObjectMapper().readTree(NoteAjaxResult.GetString());
 		if (RESULT.get("error") == null) {
 			return ConvertType.ConvertNote(RESULT.get("createdNote"), Kai, DOMAIN, TOKEN);
 		} else {

@@ -46,6 +46,18 @@ public class Note {
 		this.KaiMention = KaiMention;
 	}
 
+	public void SetKai(User Kai) {
+		this.Kai = Kai;
+	}
+
+	public void SetDOMAIN(String DOMAIN) {
+		this.DOMAIN = DOMAIN;
+	}
+
+	public void SetTOKEN(String TOKEN) {
+		this.TOKEN = TOKEN;
+	}
+
 	public User getUSER() {
 		return USER;
 	}
