@@ -125,8 +125,8 @@ public class MisskeyClient {
 		return Kai;
 	}
 
-	public void PostNote(Note NOTE) throws IOException {
-		CreateNote.Post(INSTANCE_DOMAIN, TOKEN, Kai, NOTE);
+	public Note PostNote(Note NOTE) throws IOException {
+		return CreateNote.Post(INSTANCE_DOMAIN, TOKEN, Kai, NOTE);
 	}
 
 	public void CreateReaction(Note NOTE, String ReactionText) throws IOException {
