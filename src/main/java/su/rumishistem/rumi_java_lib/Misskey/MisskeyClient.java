@@ -40,7 +40,7 @@ public class MisskeyClient {
 	 */
 	public LOGIN_RESULT LOGIN(String UID, String PASSWORD, String TOTP) {
 		try {
-			User USER_DATA = UserSHOW.GetUID(INSTANCE_DOMAIN, UID);
+			User USER_DATA = UserSHOW.GetUID(INSTANCE_DOMAIN, UID, Kai, TOKEN);
 
 			//TOTPが有効か
 			if (!USER_DATA.isTwoFactorEnabled()) {
@@ -142,10 +142,10 @@ public class MisskeyClient {
 	}
 
 	public User GetUserID(String ID) throws IOException {
-		return UserSHOW.GetID(INSTANCE_DOMAIN, ID);
+		return UserSHOW.GetID(INSTANCE_DOMAIN, ID, Kai, TOKEN);
 	}
 
 	public User GetUserUID(String UID) throws IOException {
-		return UserSHOW.GetUID(INSTANCE_DOMAIN, UID);
+		return UserSHOW.GetUID(INSTANCE_DOMAIN, UID, Kai, TOKEN);
 	}
 }

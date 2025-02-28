@@ -68,7 +68,7 @@ public class WSS {
 
 								//フォローされた
 								case "followed": {
-									User FROM = ConvertType.ConvertUser(MSG.get("body").get("body"));
+									User FROM = ConvertType.ConvertUser(MSG.get("body").get("body"), Kai, DOMAIN, TOKEN);
 
 									//イベント着火
 									EVENT_LISTENER[] LISTENER_LIST = EL_LIST.getListeners(EVENT_LISTENER.class);

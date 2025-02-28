@@ -9,7 +9,7 @@ import su.rumishistem.rumi_java_lib.Misskey.TYPE.User;
 import java.time.OffsetDateTime;
 
 public class ConvertType {
-	public static User ConvertUser(JsonNode UserData) {
+	public static User ConvertUser(JsonNode UserData, User Kai, String DOMAIN, String TOKEN) {
 		boolean NiFA = false;
 		JsonNode TwoFactorEnabledNode = UserData.get("twoFactorEnabled");
 		if (TwoFactorEnabledNode != null && !TwoFactorEnabledNode.isNull()) {
@@ -35,8 +35,8 @@ public class ConvertType {
 			UserData.get("username").asText(),
 			UserData.get("name").asText(),
 			UserData.get("avatarUrl").asText(),
-			UserData.get("host").asText(),
-			null,
+			DOMAIN,
+			TOKEN,
 			NiFA,
 			isFollowing,
 			isFollowed
@@ -105,7 +105,7 @@ public class ConvertType {
 			Kai,
 			DOMAIN,
 			TOKEN,
-			ConvertUser(NoteData.get("user")),
+			ConvertUser(NoteData.get("user"), Kai, DOMAIN, TOKEN),
 			NoteData.get("id").asText(),
 			NoteData.get("text").asText(),
 			OffsetDateTime.parse(NoteData.get("createdAt").asText()),
