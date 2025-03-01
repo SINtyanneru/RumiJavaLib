@@ -32,11 +32,13 @@ public class CreateNote {
 		POST_DATA.put("reactionAcceptance", null);
 
 		//ファイル
-		List<String> FileIDList = new ArrayList<>();
-		for (AttachFile F:NOTE.GetFile()) {
-			FileIDList.add(F.GetNAME());
+		if (!NOTE.GetFile().isEmpty()) {
+			List<String> FileIDList = new ArrayList<>();
+			for (AttachFile F:NOTE.GetFile()) {
+				FileIDList.add(F.GetNAME());
+			}
+			POST_DATA.put("fileIds", FileIDList);
 		}
-		POST_DATA.put("fileIds", FileIDList);
 
 		//リプライ
 		if (NOTE.isREPLY()) {
