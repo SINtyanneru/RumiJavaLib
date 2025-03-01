@@ -19,13 +19,15 @@ import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.MESSAGE_EVENT;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.WS_EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.WebSocketSERVER;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.function.Function;
 
 public class Main {
 	public static void main(String[] args) {
-		try {
+		try {/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
 			if (MC.TOKEN_LOGIN(args[0]) == LOGIN_RESULT.DONE) {
 				MC.SET_EVENT_LISTENER(new EVENT_LISTENER() {
@@ -35,6 +37,7 @@ public class Main {
 							System.out.println("サーバーに接続した");
 							NoteBuilder NB = new NoteBuilder();
 							NB.setTEXT("接続しました");
+							NB.AddFile(new File("/home/rumisan/Pictures/remmina_クイック接続_192.168.100.16_20250223-131411.png"));
 							MC.PostNote(NB.Build());
 						} catch (Exception EX) {
 							EX.printStackTrace();
@@ -77,7 +80,7 @@ public class Main {
 				});
 			} else {
 				System.out.println("ログイン失敗");
-			}
+			}*/
 		} catch (Exception EX) {
 			EX.printStackTrace();
 		}

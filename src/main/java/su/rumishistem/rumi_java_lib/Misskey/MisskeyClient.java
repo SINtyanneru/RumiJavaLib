@@ -3,6 +3,7 @@ package su.rumishistem.rumi_java_lib.Misskey;
 import com.fasterxml.jackson.databind.JsonNode;
 import su.rumishistem.rumi_java_lib.Misskey.API.*;
 import su.rumishistem.rumi_java_lib.Misskey.MODULE.ConvertType;
+import su.rumishistem.rumi_java_lib.Misskey.TYPE.AttachFile;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.Note;
 import su.rumishistem.rumi_java_lib.Misskey.Event.EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.Misskey.RESULT.LOGIN_RESULT;
@@ -12,7 +13,11 @@ import su.rumishistem.rumi_java_lib.Misskey.TYPE.User;
 import javax.swing.event.EventListenerList;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MisskeyClient {
 	private String INSTANCE_DOMAIN = null;
@@ -129,6 +134,19 @@ public class MisskeyClient {
 		NOTE.SetKai(Kai);
 		NOTE.SetDOMAIN(INSTANCE_DOMAIN);
 		NOTE.SetTOKEN(TOKEN);
+
+		List<AttachFile> UploadList = new ArrayList<>();
+		for (AttachFile F:NOTE.GetFile()) {
+			if (Files.exists(Path.of(F.GetURL()))) {
+				byte[] Data = Files.readAllBytes(Path.of(F.GetURL()));
+				String ID = DriveFile.Upload(INSTANCE_DOMAIN, TOKEN, F.GetNAME(), Data);
+				UploadList.add(new AttachFile("", ID, false));
+			} else {
+				throw new Error("ファイルが見つかりません:" + F.GetURL());
+			}
+		}
+		NOTE.SetFile(UploadList);
+
 		return CreateNote.Post(INSTANCE_DOMAIN, TOKEN, Kai, NOTE);
 	}
 

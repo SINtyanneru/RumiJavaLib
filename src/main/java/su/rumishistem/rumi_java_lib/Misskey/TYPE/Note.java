@@ -6,6 +6,7 @@ import su.rumishistem.rumi_java_lib.Misskey.MODULE.ConvertType;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 public class Note {
 	private User Kai;
@@ -21,10 +22,11 @@ public class Note {
 	private boolean CW = false;
 	private String CW_TEXT;
 	private boolean KaiMention = false;
+	private List<AttachFile> FileList;
 
 	private boolean BUILD = false;
 
-	public Note(boolean BUILD, User Kai, String DOMAIN, String TOKEN, User USER, String ID, String TEXT, OffsetDateTime DATE, NoteVis VIS, String RENOTE_ID, String REPLY_ID, String CW_TEXT, boolean KaiMention) {
+	public Note(boolean BUILD, User Kai, String DOMAIN, String TOKEN, User USER, String ID, String TEXT, OffsetDateTime DATE, NoteVis VIS, String RENOTE_ID, String REPLY_ID, String CW_TEXT, boolean KaiMention, List<AttachFile> FileList) {
 		this.Kai = Kai;
 		this.DOMAIN = DOMAIN;
 		this.TOKEN = TOKEN;
@@ -44,6 +46,7 @@ public class Note {
 		}
 
 		this.KaiMention = KaiMention;
+		this.FileList = FileList;
 	}
 
 	public void SetKai(User Kai) {
@@ -104,5 +107,13 @@ public class Note {
 
 	public OffsetDateTime getDATE() {
 		return DATE;
+	}
+
+	public List<AttachFile> GetFile() {
+		return FileList;
+	}
+
+	public void SetFile(List<AttachFile> FileList) {
+		this.FileList = FileList;
 	}
 }

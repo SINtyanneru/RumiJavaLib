@@ -7,6 +7,7 @@ import su.rumishistem.rumi_java_lib.Misskey.TYPE.NoteVis;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.User;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 
 public class ConvertType {
 	public static User ConvertUser(JsonNode UserData, User Kai, String DOMAIN, String TOKEN) {
@@ -113,7 +114,8 @@ public class ConvertType {
 			RenoteID,
 			ReplyID,
 			CW,
-			KaiMention
+			KaiMention,
+			new ArrayList<>()
 		);
 	}
 }

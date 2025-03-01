@@ -6,11 +6,14 @@ import su.rumishistem.rumi_java_lib.FETCH;
 import su.rumishistem.rumi_java_lib.FETCH_RESULT;
 import su.rumishistem.rumi_java_lib.HTTP_REQUEST;
 import su.rumishistem.rumi_java_lib.Misskey.MODULE.ConvertType;
+import su.rumishistem.rumi_java_lib.Misskey.TYPE.AttachFile;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.Note;
 import su.rumishistem.rumi_java_lib.Misskey.TYPE.User;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class CreateNote {
 	public static Note Post(String DOMAIN, String TOKEN, User Kai, Note NOTE) throws IOException {
@@ -27,6 +30,13 @@ public class CreateNote {
 		POST_DATA.put("localOnly", false);
 		POST_DATA.put("visibility", "public");
 		POST_DATA.put("reactionAcceptance", null);
+
+		//ファイル
+		List<String> FileIDList = new ArrayList<>();
+		for (AttachFile F:NOTE.GetFile()) {
+			FileIDList.add(F.GetNAME());
+		}
+		POST_DATA.put("fileIds", FileIDList);
 
 		//リプライ
 		if (NOTE.isREPLY()) {
