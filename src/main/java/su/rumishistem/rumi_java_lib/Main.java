@@ -20,14 +20,17 @@ import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.WS_EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.WebSocketSERVER;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.function.Function;
 
 public class Main {
 	public static void main(String[] args) {
-		try {/*
+		try {
+			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
 			if (MC.TOKEN_LOGIN(args[0]) == LOGIN_RESULT.DONE) {
 				MC.SET_EVENT_LISTENER(new EVENT_LISTENER() {
