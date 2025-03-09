@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'rumi_java_lib'
-version = '13.27'
+version = '13.29'
 
 repositories {
 	mavenCentral()
@@ -24,6 +24,9 @@ dependencies {
 
 	//SSH
 	implementation("org.apache.sshd:sshd-core:2.14.0")
+
+	//FormData解析
+	implementation("commons-fileupload:commons-fileupload:1.5")
 }
 
 jar {

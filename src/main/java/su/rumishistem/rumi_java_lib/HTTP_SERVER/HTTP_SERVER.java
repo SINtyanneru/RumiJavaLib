@@ -13,12 +13,15 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
 
 public class HTTP_SERVER {
 	private int PORT;
 	private boolean VERBOSE = false;
+	private int ThreadNum = 100;
 
 	EventListenerList EL_LIST = new EventListenerList();
 
@@ -40,18 +43,25 @@ public class HTTP_SERVER {
 		EL_LIST.add(HTTP_EVENT_LISTENER.class, EVL);
 	}
 
+	//スレッド数を指定するやつ
+	public void SetThreadNum(int ThreadNum) {
+		this.ThreadNum = ThreadNum;
+	}
+
 	//HTTP鯖を実行する
 	public void START_HTTPSERVER() throws IOException {
 		HttpServer SERVER = HttpServer.create(new InetSocketAddress(PORT), 0);
 
 		SERVER.createContext("/", new HTTP_HANDLER());
-		SERVER.setExecutor(null); //デフォルトのExecutorを使用
+
+		//マルチスレッドなやつ
+		ExecutorService ES = Executors.newFixedThreadPool(ThreadNum);
+		SERVER.setExecutor(ES);
 
 		SERVER.start();
 		LOG(LOG_TYPE.OK, "Started HTTP Server!");
 		LOG(LOG_TYPE.OK, "Port:" + PORT);
 	}
-
 
 	private class HTTP_HANDLER implements HttpHandler {
 		@Override
