@@ -64,6 +64,17 @@ public class SmartHTTP {
 				try {
 					RESOURCE_MANAGER RM = new RESOURCE_MANAGER(ResourceClass);
 					String REQUEST_FILE = e.GetEVENT().getURI().getPath().replaceFirst(PATHPATH, "");
+
+					//リクエストが無なら/を追記する
+					if (REQUEST_FILE.equals("")) {
+						REQUEST_FILE += "/";
+					}
+
+					//リクエストの最後が/なら/index.htmlを追記
+					if (REQUEST_FILE.endsWith("/")) {
+						REQUEST_FILE += "index.html";
+					}
+
 					String RESOURCE_FILE = ResourcePathPath + REQUEST_FILE;
 
 					//リソースファイルがあるか
