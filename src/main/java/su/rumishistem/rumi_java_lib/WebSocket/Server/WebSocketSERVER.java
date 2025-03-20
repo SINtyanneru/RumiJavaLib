@@ -98,7 +98,7 @@ public class WebSocketSERVER {
 						});
 						try {
 							SS.START(PORT + 1);
-						} catch (IOException EX) {
+						} catch (InterruptedException EX) {
 							EX.printStackTrace();
 							System.exit(1);
 						}

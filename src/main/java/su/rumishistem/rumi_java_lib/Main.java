@@ -3,7 +3,6 @@ package su.rumishistem.rumi_java_lib;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT;
 import su.rumishistem.rumi_java_lib.Misskey.Builder.NoteBuilder;
 import su.rumishistem.rumi_java_lib.Misskey.Event.DisconnectEvent;
-import su.rumishistem.rumi_java_lib.Misskey.Event.EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.Misskey.Event.NewFollower;
 import su.rumishistem.rumi_java_lib.Misskey.Event.NewNoteEvent;
 import su.rumishistem.rumi_java_lib.Misskey.MisskeyClient;
@@ -12,8 +11,13 @@ import su.rumishistem.rumi_java_lib.SmartHTTP.ERRORCODE;
 import su.rumishistem.rumi_java_lib.SmartHTTP.HTTP_REQUEST;
 import su.rumishistem.rumi_java_lib.SmartHTTP.HTTP_RESULT;
 import su.rumishistem.rumi_java_lib.SmartHTTP.SmartHTTP;
-import su.rumishistem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT.CONNECT_EVENT;
-import su.rumishistem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT.CONNECT_EVENT_LISTENER;
+import su.rumishistem.rumi_java_lib.Socket.Server.CONNECT_EVENT.CONNECT_EVENT;
+import su.rumishistem.rumi_java_lib.Socket.Server.CONNECT_EVENT.CONNECT_EVENT_LISTENER;
+import su.rumishistem.rumi_java_lib.Socket.Server.EVENT.CloseEvent;
+import su.rumishistem.rumi_java_lib.Socket.Server.EVENT.EVENT_LISTENER;
+import su.rumishistem.rumi_java_lib.Socket.Server.EVENT.MessageEvent;
+import su.rumishistem.rumi_java_lib.Socket.Server.EVENT.ReceiveEvent;
+import su.rumishistem.rumi_java_lib.Socket.Server.SocketServer;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.CLOSE_EVENT;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.MESSAGE_EVENT;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.WS_EVENT_LISTENER;
@@ -21,6 +25,7 @@ import su.rumishistem.rumi_java_lib.WebSocket.Server.WebSocketSERVER;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -30,6 +35,33 @@ import java.util.function.Function;
 public class Main {
 	public static void main(String[] args) {
 		try {
+			SocketServer SS = new SocketServer();
+
+			SS.setEventListener(new CONNECT_EVENT_LISTENER() {
+				@Override
+				public void CONNECT(CONNECT_EVENT SESSION) throws IOException {
+					System.out.println("接続された:" + SESSION.getIP());
+					SESSION.setEventListener(new EVENT_LISTENER() {
+						@Override
+						public void Message(MessageEvent E) {
+							System.out.println("メッセージ受信:" + E.getString());
+						}
+
+						@Override
+						public void Receive(ReceiveEvent E) {
+							System.out.println("受信:" + E.getString());
+						}
+
+						@Override
+						public void Close(CloseEvent E) {
+							System.out.println("切断");
+						}
+					});
+				}
+			});
+
+			SS.START(8081);
+
 			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
 			if (MC.TOKEN_LOGIN(args[0]) == LOGIN_RESULT.DONE) {

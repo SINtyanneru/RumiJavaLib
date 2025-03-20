@@ -12,6 +12,6 @@ public class MessageEvent {
 	}
 
 	public String getString() {
-		return new String(DATA);
+		return new String(DATA).replaceAll("[\r\n]+$", "");
 	}
 }
