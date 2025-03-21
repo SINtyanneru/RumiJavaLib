@@ -62,6 +62,10 @@ public class HTTP_EVENT extends EventObject {
 		return r.uri();
 	}
 
+	public String getMethod() {
+		return r.method().name().toUpperCase();
+	}
+
 	public HashMap<String, String> getCookie() {
 		HashMap<String, String> CookieList = new HashMap<>();
 
