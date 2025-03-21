@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.EventObject;
 import java.util.HashMap;
@@ -58,8 +59,12 @@ public class HTTP_EVENT extends EventObject {
 		return HEADER_DATA;
 	}
 
-	public String getURI() {
-		return r.uri();
+	public URI getURI() {
+		try {
+			return new URI(r.uri());
+		} catch (Exception EX) {
+			return null;
+		}
 	}
 
 	public String getMethod() {
