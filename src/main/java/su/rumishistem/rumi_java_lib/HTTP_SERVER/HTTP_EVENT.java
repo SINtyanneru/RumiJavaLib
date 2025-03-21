@@ -20,14 +20,14 @@ import java.util.Map;
 
 public class HTTP_EVENT extends EventObject {
 	private ChannelHandlerContext CTX;
-	private FullHttpRequest r;
+	private HttpRequest r;
 	private HashMap<String, String> URI_PARAM;
 	private byte[] POST_DATA;
 	private HashMap<String, String> HEADER_DATA;
 	private HttpHeaders RES_HEADER;
 	private HashMap<String, String> ResponseHeader = new HashMap<>();
 
-	public HTTP_EVENT(Object source, ChannelHandlerContext CTX, FullHttpRequest r, HashMap<String, String> URI_PARAM, byte[] POST_DATA, HashMap<String, String> HEADER_DATA) {
+	public HTTP_EVENT(Object source, ChannelHandlerContext CTX, HttpRequest r, HashMap<String, String> URI_PARAM, byte[] POST_DATA, HashMap<String, String> HEADER_DATA) {
 		super(source);
 
 		this.CTX = CTX;
@@ -39,7 +39,7 @@ public class HTTP_EVENT extends EventObject {
 		RES_HEADER = r.headers();
 	}
 
-	public FullHttpRequest getEXCHANGE(){
+	public HttpRequest getEXCHANGE(){
 		return r;
 	}
 
