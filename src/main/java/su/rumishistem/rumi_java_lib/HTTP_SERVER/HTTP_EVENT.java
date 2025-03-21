@@ -2,6 +2,10 @@ package su.rumishistem.rumi_java_lib.HTTP_SERVER;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.*;
 
 import javax.swing.event.EventListenerList;
 import java.io.IOException;
@@ -11,27 +15,31 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.EventObject;
 import java.util.HashMap;
+import java.util.Map;
 
 public class HTTP_EVENT extends EventObject {
-	private static HttpExchange EXCHANGE;
-	private static HashMap<String, String> URI_PARAM;
-	private static byte[] POST_DATA;
-	private static HashMap<String, String> HEADER_DATA;
-	private static Headers RES_HEADER;
+	private ChannelHandlerContext CTX;
+	private FullHttpRequest r;
+	private HashMap<String, String> URI_PARAM;
+	private byte[] POST_DATA;
+	private HashMap<String, String> HEADER_DATA;
+	private HttpHeaders RES_HEADER;
+	private HashMap<String, String> ResponseHeader = new HashMap<>();
 
-	public HTTP_EVENT(Object source, HttpExchange EXCHANGE, HashMap<String, String> URI_PARAM, byte[] POST_DATA, HashMap<String, String> HEADER_DATA) {
+	public HTTP_EVENT(Object source, ChannelHandlerContext CTX, FullHttpRequest r, HashMap<String, String> URI_PARAM, byte[] POST_DATA, HashMap<String, String> HEADER_DATA) {
 		super(source);
 
-		this.EXCHANGE = EXCHANGE;
+		this.CTX = CTX;
+		this.r = r;
 		this.URI_PARAM = URI_PARAM;
 		this.POST_DATA = POST_DATA;
 		this.HEADER_DATA = HEADER_DATA;
 
-		RES_HEADER = EXCHANGE.getResponseHeaders();
+		RES_HEADER = r.headers();
 	}
 
-	public HttpExchange getEXCHANGE(){
-		return EXCHANGE;
+	public FullHttpRequest getEXCHANGE(){
+		return r;
 	}
 
 	public HashMap<String, String> getURI_PARAM(){
@@ -50,8 +58,8 @@ public class HTTP_EVENT extends EventObject {
 		return HEADER_DATA;
 	}
 
-	public URI getURI() {
-		return EXCHANGE.getRequestURI();
+	public String getURI() {
+		return r.uri();
 	}
 
 	public HashMap<String, String> getCookie() {
@@ -74,7 +82,7 @@ public class HTTP_EVENT extends EventObject {
 	 * @param VAL
 	 */
 	public void setCookie(String NAME, String VAL, long Sec, String DOMAIN, String PATH, boolean SSL, boolean HTTPOnly) {
-		RES_HEADER.add("Set-Cookie", NAME+"="+VAL+";Max-Age="+Sec+";Path="+PATH);
+		ResponseHeader.put("Set-Cookie", NAME+"="+VAL+";Max-Age="+Sec+";Path="+PATH);
 	}
 
 	/**
@@ -83,7 +91,7 @@ public class HTTP_EVENT extends EventObject {
 	 * @param VAL 内容
 	 */
 	public void setHEADER(String KEY, String VAL){
-		RES_HEADER.add(KEY, VAL);
+		ResponseHeader.put(KEY, VAL);
 	}
 
 	/**
@@ -91,23 +99,25 @@ public class HTTP_EVENT extends EventObject {
 	 * @throws IOException 例外
 	 */
 	public void REPLY_BYTE(int STATUS, byte[] BODY) throws IOException {
-		//HEAD以外での動作
-		if (!EXCHANGE.getRequestMethod().equals("HEAD")) {
-			//ステータスコードと文字数
-			EXCHANGE.sendResponseHeaders(STATUS, BODY.length);
-			//書き込むやつ
-			OutputStream OS = EXCHANGE.getResponseBody();
-			//文字列を書き込む
-			OS.write(BODY);
-			//フラッシュする
-			OS.flush();
-			//終了
-			OS.close();
-		} else {
-			//HEADの場合の動作(ステータスコードとかを返して閉じるだけ)
-			EXCHANGE.sendResponseHeaders(STATUS, BODY.length);
-			EXCHANGE.getResponseBody().close();
+		FullHttpResponse Response = new DefaultFullHttpResponse(
+			HttpVersion.HTTP_1_1,
+			HttpResponseStatus.valueOf(STATUS),
+			Unpooled.wrappedBuffer(BODY)
+		);
+
+		//ヘッダー
+		for (Map.Entry<String, String> Entry:ResponseHeader.entrySet()) {
+			Response.headers().set(Entry.getKey(), Entry.getValue());
 		}
+		Response.headers().set(HttpHeaderNames.CONTENT_LENGTH, BODY.length);
+
+		//HEADなら本文を破壊する
+		if (r.method().equals(HttpMethod.HEAD)) {
+			Response.content().clear();
+		}
+
+		//送信
+		CTX.writeAndFlush(Response).addListener(ChannelFutureListener.CLOSE);
 	}
 
 	/**
@@ -116,23 +126,6 @@ public class HTTP_EVENT extends EventObject {
 	 */
 	public void REPLY_String(int STATUS, String BODY) throws IOException {
 		byte[] BS = BODY.getBytes(StandardCharsets.UTF_8);
-
-		//HEAD以外での動作
-		if (!EXCHANGE.getRequestMethod().equals("HEAD")) {
-			//ステータスコードと文字数
-			EXCHANGE.sendResponseHeaders(STATUS, BS.length);
-			//書き込むやつ
-			OutputStream OS = EXCHANGE.getResponseBody();
-			//文字列を書き込む
-			OS.write(BS);
-			//フラッシュする
-			OS.flush();
-			//終了
-			OS.close();
-		} else {
-			//HEADの場合の動作(ステータスコードとかを返して閉じるだけ)
-			EXCHANGE.sendResponseHeaders(STATUS, BS.length);
-			EXCHANGE.getResponseBody().close();
-		}
+		REPLY_BYTE(STATUS, BS);
 	}
 }

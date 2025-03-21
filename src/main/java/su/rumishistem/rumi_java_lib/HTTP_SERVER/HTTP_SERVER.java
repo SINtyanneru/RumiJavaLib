@@ -1,32 +1,30 @@
 package su.rumishistem.rumi_java_lib.HTTP_SERVER;
 
-import su.rumishistem.rumi_java_lib.EXCEPTION_READER;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
 import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
-
 import javax.swing.event.EventListenerList;
-import java.io.*;
-import java.net.InetSocketAddress;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
 
 public class HTTP_SERVER {
-	private int PORT;
-	private boolean VERBOSE = false;
-	private int ThreadNum = 100;
+	private final int MaxContentLength = 65536;
 
-	EventListenerList EL_LIST = new EventListenerList();
+	private HTTP_SERVER HS = null;
+	private int PORT;
+	private int ThreadNum = 1;
+
+	public boolean VERBOSE = false;
+	public EventListenerList EL_LIST = new EventListenerList();
 
 	public HTTP_SERVER(int PORT){
 		this.PORT = PORT;
+		this.HS = this;
 	}
 
 	/**
@@ -49,21 +47,38 @@ public class HTTP_SERVER {
 	}
 
 	//HTTP鯖を実行する
-	public void START_HTTPSERVER() throws IOException {
-		HttpServer SERVER = HttpServer.create(new InetSocketAddress(PORT), 0);
+	public void START_HTTPSERVER() throws InterruptedException {
+		NioEventLoopGroup BossGroup = new NioEventLoopGroup(ThreadNum);
+		NioEventLoopGroup WorkerGroup = new NioEventLoopGroup();
 
-		SERVER.createContext("/", new HTTP_HANDLER());
+		try {
+			ServerBootstrap BootStrap = new ServerBootstrap();
+			BootStrap.group(BossGroup, WorkerGroup);
+			BootStrap.channel(NioServerSocketChannel.class);
+			BootStrap.childHandler(new ChannelInitializer<SocketChannel>() {
+				@Override
+				protected void initChannel(SocketChannel Ch) throws Exception {
+					Ch.pipeline().addLast(new HttpServerCodec());
+					Ch.pipeline().addLast(new HttpObjectAggregator(MaxContentLength));
+					Ch.pipeline().addLast(new HTTPHandler(HS));
+				}
+			});
 
-		//マルチスレッドなやつ
-		ExecutorService ES = Executors.newFixedThreadPool(ThreadNum);
-		SERVER.setExecutor(ES);
+			//サーバー起動
+			ChannelFuture CF = BootStrap.bind(PORT).sync();
+			LOG(LOG_TYPE.OK, "Started HTTP Server!");
+			LOG(LOG_TYPE.OK, "Port:" + PORT);
 
-		SERVER.start();
-		LOG(LOG_TYPE.OK, "Started HTTP Server!");
-		LOG(LOG_TYPE.OK, "Port:" + PORT);
+			//落ちるまで待つ
+			CF.channel().closeFuture().sync();
+		} finally {
+			BossGroup.shutdownGracefully();
+			WorkerGroup.shutdownGracefully();
+		}
 	}
 
-	private class HTTP_HANDLER implements HttpHandler {
+	/*
+	private class HTTPHandler implements HttpHandler {
 		@Override
 		public void handle(HttpExchange EXCHANGE) {
 			try {
@@ -132,5 +147,5 @@ public class HTTP_SERVER {
 				}
 			}
 		}
-	}
+	}*/
 }

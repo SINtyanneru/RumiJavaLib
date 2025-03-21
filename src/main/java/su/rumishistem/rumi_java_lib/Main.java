@@ -1,6 +1,8 @@
 package su.rumishistem.rumi_java_lib;
 
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT;
+import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT_LISTENER;
+import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_SERVER;
 import su.rumishistem.rumi_java_lib.Misskey.Builder.NoteBuilder;
 import su.rumishistem.rumi_java_lib.Misskey.Event.DisconnectEvent;
 import su.rumishistem.rumi_java_lib.Misskey.Event.NewFollower;
@@ -35,32 +37,15 @@ import java.util.function.Function;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			SocketServer SS = new SocketServer();
-
-			SS.setEventListener(new CONNECT_EVENT_LISTENER() {
+			SmartHTTP SH = new SmartHTTP(8001);
+			SH.SetRoute("/", new Function<HTTP_REQUEST, HTTP_RESULT>() {
 				@Override
-				public void CONNECT(CONNECT_EVENT SESSION) throws IOException {
-					System.out.println("接続された:" + SESSION.getIP());
-					SESSION.setEventListener(new EVENT_LISTENER() {
-						@Override
-						public void Message(MessageEvent E) {
-							System.out.println("メッセージ受信:" + E.getString());
-						}
-
-						@Override
-						public void Receive(ReceiveEvent E) {
-							System.out.println("受信:" + E.getString());
-						}
-
-						@Override
-						public void Close(CloseEvent E) {
-							System.out.println("切断");
-						}
-					});
+				public HTTP_RESULT apply(HTTP_REQUEST r) {
+					System.out.println(r.GetEVENT().getHEADER_DATA().get("USER-AGENT"));
+					return new HTTP_RESULT(200, "お前を殺す".getBytes(), "text/plain;charset=UTF-8");
 				}
 			});
-
-			SS.START(8081);
+			SH.Start();
 
 			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");

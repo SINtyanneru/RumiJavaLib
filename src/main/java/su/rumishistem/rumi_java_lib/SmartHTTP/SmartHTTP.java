@@ -63,7 +63,7 @@ public class SmartHTTP {
 			public HTTP_RESULT apply(HTTP_REQUEST e) {
 				try {
 					RESOURCE_MANAGER RM = new RESOURCE_MANAGER(ResourceClass);
-					String REQUEST_FILE = e.GetEVENT().getURI().getPath().replaceFirst(PATHPATH, "");
+					String REQUEST_FILE = e.GetEVENT().getURI().replaceFirst(PATHPATH, "");
 
 					//リクエストが無なら/を追記する
 					if (REQUEST_FILE.equals("")) {
@@ -94,7 +94,7 @@ public class SmartHTTP {
 						//ファイルならないなら404
 						HashMap<String, String> PARAM_LIST = new HashMap<>();
 						PARAM_LIST.put("EX", "404");
-						ReturnErrorPage(e.GetEVENT(), PARAM_LIST, e.GetEVENT().getURI().getPath(), ERRORCODE.PAGE_NOT_FOUND, 404);
+						ReturnErrorPage(e.GetEVENT(), PARAM_LIST, e.GetEVENT().getURI(), ERRORCODE.PAGE_NOT_FOUND, 404);
 
 						return null;
 					}
@@ -102,7 +102,7 @@ public class SmartHTTP {
 					//エラー
 					HashMap<String, String> PARAM_LIST = new HashMap<>();
 					PARAM_LIST.put("EX", EXCEPTION_READER.READ(EX));
-					ReturnErrorPage(e.GetEVENT(), PARAM_LIST, e.GetEVENT().getURI().getPath(), ERRORCODE.INTERNAL_SERVER_ERROR, 500);
+					ReturnErrorPage(e.GetEVENT(), PARAM_LIST, e.GetEVENT().getURI(), ERRORCODE.INTERNAL_SERVER_ERROR, 500);
 					return null;
 				}
 			}
@@ -120,14 +120,14 @@ public class SmartHTTP {
 		ERROR_EP_LIST.put(NAME, RESULT);
 	}
 
-	public void Start() throws IOException {
+	public void Start() throws InterruptedException {
 		HS = new HTTP_SERVER(PORT);
 		HS.setVERBOSE(true);
 		HS.SET_EVENT_VOID(new HTTP_EVENT_LISTENER() {
 			@Override
 			public void REQUEST_EVENT(HTTP_EVENT E) {
 				try {
-					String REQUEST_PATH = E.getEXCHANGE().getRequestURI().getPath();
+					String REQUEST_PATH = E.getURI();
 					REQUEST_PATH = SlasshFucker(REQUEST_PATH);
 
 					//エンドポイント一覧を回す
@@ -155,8 +155,7 @@ public class SmartHTTP {
 
 									E.REPLY_BYTE(RESULT.STATUS, RESULT.DATA);
 								} else {
-									//Nullなら切断
-									E.getEXCHANGE().close();
+									//Nullなら切断←してない
 								}
 								return;
 							}
@@ -165,12 +164,12 @@ public class SmartHTTP {
 
 					HashMap<String, String> PARAM_LIST = new HashMap<>();
 					PARAM_LIST.put("EX", "404");
-					ReturnErrorPage(E, PARAM_LIST, E.getEXCHANGE().getRequestURI().getPath(), ERRORCODE.PAGE_NOT_FOUND, 404);
+					ReturnErrorPage(E, PARAM_LIST, E.getURI(), ERRORCODE.PAGE_NOT_FOUND, 404);
 				} catch (Exception EX) {
 					//500エラー
 					HashMap<String, String> PARAM_LIST = new HashMap<>();
 					PARAM_LIST.put("EX", EXCEPTION_READER.READ(EX));
-					ReturnErrorPage(E, PARAM_LIST, E.getEXCHANGE().getRequestURI().getPath(), ERRORCODE.INTERNAL_SERVER_ERROR, 500);
+					ReturnErrorPage(E, PARAM_LIST, E.getURI(), ERRORCODE.INTERNAL_SERVER_ERROR, 500);
 				}
 			}
 		});
