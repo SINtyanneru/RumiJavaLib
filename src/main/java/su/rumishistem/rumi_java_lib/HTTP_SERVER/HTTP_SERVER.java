@@ -13,8 +13,6 @@ import javax.swing.event.EventListenerList;
 import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
 
 public class HTTP_SERVER {
-	private final int MaxContentLength = 65536;
-
 	private HTTP_SERVER HS = null;
 	private int PORT;
 	private int ThreadNum = 1;
@@ -59,7 +57,7 @@ public class HTTP_SERVER {
 				@Override
 				protected void initChannel(SocketChannel Ch) throws Exception {
 					Ch.pipeline().addLast(new HttpServerCodec());
-					Ch.pipeline().addLast(new HttpObjectAggregator(MaxContentLength));
+					Ch.pipeline().addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
 					Ch.pipeline().addLast(new HTTPHandler(HS));
 				}
 			});
