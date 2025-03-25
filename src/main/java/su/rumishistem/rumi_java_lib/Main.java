@@ -33,16 +33,17 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.function.Function;
+import java.awt.*;
 
 public class Main {
 	public static void main(String[] args) {
 		try {
 			SmartHTTP SH = new SmartHTTP(8001);
-			SH.SetRoute("/", new Function<HTTP_REQUEST, HTTP_RESULT>() {
+			SH.SetRoute("/api/dir", new Function<HTTP_REQUEST, HTTP_RESULT>() {
 				@Override
 				public HTTP_RESULT apply(HTTP_REQUEST r) {
 					System.out.println(r.GetEVENT().getHEADER_DATA().get("USER-AGENT"));
-					return new HTTP_RESULT(200, "お前を殺す".getBytes(), "text/plain;charset=UTF-8");
+					return new HTTP_RESULT(200, ("お前を殺す:" + r.GetEVENT().getURI_PARAM().get("name")).getBytes(), "text/plain;charset=UTF-8");
 				}
 			});
 			SH.Start();
