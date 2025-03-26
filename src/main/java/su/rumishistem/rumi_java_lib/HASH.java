@@ -9,7 +9,8 @@ public class HASH {
 		SHA1,
 		SHA256,
 		SHA512,
-		SHA3_256
+		SHA3_256,
+		SHA3_512
 	}
 
 	public static String Gen(HASH_TYPE TYPE, byte[] INPUT) throws NoSuchAlgorithmException {
@@ -44,6 +45,10 @@ public class HASH {
 
 			case SHA3_256:{
 				return "SHA3-256";
+			}
+
+			case SHA3_512:{
+				return "SHA3-512";
 			}
 
 			default: {
