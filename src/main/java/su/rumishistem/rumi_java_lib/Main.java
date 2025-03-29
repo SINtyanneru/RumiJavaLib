@@ -9,6 +9,8 @@ import su.rumishistem.rumi_java_lib.Misskey.Event.NewFollower;
 import su.rumishistem.rumi_java_lib.Misskey.Event.NewNoteEvent;
 import su.rumishistem.rumi_java_lib.Misskey.MisskeyClient;
 import su.rumishistem.rumi_java_lib.Misskey.RESULT.LOGIN_RESULT;
+import su.rumishistem.rumi_java_lib.REON4213.REON4213Parser;
+import su.rumishistem.rumi_java_lib.REON4213.Type.VBlock;
 import su.rumishistem.rumi_java_lib.SmartHTTP.ERRORCODE;
 import su.rumishistem.rumi_java_lib.SmartHTTP.HTTP_REQUEST;
 import su.rumishistem.rumi_java_lib.SmartHTTP.HTTP_RESULT;
@@ -38,15 +40,17 @@ import java.awt.*;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			SmartHTTP SH = new SmartHTTP(8001);
-			SH.SetRoute("/api/dir", new Function<HTTP_REQUEST, HTTP_RESULT>() {
-				@Override
-				public HTTP_RESULT apply(HTTP_REQUEST r) {
-					System.out.println(r.GetEVENT().getHEADER_DATA().get("USER-AGENT"));
-					return new HTTP_RESULT(200, ("お前を殺す:" + r.GetEVENT().getURI_PARAM().get("name")).getBytes(), "text/plain;charset=UTF-8");
-				}
-			});
-			SH.Start();
+			REON4213Parser RP = new REON4213Parser("""
+					Queli->{
+						EX[a]->{b};
+						EX[c]->{d};
+						EX[e]->{f}
+					}->ExeC->{RB}
+					""");
+
+			for (VBlock V:RP.GetVList()) {
+				System.out.println(V.GetObject() + "を" + V.GetVerb() + "する");
+			}
 
 			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
