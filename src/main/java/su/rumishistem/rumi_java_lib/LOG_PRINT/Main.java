@@ -1,6 +1,8 @@
 package su.rumishistem.rumi_java_lib.LOG_PRINT;
 
 public class Main {
+	private static boolean DebugMode = false;
+
 	public static void LOG(LOG_TYPE LEVEL, String TEXT){
 		switch (LEVEL){
 			case LOG_TYPE.OK:{
@@ -15,6 +17,13 @@ public class Main {
 
 			case LOG_TYPE.INFO:{
 				System.out.println("[ INFO ]" + TEXT);
+				break;
+			}
+
+			case LOG_TYPE.DEBUG:{
+				if (DebugMode) {
+					System.out.println("[DEBUG ]" + TEXT);
+				}
 				break;
 			}
 
@@ -33,5 +42,9 @@ public class Main {
 				break;
 			}
 		}
+	}
+
+	public static void SetDebugMode() {
+		DebugMode = true;
 	}
 }

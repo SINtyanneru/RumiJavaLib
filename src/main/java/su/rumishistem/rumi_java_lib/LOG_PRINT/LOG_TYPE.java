@@ -4,6 +4,7 @@ public enum LOG_TYPE {
 	OK,
 	FAILED,
 	INFO,
+	DEBUG,
 
 	PROCESS,
 	PROCESS_END_OK,
