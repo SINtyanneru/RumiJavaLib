@@ -3,6 +3,7 @@ package su.rumishistem.rumi_java_lib;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_SERVER;
+import su.rumishistem.rumi_java_lib.Loger.LogerSystem;
 import su.rumishistem.rumi_java_lib.Misskey.Builder.NoteBuilder;
 import su.rumishistem.rumi_java_lib.Misskey.Event.DisconnectEvent;
 import su.rumishistem.rumi_java_lib.Misskey.Event.NewFollower;
@@ -40,6 +41,9 @@ import java.awt.*;
 public class Main {
 	public static void main(String[] args) {
 		try {
+			LogerSystem LS = new LogerSystem();
+			System.err.println("これはエラー出力");
+
 			REON4213Parser RP = new REON4213Parser("""
 					Queli->{
 						EX[a]->{b};
