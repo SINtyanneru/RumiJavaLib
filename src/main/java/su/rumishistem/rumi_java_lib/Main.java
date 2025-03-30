@@ -41,19 +41,20 @@ import java.awt.*;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			LogerSystem LS = new LogerSystem();
-			System.err.println("これはエラー出力");
-
 			REON4213Parser RP = new REON4213Parser("""
 					Queli->{
-						EX[a]->{b};
-						EX[c]->{d};
-						EX[e]->{f}
-					}->ExeC->{RB}
+						Cls(RB){
+							EX[CMD]->{fastfetch};
+						};
+					}->ExeC->{R}
 					""");
 
-			for (VBlock V:RP.GetVList()) {
-				System.out.println(V.GetObject() + "を" + V.GetVerb() + "する");
+
+
+			for (String K:RP.GetCls().keySet()) {
+				for (VBlock V:RP.GetCls().get(K)) {
+					System.out.println(K + "が" + V.GetObject() + "を" + V.GetVerb() + "する");
+				}
 			}
 
 			/*
