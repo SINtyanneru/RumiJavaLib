@@ -19,14 +19,12 @@ public class CONNECT_EVENT {
 	private ChannelHandlerContext CTX = null;
 	private HashMap<Integer, String> CEL_LIST = null;
 	private EventListenerList EL_LIST = null;
-	private SocketServer SS = null;
 
 	public CONNECT_EVENT(String ID, ChannelHandlerContext CTX, EventListenerList EL_LIST, HashMap<Integer, String> CEL_LIST, SocketServer SS) {
 		this.ID = ID;
 		this.CTX = CTX;
 		this.EL_LIST = EL_LIST;
 		this.CEL_LIST = CEL_LIST;
-		this.SS = SS;
 	}
 
 	public void setEventListener(EVENT_LISTENER EL) {
@@ -62,7 +60,7 @@ public class CONNECT_EVENT {
 	 */
 	public void close() {
 		try {
-			CTX.close();
+			CTX.channel().close();
 		} catch (Exception EX) {
 			//握り潰すことにした
 		}
