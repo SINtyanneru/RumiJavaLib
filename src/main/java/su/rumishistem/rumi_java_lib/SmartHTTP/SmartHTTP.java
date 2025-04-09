@@ -5,6 +5,10 @@ import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_SERVER;
 import su.rumishistem.rumi_java_lib.RESOURCE.RESOURCE_MANAGER;
+import su.rumishistem.rumi_java_lib.SmartHTTP.Type.EndpointEntrie;
+import su.rumishistem.rumi_java_lib.SmartHTTP.Type.EndpointTable;
+import su.rumishistem.rumi_java_lib.SmartHTTP.Type.MethodStringToEnum;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.function.Function;
@@ -14,7 +18,7 @@ import java.util.regex.Pattern;
 public class SmartHTTP {
 	private int PORT;
 	private HTTP_SERVER HS;
-	private LinkedHashMap<String, Function<HTTP_REQUEST, HTTP_RESULT>> EP_LIST = new LinkedHashMap<>();
+	private EndpointTable ET = new EndpointTable();
 	private LinkedHashMap<String, Function<HTTP_REQUEST, HTTP_RESULT>> ERROR_EP_LIST = new LinkedHashMap<>();
 
 	public SmartHTTP(int PORT) {
@@ -35,7 +39,24 @@ public class SmartHTTP {
 		REGEX += PATH.replaceAll("\\*", ".*").replaceAll(":(\\w+)", "(?<$1>[^/]+)");
 		REGEX += "$";
 
-		EP_LIST.put(REGEX, RESULT);
+		ET.Set(new EndpointEntrie(REGEX, EndpointEntrie.Method.ALL, RESULT));
+	}
+
+	/**
+	 * エンドポイントを設定します
+	 * @param PATH パス(*と:が使えます)
+	 * @param RESULT エンドポイントとなる関数を設定して
+	 * @param M メソッドを設定
+	 */
+	public void SetRoute(String PATH, EndpointEntrie.Method M, Function<HTTP_REQUEST, HTTP_RESULT> RESULT) {
+		PATH = SlasshFucker(PATH);
+
+		//正規表現に変換する
+		String REGEX = "^";
+		REGEX += PATH.replaceAll("\\*", ".*").replaceAll(":(\\w+)", "(?<$1>[^/]+)");
+		REGEX += "$";
+
+		ET.Set(new EndpointEntrie(REGEX, M, RESULT));
 	}
 
 	/**
@@ -125,42 +146,22 @@ public class SmartHTTP {
 				try {
 					String REQUEST_PATH = E.getURI().getPath();
 					REQUEST_PATH = SlasshFucker(REQUEST_PATH);
+					EndpointEntrie Entrie = ET.Get(REQUEST_PATH, MethodStringToEnum.Convert(E.getMethod()));
 
-					//エンドポイント一覧を回す
-					for (String PATH:EP_LIST.keySet()) {
-						Pattern PATTERN = Pattern.compile(PATH);
-						Matcher MATCHER = PATTERN.matcher(REQUEST_PATH);
-						//見つけろ(ちなみに最初にfindを実行しないとgroupでエラー出るからな)
-						if (MATCHER.find()) {
-							HashMap<String, String> PARAM_LIST = new HashMap<>();
-
-							//パラメーターを取得する
-							for (String GROUP_NAME:PATTERN.namedGroups().keySet()) {
-								PARAM_LIST.put(GROUP_NAME, MATCHER.group(GROUP_NAME));
+					if (Entrie != null) {
+						HTTP_RESULT RESULT = Entrie.RunFunction(E);
+						if (RESULT != null) {
+							if (RESULT.MIME != null) {
+								E.setHEADER("Content-Type", RESULT.MIME);
 							}
 
-							//関数を実行
-							if (MATCHER.matches()) {
-								Function<HTTP_REQUEST, HTTP_RESULT> VOID = EP_LIST.get(PATH);
-								HTTP_RESULT RESULT = VOID.apply(new HTTP_REQUEST(E, PARAM_LIST));
-
-								if (RESULT != null) {
-									if (RESULT.MIME != null) {
-										E.setHEADER("Content-Type", RESULT.MIME);
-									}
-
-									E.REPLY_BYTE(RESULT.STATUS, RESULT.DATA);
-								} else {
-									//Nullなら切断←してない
-								}
-								return;
-							}
+							E.REPLY_BYTE(RESULT.STATUS, RESULT.DATA);
 						}
+					} else {
+						HashMap<String, String> PARAM_LIST = new HashMap<>();
+						PARAM_LIST.put("EX", "404");
+						ReturnErrorPage(E, PARAM_LIST, E.getURI().getPath(), ERRORCODE.PAGE_NOT_FOUND, 404);
 					}
-
-					HashMap<String, String> PARAM_LIST = new HashMap<>();
-					PARAM_LIST.put("EX", "404");
-					ReturnErrorPage(E, PARAM_LIST, E.getURI().getPath(), ERRORCODE.PAGE_NOT_FOUND, 404);
 				} catch (Exception EX) {
 					//500エラー
 					HashMap<String, String> PARAM_LIST = new HashMap<>();

@@ -16,6 +16,7 @@ import su.rumishistem.rumi_java_lib.SmartHTTP.ERRORCODE;
 import su.rumishistem.rumi_java_lib.SmartHTTP.HTTP_REQUEST;
 import su.rumishistem.rumi_java_lib.SmartHTTP.HTTP_RESULT;
 import su.rumishistem.rumi_java_lib.SmartHTTP.SmartHTTP;
+import su.rumishistem.rumi_java_lib.SmartHTTP.Type.EndpointEntrie;
 import su.rumishistem.rumi_java_lib.Socket.Server.CONNECT_EVENT.CONNECT_EVENT;
 import su.rumishistem.rumi_java_lib.Socket.Server.CONNECT_EVENT.CONNECT_EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.Socket.Server.EVENT.CloseEvent;
@@ -41,21 +42,14 @@ import java.awt.*;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			REON4213Parser RP = new REON4213Parser("""
-					Queli->{
-						Cls(RB){
-							EX[CMD]->{fastfetch};
-						};
-					}->ExeC->{R}
-					""");
-
-
-
-			for (String K:RP.GetCls().keySet()) {
-				for (VBlock V:RP.GetCls().get(K)) {
-					System.out.println(K + "が" + V.GetObject() + "を" + V.GetVerb() + "する");
+			SmartHTTP SH = new SmartHTTP(3233);
+			SH.SetRoute("/", EndpointEntrie.Method.GET, new Function<HTTP_REQUEST, HTTP_RESULT>() {
+				@Override
+				public HTTP_RESULT apply(HTTP_REQUEST httpRequest) {
+					return new HTTP_RESULT(200, "".getBytes(), "text/plain; charset=UTF-8");
 				}
-			}
+			});
+			SH.Start();
 
 			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
