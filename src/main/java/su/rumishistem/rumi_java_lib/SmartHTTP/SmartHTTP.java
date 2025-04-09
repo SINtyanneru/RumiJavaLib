@@ -6,6 +6,7 @@ import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_SERVER;
 import su.rumishistem.rumi_java_lib.RESOURCE.RESOURCE_MANAGER;
 import su.rumishistem.rumi_java_lib.SmartHTTP.Type.EndpointEntrie;
+import su.rumishistem.rumi_java_lib.SmartHTTP.Type.EndpointFunction;
 import su.rumishistem.rumi_java_lib.SmartHTTP.Type.EndpointTable;
 import su.rumishistem.rumi_java_lib.SmartHTTP.Type.MethodStringToEnum;
 
@@ -31,7 +32,7 @@ public class SmartHTTP {
 	 * @param PATH パス(*と:が使えます)
 	 * @param RESULT エンドポイントとなる関数を設定して
 	 */
-	public void SetRoute(String PATH, Function<HTTP_REQUEST, HTTP_RESULT> RESULT) {
+	public void SetRoute(String PATH, EndpointFunction RESULT) {
 		PATH = SlasshFucker(PATH);
 
 		//正規表現に変換する
@@ -48,7 +49,7 @@ public class SmartHTTP {
 	 * @param RESULT エンドポイントとなる関数を設定して
 	 * @param M メソッドを設定
 	 */
-	public void SetRoute(String PATH, EndpointEntrie.Method M, Function<HTTP_REQUEST, HTTP_RESULT> RESULT) {
+	public void SetRoute(String PATH, EndpointEntrie.Method M, EndpointFunction RESULT) {
 		PATH = SlasshFucker(PATH);
 
 		//正規表現に変換する
@@ -75,9 +76,9 @@ public class SmartHTTP {
 
 		String PATHPATH = PATH;//←Javaのクソ仕様
 		String ResourcePathPath = ResourcePath;
-		SetRoute(PATH + "*", new Function<HTTP_REQUEST, HTTP_RESULT>() {
+		SetRoute(PATH + "*", new EndpointFunction() {
 			@Override
-			public HTTP_RESULT apply(HTTP_REQUEST e) {
+			public HTTP_RESULT Run(HTTP_REQUEST e) {
 				try {
 					RESOURCE_MANAGER RM = new RESOURCE_MANAGER(ResourceClass);
 					String REQUEST_FILE = e.GetEVENT().getURI().getPath().replaceFirst(PATHPATH, "");

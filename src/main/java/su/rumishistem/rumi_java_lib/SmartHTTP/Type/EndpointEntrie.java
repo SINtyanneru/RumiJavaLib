@@ -10,7 +10,7 @@ import java.util.function.Function;
 public class EndpointEntrie {
 	private String P;
 	private Method M;
-	private Function<HTTP_REQUEST, HTTP_RESULT> F;
+	private EndpointFunction F;
 	private HashMap<String, String> PARAM_LIST = new HashMap<>();
 
 	public enum Method{
@@ -18,7 +18,7 @@ public class EndpointEntrie {
 		GET, POST, DELETE, PATCH, PUT, HEAD
 	}
 
-	public EndpointEntrie(String P, Method M, Function<HTTP_REQUEST, HTTP_RESULT> F) {
+	public EndpointEntrie(String P, Method M, EndpointFunction F) {
 		this.P = P;
 		this.M = M;
 		this.F = F;
@@ -36,11 +36,11 @@ public class EndpointEntrie {
 		return M;
 	}
 
-	public Function<HTTP_REQUEST, HTTP_RESULT> GetFunction() {
+	public EndpointFunction GetFunction() {
 		return F;
 	}
 
-	public HTTP_RESULT RunFunction(HTTP_EVENT E) {
-		return F.apply(new HTTP_REQUEST(E, PARAM_LIST));
+	public HTTP_RESULT RunFunction(HTTP_EVENT E) throws Exception {
+		return F.Run(new HTTP_REQUEST(E, PARAM_LIST));
 	}
 }
