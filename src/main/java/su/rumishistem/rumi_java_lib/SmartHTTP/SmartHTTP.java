@@ -21,6 +21,28 @@ public class SmartHTTP {
 	private HTTP_SERVER HS;
 	private EndpointTable ET = new EndpointTable();
 	private LinkedHashMap<String, Function<HTTP_REQUEST, HTTP_RESULT>> ERROR_EP_LIST = new LinkedHashMap<>();
+	private final HashMap<String, String> ExtMimeList = new HashMap<>() {{
+		put("txt", "text/plain; charset=UTF-8");
+		put("html", "text/html; charset=UTF-8");
+		put("htm", "text/html; charset=UTF-8");
+		put("xhtml", "application/xhtml+xml");
+		put("css", "text/css; charset=UTF-8");
+		put("js", "text/javascript; charset=UTF-8");
+		put("svg", "image/svg+xml; charset=UTF-8");
+		put("png", "image/png");
+		put("gif", "image/gif");
+		put("bmp", "image/bmp");
+		put("jpeg", "image/jpeg");
+		put("jpg", "image/jpeg");
+		put("mp3", "audio/mpeg");
+		put("ico", "image/vnd.microsoft.icon");
+		put("weba", "audio/webm");
+		put("webm", "video/webm");
+		put("webp", "image/webp");
+		put("xml", "application/xml");
+		put("zip", "application/zip");
+		put("pdf", "application/pdf");
+	}};
 
 	public SmartHTTP(int PORT) {
 		//
@@ -97,13 +119,11 @@ public class SmartHTTP {
 
 					//リソースファイルがあるか
 					if (RM.Exists(RESOURCE_FILE)) {
+						String EXT = RESOURCE_FILE.split("\\.")[RESOURCE_FILE.split("\\.").length - 1];
 						String MIME = "application/octet-stream";
-						if (RESOURCE_FILE.endsWith(".html") || RESOURCE_FILE.endsWith(".htm")) {
-							MIME = "text/html; charset=UTF-8";
-						} else if (RESOURCE_FILE.endsWith(".css")) {
-							MIME = "text/css; charset=UTF-8";
-						} else if (RESOURCE_FILE.endsWith(".js")) {
-							MIME = "text/javascript; charset=UTF-8";
+
+						if (ExtMimeList.get(EXT) != null) {
+							MIME = ExtMimeList.get(EXT);
 						}
 
 						//ファイルを返す
