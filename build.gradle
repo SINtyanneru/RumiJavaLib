@@ -30,6 +30,8 @@ dependencies {
 
 	//Netty
 	implementation("io.netty:netty-all:4.1.68.Final")
+
+	implementation("com.github.kwhat:jnativehook:2.2.2")
 }
 
 jar {

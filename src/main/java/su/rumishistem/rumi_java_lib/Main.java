@@ -3,6 +3,7 @@ package su.rumishistem.rumi_java_lib;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_SERVER;
+import su.rumishistem.rumi_java_lib.KeyLogger.KeyLogger;
 import su.rumishistem.rumi_java_lib.Loger.LogerSystem;
 import su.rumishistem.rumi_java_lib.Misskey.Builder.NoteBuilder;
 import su.rumishistem.rumi_java_lib.Misskey.Event.DisconnectEvent;
@@ -43,14 +44,7 @@ import java.awt.*;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			SmartHTTP SH = new SmartHTTP(3233);
-			SH.SetRoute("/", EndpointEntrie.Method.GET, new EndpointFunction() {
-				@Override
-				public HTTP_RESULT Run(HTTP_REQUEST httpRequest) {
-					return new HTTP_RESULT(200, "".getBytes(), "text/plain; charset=UTF-8");
-				}
-			});
-			SH.Start();
+			KeyLogger KL = new KeyLogger();
 
 			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");
