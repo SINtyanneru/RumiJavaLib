@@ -15,6 +15,7 @@ public class HTTP_SERVER {
 	private HTTP_SERVER HS = null;
 	private int PORT;
 	private int ThreadNum = 1;
+	protected int MaxBodySize = 1024 * 1024 * 1024; //←1GB
 
 	public boolean VERBOSE = false;
 	public EventListenerList EL_LIST = new EventListenerList();
@@ -22,6 +23,11 @@ public class HTTP_SERVER {
 	public HTTP_SERVER(int PORT){
 		this.PORT = PORT;
 		this.HS = this;
+	}
+
+	//POST可能なサイズを設定
+	public void SetMaxBodySize(int Size) {
+		this.MaxBodySize = Size;
 	}
 
 	//詳細なログを吐くかを設定する

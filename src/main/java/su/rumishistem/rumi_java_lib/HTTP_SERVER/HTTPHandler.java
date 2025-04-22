@@ -70,7 +70,11 @@ public class HTTPHandler extends SimpleChannelInboundHandler<HttpObject> {
 			ByteBuf buf = content.content();
 			byte[] chunk = new byte[buf.readableBytes()];
 			buf.readBytes(chunk);
-			RequestBodyStream.write(chunk); // 受信データを蓄積
+
+			//送られたデータのサイズが最大値を超えていないことを確認する(超えてたら無視する)
+			if (RequestBodyStream.size() < HS.MaxBodySize) {
+				RequestBodyStream.write(chunk); // 受信データを蓄積
+			}
 
 			// 最後のチャンクを受信したらリクエスト処理を実行
 			if (msg instanceof LastHttpContent) {
