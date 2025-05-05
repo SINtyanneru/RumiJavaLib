@@ -35,7 +35,7 @@ public class HTTPHandler extends SimpleChannelInboundHandler<HttpObject> {
 
 			// ログ
 			if (HS.VERBOSE) {
-				if (!URI.contains("SESSION")) {
+				if (!URI.toUpperCase().contains("SESSION")) {
 					LOG(LOG_TYPE.INFO, "HTTP Request:" + Method + " " + URI);
 				} else {
 					LOG(LOG_TYPE.INFO, "HTTP Request:" + Method + " ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
