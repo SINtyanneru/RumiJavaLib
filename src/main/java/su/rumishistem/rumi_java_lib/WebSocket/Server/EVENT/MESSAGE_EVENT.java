@@ -11,6 +11,6 @@ public class MESSAGE_EVENT {
 	}
 
 	public String getMessage(){
-		return new String(Base64.getDecoder().decode(MESSAGE), StandardCharsets.UTF_8);
+		return MESSAGE;
 	}
 }
