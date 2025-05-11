@@ -1,5 +1,6 @@
 package su.rumishistem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT;
 
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.WS_EVENT_LISTENER;
 
 import java.nio.charset.StandardCharsets;
@@ -28,7 +29,7 @@ public class CONNECT_EVENT {
 	public void SendMessage(String TEXT) {
 		try {
 			if (SESSION_LIST.get(ID) != null) {
-				SESSION_LIST.get(ID).sendMessage(Base64.getEncoder().encodeToString((TEXT + "\r\n").getBytes()));
+				SESSION_LIST.get(ID).channel().writeAndFlush(new TextWebSocketFrame(TEXT));
 			}
 		} catch (Exception EX) {
 			//もみ消す
