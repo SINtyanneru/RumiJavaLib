@@ -7,9 +7,14 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
 import su.rumishistem.rumi_java_lib.Socket.Server.CONNECT_EVENT.CONNECT_EVENT_LISTENER;
+
+import javax.net.ssl.SSLException;
 import javax.swing.event.EventListenerList;
+import java.io.File;
 import java.util.HashMap;
 import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
 
@@ -18,6 +23,8 @@ public class SocketServer {
 	public EventListenerList EL_LIST = new EventListenerList();
 	public HashMap<Integer, String> CEL_LIST = new HashMap<>();		//接続後のイベントリスナーのhashCodeとUUIDを保存
 	private SocketServer SS = null;
+	protected SslContext SSLC = null;
+	protected boolean DefaultTLS = false;
 
 	public SocketServer() {
 		SS = this;
@@ -26,6 +33,21 @@ public class SocketServer {
 	public void setEventListener(CONNECT_EVENT_LISTENER EL) {
 		//追加
 		CONNECT_EL_LIST.add(CONNECT_EVENT_LISTENER.class, EL);
+	}
+
+	public void setSSLSetting(String Cert, String PrivateKey) throws SSLException {
+		File CertFile = new File(Cert);
+		File PrivateKeyFile = new File(PrivateKey);
+
+		if ((!CertFile.exists()) || (!PrivateKeyFile.exists())) {
+			throw new Error("TLSに必要なファイルが見つかりません");
+		}
+
+		SSLC = SslContextBuilder.forServer(CertFile, PrivateKeyFile).build();
+	}
+
+	public void setDefaultTLS() {
+		DefaultTLS = true;
 	}
 
 	public void START(int PORT) throws InterruptedException {
@@ -40,6 +62,10 @@ public class SocketServer {
 			B.childHandler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				protected void initChannel(SocketChannel Ch) {
+					if (DefaultTLS) {
+						Ch.pipeline().addLast(SSLC.newHandler(Ch.alloc()));
+					}
+
 					Ch.pipeline().addLast(new SocketServerHandler(SS));
 				}
 			});

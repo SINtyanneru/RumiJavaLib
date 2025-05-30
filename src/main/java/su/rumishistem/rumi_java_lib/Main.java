@@ -44,7 +44,56 @@ import java.awt.*;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			KeyLogger KL = new KeyLogger();
+			SocketServer SS = new SocketServer();
+			SS.setSSLSetting("/home/rumisan/Documents/fullchain.pem", "/home/rumisan/Documents/privkey.pem");
+
+			SS.setEventListener(new CONNECT_EVENT_LISTENER() {
+				@Override
+				public void CONNECT(CONNECT_EVENT SESSION) throws IOException {
+					System.out.println("New Session");
+
+					SESSION.sendMessage("220 Fuckfuck\r\n");
+
+					SESSION.setEventListener(new EVENT_LISTENER() {
+						@Override
+						public void Message(MessageEvent E) {
+							try {
+								if (SESSION.isTLS()) {
+									System.out.println("TLS[" + E.getString().toString() + "]");
+								} else {
+									System.out.println("平文[" + E.getString().toString() + "]");
+								}
+
+								if (E.getString().toUpperCase().startsWith("EHLO")) {
+									SESSION.sendMessage("250-smtp.example.com\r\n");
+									SESSION.sendMessage("250 STARTTLS\r\n");
+								}
+
+								if (E.getString().equalsIgnoreCase("STARTTLS")) {
+									SESSION.sendMessage("220 Ready to Start TLS\r\n");
+									SESSION.StartTLS();
+								}
+							} catch (Exception EX) {
+								EX.printStackTrace();
+							}
+						}
+
+						@Override
+						public void Receive(ReceiveEvent E) {
+
+						}
+
+						@Override
+						public void Close(CloseEvent E) {
+
+						}
+					});
+				}
+			});
+
+			SS.START(3039);
+
+			//KeyLogger KL = new KeyLogger();
 
 			/*
 			MisskeyClient MC = new MisskeyClient("ussr.rumiserver.com");

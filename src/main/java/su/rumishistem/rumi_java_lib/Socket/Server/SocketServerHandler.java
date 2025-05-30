@@ -30,7 +30,7 @@ public class SocketServerHandler extends ChannelInboundHandlerAdapter {
 		//接続されたイベントを発行
 		CONNECT_EVENT_LISTENER[] ELL = SS.CONNECT_EL_LIST.getListeners(CONNECT_EVENT_LISTENER.class);
 		for (CONNECT_EVENT_LISTENER EL:ELL) {
-			EL.CONNECT(new CONNECT_EVENT(ID, CTX, SS.EL_LIST, SS.CEL_LIST, SS));
+			EL.CONNECT(new CONNECT_EVENT(ID, CTX, SS.EL_LIST, SS.CEL_LIST, SS, SS.SSLC, SS.DefaultTLS));
 		}
 	}
 
