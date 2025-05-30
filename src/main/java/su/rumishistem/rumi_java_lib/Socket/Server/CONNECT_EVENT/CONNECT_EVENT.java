@@ -18,6 +18,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
 
 public class CONNECT_EVENT {
 	private String ID = "";
@@ -88,19 +89,19 @@ public class CONNECT_EVENT {
 	/**
 	 * STARTTLS用
 	 */
-	public void StartTLS() {
+	public CompletableFuture<Boolean> StartTLS() {
+		CompletableFuture<Boolean> Result = new CompletableFuture<>();//←これええわマジ
 		SslHandler Handler = SSLC.newHandler(CTX.alloc());
 		CTX.pipeline().addFirst("ssl", Handler);
 
 		Handler.handshakeFuture().addListener(new GenericFutureListener<Future<? super Channel>>() {
 			@Override
 			public void operationComplete(Future<? super Channel> F) throws Exception {
-				if (F.isSuccess()) {
-					TLSOK = true;
-				} else {
-					close();
-				}
+				TLSOK = F.isSuccess();
+				Result.complete(F.isSuccess());
 			}
 		});
+
+		return Result;
 	}
 }

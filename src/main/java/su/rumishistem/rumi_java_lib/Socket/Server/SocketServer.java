@@ -35,7 +35,7 @@ public class SocketServer {
 		CONNECT_EL_LIST.add(CONNECT_EVENT_LISTENER.class, EL);
 	}
 
-	public void setSSLSetting(String Cert, String PrivateKey) throws SSLException {
+	public void setSSLSetting(String Cert, String PrivateKey, String[] TLSVersion) throws SSLException {
 		File CertFile = new File(Cert);
 		File PrivateKeyFile = new File(PrivateKey);
 
@@ -43,7 +43,7 @@ public class SocketServer {
 			throw new Error("TLSに必要なファイルが見つかりません");
 		}
 
-		SSLC = SslContextBuilder.forServer(CertFile, PrivateKeyFile).build();
+		SSLC = SslContextBuilder.forServer(CertFile, PrivateKeyFile).protocols(TLSVersion).build();
 	}
 
 	public void setDefaultTLS() {

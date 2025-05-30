@@ -45,7 +45,7 @@ public class Main {
 	public static void main(String[] args) {
 		try {
 			SocketServer SS = new SocketServer();
-			SS.setSSLSetting("/home/rumisan/Documents/fullchain.pem", "/home/rumisan/Documents/privkey.pem");
+			SS.setSSLSetting("/home/rumisan/Documents/fullchain.pem", "/home/rumisan/Documents/privkey.pem", new String[]{"TLSv1.2"});
 
 			SS.setEventListener(new CONNECT_EVENT_LISTENER() {
 				@Override
