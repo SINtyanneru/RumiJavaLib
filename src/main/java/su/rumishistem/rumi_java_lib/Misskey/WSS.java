@@ -63,6 +63,15 @@ public class WSS {
 							switch (MSG.get("body").get("type").asText()) {
 								//メンション
 								case "mention":{
+									JsonNode NOTE_DATA = MSG.get("body").get("body");
+
+									Note NOTE = ConvertType.ConvertNote(NOTE_DATA, Kai, DOMAIN, TOKEN);
+
+									//イベント着火
+									EVENT_LISTENER[] LISTENER_LIST = EL_LIST.getListeners(EVENT_LISTENER.class);
+									for(EVENT_LISTENER LISTENER:LISTENER_LIST){
+										LISTENER.onMention(new NewNoteEvent(NOTE));
+									}
 									break;
 								}
 
