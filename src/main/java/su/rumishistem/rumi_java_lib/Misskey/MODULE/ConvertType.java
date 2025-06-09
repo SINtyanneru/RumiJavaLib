@@ -33,7 +33,7 @@ public class ConvertType {
 
 		String Host = "";
 		if (UserData.get("host").isNull()) {
-			Host = Kai.getUID();
+			Host = Kai.getHost();
 		} else {
 			Host = UserData.get("host").asText();
 		}
