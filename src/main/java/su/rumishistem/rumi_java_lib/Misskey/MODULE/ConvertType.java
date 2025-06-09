@@ -41,8 +41,8 @@ public class ConvertType {
 		return new User(
 			UserData.get("id").asText(),
 			UserData.get("username").asText(),
-			Host,
 			UserData.get("name").asText(),
+			Host,
 			UserData.get("avatarUrl").asText(),
 			DOMAIN,
 			TOKEN,

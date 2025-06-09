@@ -108,8 +108,8 @@ public class MisskeyClient {
 		Kai = new User(
 			RESULT.get("id").asText(),
 			RESULT.get("username").asText(),
-			"ussr.rumiserver.com",
 			RESULT.get("name").asText(),
+			"ussr.rumiserver.com",
 			RESULT.get("avatarUrl").asText(),
 			INSTANCE_DOMAIN,
 			TOKEN,
