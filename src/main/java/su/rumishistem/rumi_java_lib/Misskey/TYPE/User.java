@@ -5,6 +5,7 @@ import su.rumishistem.rumi_java_lib.Misskey.API.Follow;
 public class User {
 	private String ID;
 	private String UID;
+	private String Host;
 	private String NAME;
 	private String ICON_URL;
 
@@ -15,10 +16,11 @@ public class User {
 	private boolean isFollowing;
 	private boolean isFollowed;
 
-	public User(String ID, String UID, String NAME, String ICON_URL, String DOMAIN, String TOKEN, boolean NiFA, boolean isFollowing, boolean isFollowed) {
+	public User(String ID, String UID, String NAME, String Host, String ICON_URL, String DOMAIN, String TOKEN, boolean NiFA, boolean isFollowing, boolean isFollowed) {
 		this.ID = ID;
 		this.UID = UID;
 		this.NAME = NAME;
+		this.Host = Host;
 		this.ICON_URL = ICON_URL;
 
 		this.DOMAIN = DOMAIN;
@@ -35,6 +37,10 @@ public class User {
 
 	public String getUID() {
 		return UID;
+	}
+
+	public String getHost() {
+		return Host;
 	}
 
 	public String getNAME() {

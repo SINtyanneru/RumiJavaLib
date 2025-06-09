@@ -31,9 +31,17 @@ public class ConvertType {
 			isFollowed = IsFollowedNode.asBoolean();
 		}
 
+		String Host = "";
+		if (UserData.get("host").isNull()) {
+			Host = Kai.getUID();
+		} else {
+			Host = UserData.get("host").asText();
+		}
+
 		return new User(
 			UserData.get("id").asText(),
 			UserData.get("username").asText(),
+			Host,
 			UserData.get("name").asText(),
 			UserData.get("avatarUrl").asText(),
 			DOMAIN,
