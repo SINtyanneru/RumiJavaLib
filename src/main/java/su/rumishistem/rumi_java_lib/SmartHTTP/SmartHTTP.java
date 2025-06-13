@@ -216,7 +216,7 @@ public class SmartHTTP {
 
 	private Function<HTTP_REQUEST, HTTP_RESULT> GetErrorEP(String PATH, ERRORCODE CODE) {
 		for (String ROW:ERROR_EP_LIST.keySet()) {
-			String ROW_PATH = ROW.split(":")[0];
+			String ROW_PATH = "/" + ROW.split(":")[0];
 			String ROW_ERR = ROW.split(":")[1];
 			if (PATH.startsWith(ROW_PATH) && ROW_ERR.equals(CODE.name())) {
 				return ERROR_EP_LIST.get(ROW);
