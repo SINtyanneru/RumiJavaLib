@@ -2,6 +2,8 @@ package su.rumishistem.rumi_java_lib.HTTP_SERVER;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -61,7 +63,13 @@ public class HTTP_SERVER {
 				protected void initChannel(SocketChannel Ch) throws Exception {
 					Ch.pipeline().addLast(new HttpServerCodec());
 					Ch.pipeline().addLast(new HTTPHandler(HS));
-					Ch.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
+					Ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
+						@Override
+						public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+							cause.printStackTrace();
+							ctx.close();
+						}
+					});
 				}
 			});
 
