@@ -6,27 +6,30 @@ public class HTTPForwardedParser {
 	private String HOST = null;
 
 	public HTTPForwardedParser(String Forwarded) {
-		for (String ROW:Forwarded.split(";")) {
-			String KEY = ROW.split("=")[0];
-			String VAL = ROW.split("=")[1];
-			switch (KEY.toUpperCase()) {
-				case "FOR": {
-					IP = VAL;
-					break;
-				}
-
-				case "PROTO": {
-					if (VAL.equalsIgnoreCase("HTTPS")) {
-						SSL = true;
+		try {
+			for (String ROW:Forwarded.split(";")) {
+				String KEY = ROW.split("=")[0];
+				String VAL = ROW.split("=")[1];
+				switch (KEY.toUpperCase()) {
+					case "FOR": {
+						IP = VAL;
+						break;
 					}
-					break;
-				}
 
-				case "HOST": {
-					HOST = VAL;
-					break;
+					case "PROTO": {
+						if (VAL.equalsIgnoreCase("HTTPS")) {
+							SSL = true;
+						}
+						break;
+					}
+
+					case "HOST": {
+						HOST = VAL;
+						break;
+					}
 				}
 			}
+		} catch (NullPointerException a) {
 		}
 	}
 
