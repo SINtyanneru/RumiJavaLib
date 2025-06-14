@@ -58,6 +58,26 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 	}
 
 	@Override
+	public void channelInactive(ChannelHandlerContext C) throws Exception {
+		//切断
+
+		String ID = C.channel().id().asLongText();
+
+		//セッションリストから消す
+		S.SESSION_LIST.remove(ID);
+
+		//クローズイベント
+		WS_EVENT_LISTENER[] ELL = S.EL_LIST.getListeners(WS_EVENT_LISTENER.class);
+		for (WS_EVENT_LISTENER EL:ELL) {
+			if (S.CEL_LIST.get(EL.hashCode()).equals(ID)) {
+				EL.CLOSE(new CLOSE_EVENT("", 0));
+			}
+		}
+
+		super.channelInactive(C);
+	}
+
+	@Override
 	public void userEventTriggered(ChannelHandlerContext C, Object e) throws Exception {
 		if (e == WebSocketServerProtocolHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE) {
 			String ID = C.channel().id().asLongText();

@@ -31,6 +31,6 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 			10000
 		));
 		PL.addLast(new WebSocketFrameHandler(S));
-		PL.addLast(new LoggingHandler(LogLevel.INFO));
+		/*PL.addLast(new LoggingHandler(LogLevel.INFO));*/
 	}
 }
