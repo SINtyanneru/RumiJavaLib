@@ -96,4 +96,8 @@ public class ArrayNode {
 		}
 		return RESULT.toArray();
 	}
+
+	public int length() {
+		return NODE_DATA.size();
+	}
 }
