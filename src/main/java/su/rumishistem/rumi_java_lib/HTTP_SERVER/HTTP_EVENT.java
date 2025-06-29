@@ -43,6 +43,10 @@ public class HTTP_EVENT extends EventObject {
 		return r;
 	}
 
+	public ChannelHandlerContext getCTX() {
+		return CTX;
+	}
+
 	public HashMap<String, String> getURI_PARAM(){
 		return URI_PARAM;
 	}
