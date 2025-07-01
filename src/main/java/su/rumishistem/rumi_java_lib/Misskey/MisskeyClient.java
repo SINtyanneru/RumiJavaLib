@@ -109,7 +109,7 @@ public class MisskeyClient {
 			RESULT.get("id").asText(),
 			RESULT.get("username").asText(),
 			RESULT.get("name").asText(),
-			"ussr.rumiserver.com",
+			"eth.rumiserver.com",
 			RESULT.get("avatarUrl").asText(),
 			INSTANCE_DOMAIN,
 			TOKEN,

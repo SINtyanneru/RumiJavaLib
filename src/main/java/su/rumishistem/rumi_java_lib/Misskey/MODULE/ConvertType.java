@@ -32,7 +32,7 @@ public class ConvertType {
 		}
 
 		String Host = "";
-		if (UserData.get("host").isNull()) {
+		if (UserData.get("host") == null || UserData.get("host").isNull()) {
 			Host = Kai.getHost();
 		} else {
 			Host = UserData.get("host").asText();
