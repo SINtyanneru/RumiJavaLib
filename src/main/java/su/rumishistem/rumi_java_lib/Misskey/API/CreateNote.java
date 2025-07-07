@@ -46,7 +46,7 @@ public class CreateNote {
 		}
 
 		FETCH_RESULT NoteAjaxResult = NOTE_AJAX.POST(OM.writeValueAsString(POST_DATA).getBytes());
-		JsonNode RESULT = new ObjectMapper().readTree(NoteAjaxResult.GetString());
+		JsonNode RESULT = new ObjectMapper().readTree(NoteAjaxResult.getString());
 		if (RESULT.get("error") == null) {
 			return ConvertType.ConvertNote(RESULT.get("createdNote"), Kai, DOMAIN, TOKEN);
 		} else {

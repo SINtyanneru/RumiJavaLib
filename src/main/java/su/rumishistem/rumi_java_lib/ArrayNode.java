@@ -8,10 +8,15 @@ import java.util.Set;
 import org.checkerframework.checker.units.qual.K;
 
 /**
- * `ArrayNode`はJacksonのJsonNodeを丸パクリしたやつです
+ * JavaでJSのオブジェクトみたいなことをしたーい
  */
 public class ArrayNode {
 	private HashMap<Object, Object> NODE_DATA = new HashMap<>();
+
+	/**
+	 * 空のArrayNodeを作成します
+	 */
+	public ArrayNode() {}
 
 	private void KeyCheck(Object KEY) {
 		if(!(KEY instanceof String || KEY instanceof Integer)) {
@@ -55,6 +60,11 @@ public class ArrayNode {
 		}
 	}
 
+	/**
+	 * ArrayDataを取得する
+	 * @param KEY キー
+	 * @return ArrayData
+	 */
 	public ArrayData getData(Object KEY) {
 		KeyCheck(KEY);
 		if(NODE_DATA.get(KEY) instanceof ArrayData){
@@ -88,6 +98,10 @@ public class ArrayNode {
 		return ARRAYLIST;
 	}
 
+	/**
+	 * キー一覧を取得する
+	 * @return キー一覧のArrayList
+	 */
 	public Object[] getKeyList() {
 		List<Object> RESULT = new ArrayList<>();
 		Set<Object> KEY_LIST = NODE_DATA.keySet();
@@ -97,6 +111,10 @@ public class ArrayNode {
 		return RESULT.toArray();
 	}
 
+	/**
+	 * キーの数を取得する
+	 * @return 数
+	 */
 	public int length() {
 		return NODE_DATA.size();
 	}

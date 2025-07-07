@@ -14,9 +14,9 @@ public class UserSHOW {
 		FETCH AJAX = new FETCH("https://" + DOMAIN + "/api/users/show");
 		AJAX.SetHEADER("Content-Type", "application/json; charset=utf-8");
 		FETCH_RESULT RESULT = AJAX.POST(("{\"username\":\"" + UID + "\", \"i\": \""+TOKEN+"\"}").getBytes());
-		JsonNode UserData = new ObjectMapper().readTree(RESULT.GetRAW());
+		JsonNode UserData = new ObjectMapper().readTree(RESULT.getRaw());
 
-		if (RESULT.GetSTATUS_CODE() == 200) {
+		if (RESULT.getStatusCode() == 200) {
 			return ConvertType.ConvertUser(UserData, Kai, DOMAIN, TOKEN);
 		} else {
 			throw new Error("APIエラー:" + UserData.get("error").get("message").asText());
@@ -27,9 +27,9 @@ public class UserSHOW {
 		FETCH AJAX = new FETCH("https://" + DOMAIN + "/api/users/show");
 		AJAX.SetHEADER("Content-Type", "application/json; charset=utf-8");
 		FETCH_RESULT RESULT = AJAX.POST(("{\"userId\":\"" + ID + "\", \"i\":\""+TOKEN+"\"}").getBytes());
-		JsonNode UserData = new ObjectMapper().readTree(RESULT.GetRAW());
+		JsonNode UserData = new ObjectMapper().readTree(RESULT.getRaw());
 
-		if (RESULT.GetSTATUS_CODE() == 200) {
+		if (RESULT.getStatusCode() == 200) {
 			return ConvertType.ConvertUser(UserData, Kai, DOMAIN, TOKEN);
 		} else {
 			throw new Error("APIエラー:" + UserData.get("error").get("message").asText());

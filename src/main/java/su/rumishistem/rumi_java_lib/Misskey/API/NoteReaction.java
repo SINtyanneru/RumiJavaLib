@@ -21,7 +21,7 @@ public class NoteReaction {
 
 		//実行
 		FETCH_RESULT RESULT = AJAX.POST(new ObjectMapper().writeValueAsString(POST_BODY).getBytes());
-		if (RESULT.GetSTATUS_CODE() != 204) {
+		if (RESULT.getStatusCode() != 204) {
 			throw new Error("Reaction Error");
 		}
 	}

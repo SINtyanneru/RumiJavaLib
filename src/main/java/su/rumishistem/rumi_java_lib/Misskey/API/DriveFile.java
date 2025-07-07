@@ -16,7 +16,7 @@ public class DriveFile {
 		FETCH UploadAjax = new FETCH("https://" + DOMAIN + "/api/drive/files/create");
 		UploadAjax.SetHEADER("Content-Type", "multipart/form-data; boundary=" + FD.GetBoundary());
 		FETCH_RESULT RESULT = UploadAjax.POST(FD.Build());
-		JsonNode RESULT_JSON = new ObjectMapper().readTree(RESULT.GetString());
+		JsonNode RESULT_JSON = new ObjectMapper().readTree(RESULT.getString());
 		return RESULT_JSON.get("id").asText();
 	}
 }

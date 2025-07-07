@@ -14,7 +14,7 @@ public class Option<T> {
 
 	/**
 	 * 実行するやつ
-	 * @param <T>
+	 * @param <T> 値の型
 	 */
 	public interface OptionRunnable<T> {
 		void Some(T Value);
