@@ -20,7 +20,7 @@ public class FETCH_RESULT {
 		this.MaxBodySize = MaxBodySize;
 
 		for (String Key:HUC.getHeaderFields().keySet()) {
-			HeaderTable.put(Key, HUC.getHeaderField(Key));
+			HeaderTable.put(Key.toUpperCase(), HUC.getHeaderField(Key));
 		}
 	}
 
@@ -33,7 +33,7 @@ public class FETCH_RESULT {
 	}
 
 	public String getHeader(String Key) {
-		return HeaderTable.get(Key);
+		return HeaderTable.get(Key.toUpperCase());
 	}
 
 	public byte[] GetRAW() throws IOException {
