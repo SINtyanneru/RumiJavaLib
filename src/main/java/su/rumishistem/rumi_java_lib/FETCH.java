@@ -30,35 +30,20 @@ public class FETCH {
 		MaxBodySize = Size;
 	}
 
+	public void setMaxBodySizeKB(int Size) {
+		setMaxBodySize(Size * 1024);
+	}
+
+	public void setMaxBodySizeMB(int Size) {
+		setMaxBodySize(Size * 1024 * 1024);
+	}
+
+	public void setMaxBodySizeGB(int Size) {
+		setMaxBodySize(Size * 1024 * 1024 * 1024);
+	}
+
 	private FETCH_RESULT GenResult(int ResponseCode, HttpURLConnection HUC, long Ping) throws IOException {
-		ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
-		InputStream IS = null;
-
-		if (ResponseCode >= 200 && ResponseCode <= 299) {
-			IS = HUC.getInputStream();
-		} else if (ResponseCode >= 400 && ResponseCode <= 599) {
-			IS = HUC.getErrorStream();
-		}
-
-		if (IS == null) throw  new Error("InputStreamがなーい");
-
-		//ボディーを読む
-		byte[] Buffer = new byte[1024];
-		int BytesRead;
-		int TotalRead = 0;
-		while ((BytesRead = IS.read(Buffer, 0, Buffer.length)) != -1) {
-			TotalRead += BytesRead;
-
-			if (TotalRead > MaxBodySize) {
-				IS.close();
-				throw new Error("データサイズが" + MaxBodySize + "を超えました");
-			}
-
-			BAOS.write(Buffer, 0, BytesRead);
-		}
-		IS.close();
-
-		return new FETCH_RESULT(ResponseCode, BAOS.toByteArray(), Ping);
+		return new FETCH_RESULT(ResponseCode, Ping, HUC, MaxBodySize);
 	}
 
 	public FETCH_RESULT GET() {

@@ -1,47 +1,84 @@
 package su.rumishistem.rumi_java_lib;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 public class FETCH_RESULT {
-	private int STATUS_CODE = 0;
-	private byte[] BODY = null;
+	private int ResponseCode = 0;
 	private long PING = 0;
+	private HttpURLConnection HUC;
+	private int MaxBodySize;
+	private HashMap<String, String> HeaderTable = new HashMap<>();
 
-	public FETCH_RESULT(int STATUS_CODE, byte[] BODY, long PING) {
-		this.STATUS_CODE = STATUS_CODE;
-		this.BODY = BODY;
+	public FETCH_RESULT(int ResponseCode, long PING, HttpURLConnection HUC, int MaxBodySize) {
+		this.ResponseCode = ResponseCode;
+		this.PING = PING;
+		this.HUC = HUC;
+		this.MaxBodySize = MaxBodySize;
+
+		for (String Key:HUC.getHeaderFields().keySet()) {
+			HeaderTable.put(Key, HUC.getHeaderField(Key));
+		}
 	}
 
 	public int GetSTATUS_CODE() {
-		return STATUS_CODE;
+		return ResponseCode;
 	}
 
 	public long GetPING() {
 		return PING;
 	}
 
-	public byte[] GetRAW() {
-		return BODY;
+	public String getHeader(String Key) {
+		return HeaderTable.get(Key);
 	}
 
-	public String GetString() {
-		return new String(BODY, StandardCharsets.UTF_8);
+	public byte[] GetRAW() throws IOException {
+		ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
+		InputStream IS = null;
+
+		if (ResponseCode >= 200 && ResponseCode <= 299) {
+			IS = HUC.getInputStream();
+		} else if (ResponseCode >= 400 && ResponseCode <= 599) {
+			IS = HUC.getErrorStream();
+		}
+
+		if (IS == null) throw  new Error("InputStreamがなーい");
+
+		//ボディーを読む
+		byte[] Buffer = new byte[1024];
+		int BytesRead;
+		int TotalRead = 0;
+		while ((BytesRead = IS.read(Buffer, 0, Buffer.length)) != -1) {
+			TotalRead += BytesRead;
+
+			if (TotalRead > MaxBodySize) {
+				IS.close();
+				throw new Error("データサイズが" + MaxBodySize + "を超えました");
+			}
+
+			BAOS.write(Buffer, 0, BytesRead);
+		}
+		IS.close();
+
+		return BAOS.toByteArray();
 	}
 
-	public String GetString(Charset CHAR_CODE) {
-		return new String(BODY, CHAR_CODE);
+	public String GetString() throws IOException {
+		return new String(GetRAW(), StandardCharsets.UTF_8);
+	}
+
+	public String GetString(Charset CHAR_CODE) throws IOException {
+		return new String(GetRAW(), CHAR_CODE);
 	}
 
 	public void SaveFile(File FILE) throws IOException {
-		if(STATUS_CODE == HttpURLConnection.HTTP_OK){
+		if(ResponseCode == HttpURLConnection.HTTP_OK){
 			FileOutputStream FOS = new FileOutputStream(FILE);
-			FOS.write(BODY);
+			FOS.write(GetRAW());
 			FOS.flush();
 			FOS.close();
 		}
