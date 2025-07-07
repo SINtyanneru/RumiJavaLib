@@ -20,15 +20,17 @@ public class FETCH_RESULT {
 		this.MaxBodySize = MaxBodySize;
 
 		for (String Key:HUC.getHeaderFields().keySet()) {
+			if (Key == null) continue;
+
 			HeaderTable.put(Key.toUpperCase(), HUC.getHeaderField(Key));
 		}
 	}
 
-	public int GetSTATUS_CODE() {
+	public int getStatusCode() {
 		return ResponseCode;
 	}
 
-	public long GetPING() {
+	public long getPing() {
 		return PING;
 	}
 
@@ -36,7 +38,7 @@ public class FETCH_RESULT {
 		return HeaderTable.get(Key.toUpperCase());
 	}
 
-	public byte[] GetRAW() throws IOException {
+	public byte[] getRaw() throws IOException {
 		ByteArrayOutputStream BAOS = new ByteArrayOutputStream();
 		InputStream IS = null;
 
@@ -46,7 +48,7 @@ public class FETCH_RESULT {
 			IS = HUC.getErrorStream();
 		}
 
-		if (IS == null) throw  new Error("InputStreamがなーい");
+		if (IS == null) throw  new IOException("InputStreamがなーい");
 
 		//ボディーを読む
 		byte[] Buffer = new byte[1024];
@@ -57,7 +59,7 @@ public class FETCH_RESULT {
 
 			if (TotalRead > MaxBodySize) {
 				IS.close();
-				throw new Error("データサイズが" + MaxBodySize + "を超えました");
+				throw new IOException("データサイズが" + MaxBodySize + "を超えました");
 			}
 
 			BAOS.write(Buffer, 0, BytesRead);
@@ -67,18 +69,18 @@ public class FETCH_RESULT {
 		return BAOS.toByteArray();
 	}
 
-	public String GetString() throws IOException {
-		return new String(GetRAW(), StandardCharsets.UTF_8);
+	public String getString() throws IOException {
+		return new String(getRaw(), StandardCharsets.UTF_8);
 	}
 
-	public String GetString(Charset CHAR_CODE) throws IOException {
-		return new String(GetRAW(), CHAR_CODE);
+	public String getString(Charset CHAR_CODE) throws IOException {
+		return new String(getRaw(), CHAR_CODE);
 	}
 
 	public void SaveFile(File FILE) throws IOException {
-		if(ResponseCode == HttpURLConnection.HTTP_OK){
+		if (ResponseCode >= 200 && ResponseCode <= 299) {
 			FileOutputStream FOS = new FileOutputStream(FILE);
-			FOS.write(GetRAW());
+			FOS.write(getRaw());
 			FOS.flush();
 			FOS.close();
 		}
