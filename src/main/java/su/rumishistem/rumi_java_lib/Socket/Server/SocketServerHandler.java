@@ -80,4 +80,9 @@ public class SocketServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelInactive(ChannelHandlerContext CTX) throws Exception {
 		super.channelInactive(CTX);
 	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext CTX, Throwable Cause) throws Exception {
+		CTX.close();
+	}
 }
