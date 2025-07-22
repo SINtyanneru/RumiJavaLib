@@ -13,9 +13,14 @@ public class FETCH {
 	private URL URI = null;
 	private List<HashMap<String, String>> HEADER_LIST = new ArrayList<>();
 	private int MaxBodySize = 1000 * 1024 * 1024;
+	private boolean FollowRedirect = true;
 
 	public FETCH(String URI) throws MalformedURLException {
 		this.URI = new URL(URI);
+	}
+
+	public void setFollowRedirect(boolean FollowRedirect) {
+		this.FollowRedirect = FollowRedirect;
 	}
 
 	//ヘッダーをセットするやつ
@@ -52,6 +57,8 @@ public class FETCH {
 
 		HttpURLConnection HUC = (HttpURLConnection) URI.openConnection();
 
+		HUC.setInstanceFollowRedirects(FollowRedirect);
+
 		//GETリクエストだと主張する
 		HUC.setRequestMethod("GET");
 
@@ -74,6 +81,8 @@ public class FETCH {
 		long StartTime = System.currentTimeMillis();
 
 		HttpURLConnection HUC = (HttpURLConnection) URI.openConnection();
+
+		HUC.setInstanceFollowRedirects(FollowRedirect);
 
 		//GETリクエストだと主張する
 		HUC.setRequestMethod("POST");
@@ -106,6 +115,8 @@ public class FETCH {
 		long StartTime = System.currentTimeMillis();
 
 		HttpURLConnection HUC = (HttpURLConnection) URI.openConnection();
+
+		HUC.setInstanceFollowRedirects(FollowRedirect);
 
 		//GETリクエストだと主張する
 		HUC.setRequestMethod("DELETE");
