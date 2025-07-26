@@ -5,10 +5,7 @@ import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_EVENT_LISTENER;
 import su.rumishistem.rumi_java_lib.HTTP_SERVER.HTTP_SERVER;
 import su.rumishistem.rumi_java_lib.RESOURCE.RESOURCE_MANAGER;
-import su.rumishistem.rumi_java_lib.SmartHTTP.Type.EndpointEntrie;
-import su.rumishistem.rumi_java_lib.SmartHTTP.Type.EndpointFunction;
-import su.rumishistem.rumi_java_lib.SmartHTTP.Type.EndpointTable;
-import su.rumishistem.rumi_java_lib.SmartHTTP.Type.MethodStringToEnum;
+import su.rumishistem.rumi_java_lib.SmartHTTP.Type.*;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -20,7 +17,7 @@ public class SmartHTTP {
 	private int PORT;
 	private HTTP_SERVER HS;
 	private EndpointTable ET = new EndpointTable();
-	private LinkedHashMap<String, Function<HTTP_REQUEST, HTTP_RESULT>> ERROR_EP_LIST = new LinkedHashMap<>();
+	private LinkedHashMap<String, ErrorEndpointFunction> ERROR_EP_LIST = new LinkedHashMap<>();
 	private final HashMap<String, String> ExtMimeList = new HashMap<>() {{
 		put("txt", "text/plain; charset=UTF-8");
 		put("html", "text/html; charset=UTF-8");
@@ -132,7 +129,7 @@ public class SmartHTTP {
 						//ファイルならないなら404
 						HashMap<String, String> PARAM_LIST = new HashMap<>();
 						PARAM_LIST.put("EX", "404");
-						ReturnErrorPage(e.GetEVENT(), PARAM_LIST, e.GetEVENT().getURI().getPath(), ERRORCODE.PAGE_NOT_FOUND, 404);
+						ReturnErrorPage(e.GetEVENT(), PARAM_LIST, e.GetEVENT().getURI().getPath(), ERRORCODE.PAGE_NOT_FOUND, 404, null);
 
 						return null;
 					}
@@ -140,7 +137,7 @@ public class SmartHTTP {
 					//エラー
 					HashMap<String, String> PARAM_LIST = new HashMap<>();
 					PARAM_LIST.put("EX", EXCEPTION_READER.READ(EX));
-					ReturnErrorPage(e.GetEVENT(), PARAM_LIST, e.GetEVENT().getURI().getPath(), ERRORCODE.INTERNAL_SERVER_ERROR, 500);
+					ReturnErrorPage(e.GetEVENT(), PARAM_LIST, e.GetEVENT().getURI().getPath(), ERRORCODE.INTERNAL_SERVER_ERROR, 500, EX);
 					return null;
 				}
 			}
@@ -153,7 +150,7 @@ public class SmartHTTP {
 	 * @param CODE エラーコード
 	 * @param RESULT エンドポイントとなる関数を設定して
 	 */
-	public void SetError(String PATH, ERRORCODE CODE, Function<HTTP_REQUEST, HTTP_RESULT> RESULT) {
+	public void SetError(String PATH, ERRORCODE CODE, ErrorEndpointFunction RESULT) {
 		String NAME = SlasshFucker(PATH) + ":" + CODE.name();
 		ERROR_EP_LIST.put(NAME, RESULT);
 	}
@@ -181,24 +178,24 @@ public class SmartHTTP {
 					} else {
 						HashMap<String, String> PARAM_LIST = new HashMap<>();
 						PARAM_LIST.put("EX", "404");
-						ReturnErrorPage(E, PARAM_LIST, E.getURI().getPath(), ERRORCODE.PAGE_NOT_FOUND, 404);
+						ReturnErrorPage(E, PARAM_LIST, E.getURI().getPath(), ERRORCODE.PAGE_NOT_FOUND, 404, null);
 					}
 				} catch (Exception EX) {
 					//500エラー
 					HashMap<String, String> PARAM_LIST = new HashMap<>();
 					PARAM_LIST.put("EX", EXCEPTION_READER.READ(EX));
-					ReturnErrorPage(E, PARAM_LIST, E.getURI().getPath(), ERRORCODE.INTERNAL_SERVER_ERROR, 500);
+					ReturnErrorPage(E, PARAM_LIST, E.getURI().getPath(), ERRORCODE.INTERNAL_SERVER_ERROR, 500, EX);
 				}
 			}
 		});
 		HS.START_HTTPSERVER();
 	}
 
-	private void ReturnErrorPage(HTTP_EVENT E, HashMap<String, String> PARAM_LIST, String PATH, ERRORCODE ERRCODE, int CODE) {
+	private void ReturnErrorPage(HTTP_EVENT E, HashMap<String, String> PARAM_LIST, String PATH, ERRORCODE ERRCODE, int CODE, Exception EX) {
 		try {
-			Function<HTTP_REQUEST, HTTP_RESULT> ERROR_EP = GetErrorEP(PATH, ERRCODE);
+			ErrorEndpointFunction ERROR_EP = GetErrorEP(PATH, ERRCODE, EX);
 			if (ERROR_EP != null) {
-				HTTP_RESULT RESULT = ERROR_EP.apply(new HTTP_REQUEST(E, PARAM_LIST));
+				HTTP_RESULT RESULT = ERROR_EP.Run(new HTTP_REQUEST(E, PARAM_LIST), EX);
 
 				if (RESULT.MIME != null) {
 					E.setHEADER("Content-Type", RESULT.MIME);
@@ -214,7 +211,7 @@ public class SmartHTTP {
 		}
 	}
 
-	private Function<HTTP_REQUEST, HTTP_RESULT> GetErrorEP(String PATH, ERRORCODE CODE) {
+	private ErrorEndpointFunction GetErrorEP(String PATH, ERRORCODE CODE, Exception EX) {
 		for (String ROW:ERROR_EP_LIST.keySet()) {
 			String ROW_PATH = "/" + ROW.split(":")[0];
 			String ROW_ERR = ROW.split(":")[1];
