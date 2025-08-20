@@ -15,7 +15,23 @@ public class EndpointEntrie {
 
 	public enum Method{
 		ALL,
-		GET, POST, DELETE, PATCH, PUT, HEAD
+		GET, POST, DELETE, PATCH, PUT, HEAD, OPTION,
+
+		//WebDAV
+		WEBDAV_PROPFIND,			//プロパティ取得
+		WEBDAV_PROPPATCH,			//プロパティ変更
+		WEBDAV_MKCOL,				//コレクション(ディレクトリ)作成
+		WEBDAV_COPY,				//リソースをコピー
+		WEBDAV_MOVE,				//リソースを移動
+		WEBDAV_LOCK,				//リソースをロック
+		WEBDAV_UNLOCK,				//リソースのロックを解除
+		//WebDAV拡張
+		WEBDAV_EXT_MKCALENDAR,		//カレンダーコレクション作成
+		WEBDAV_EXT_SEARCH,			//検索
+		WEBDAV_EXT_BIND,
+		WEBDAV_EXT_UNBIND,
+		WEBDAV_EXT_REBIND,
+		WEBDAV_EXT_REPORT,
 	}
 
 	public EndpointEntrie(String P, Method M, EndpointFunction F) {
