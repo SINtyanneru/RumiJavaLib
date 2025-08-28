@@ -86,8 +86,6 @@ public class FETCH {
 
 		//GETリクエストだと主張する
 		HUC.setRequestMethod("POST");
-
-		//POST可能に
 		HUC.setDoInput(true);
 		HUC.setDoOutput(true);
 
@@ -96,8 +94,7 @@ public class FETCH {
 			HUC.setRequestProperty(HEADER.get("KEY"), HEADER.get("VAL"));
 		}
 
-		//接続
-		//HUC.connect();←getOutputStreamで接続されるから要らんらしい
+		HUC.setRequestProperty("Content-Length", String.valueOf(BODY.length));
 
 		//リクエストボディに送信したいデータを書き込む
 		OutputStream OS = HUC.getOutputStream();
