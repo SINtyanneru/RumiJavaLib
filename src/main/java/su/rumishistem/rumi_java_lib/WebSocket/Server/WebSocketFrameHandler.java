@@ -5,6 +5,7 @@ import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.websocketx.*;
 import kotlin.text.Charsets;
 import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
@@ -14,6 +15,8 @@ import su.rumishistem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT.CONNECT_EVENT
 import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.CLOSE_EVENT;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.MESSAGE_EVENT;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.WS_EVENT_LISTENER;
+
+import java.util.HashMap;
 
 public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 	private WebSocketSERVER S;
@@ -101,10 +104,23 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 
 			S.SESSION_LIST.put(ID, C);
 
+			//HttpHeaders header = ((WebSocketServerProtocolHandler.HandshakeComplete) e).requestHeaders();
+
+			HashMap<String, String> uri_param = new HashMap<>();
+			String uri = ((WebSocketServerProtocolHandler.HandshakeComplete) e).requestUri();
+			if (uri.contains("?")) {
+				String param = uri.substring(uri.indexOf("?") + 1);
+				String[] param_list = param.split("&");
+				for (String row:param_list) {
+					String[] kv = row.split("=", 2);
+					uri_param.put(kv[0], (kv.length > 1 ? kv[1]:""));
+				}
+			}
+
 			//コネクトイベント
 			CONNECT_EVENT_LISTENER[] ELL = S.CONNECT_EL_LIST.getListeners(CONNECT_EVENT_LISTENER.class);
 			for (CONNECT_EVENT_LISTENER EL:ELL) {
-				EL.CONNECT_EVENT(new CONNECT_EVENT(C.channel().remoteAddress().toString(), ID));
+				EL.CONNECT_EVENT(new CONNECT_EVENT(C.channel().remoteAddress().toString(), ID, uri_param));
 			}
 		} else {
 			super.userEventTriggered(C, e);

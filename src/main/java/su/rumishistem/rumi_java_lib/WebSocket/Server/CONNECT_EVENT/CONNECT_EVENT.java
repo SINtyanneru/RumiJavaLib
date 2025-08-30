@@ -7,20 +7,27 @@ import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.WS_EVENT_LISTENER;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.HashMap;
 
 import static su.rumishistem.rumi_java_lib.WebSocket.Server.WebSocketSERVER.*;
 
 public class CONNECT_EVENT {
 	private String IP = null;
 	private String ID = null;
+	private HashMap<String, String> uri_param = null;
 
-	public CONNECT_EVENT(String IP, String ID) {
+	public CONNECT_EVENT(String IP, String ID, HashMap<String, String> uri_param) {
 		this.IP = IP;
 		this.ID = ID;
+		this.uri_param = uri_param;
 	}
 
 	public String getIP() {
 		return IP;
+	}
+
+	public String get_uri_param(String key) {
+		return uri_param.get(key);
 	}
 
 	public void SET_EVENT_LISTENER(WS_EVENT_LISTENER WEL){
