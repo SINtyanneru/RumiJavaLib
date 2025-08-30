@@ -97,17 +97,14 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 
 	@Override
 	public void userEventTriggered(ChannelHandlerContext C, Object e) throws Exception {
-		if (e == WebSocketServerProtocolHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE) {
+		if (e instanceof WebSocketServerProtocolHandler.HandshakeComplete handshake) {
 			String ID = C.channel().id().asLongText();
 
 			LOG(LOG_TYPE.INFO, "WebSocket New Session " + ID);
 
-			S.SESSION_LIST.put(ID, C);
-
-			//HttpHeaders header = ((WebSocketServerProtocolHandler.HandshakeComplete) e).requestHeaders();
-
+			HttpHeaders header = handshake.requestHeaders();
 			HashMap<String, String> uri_param = new HashMap<>();
-			String uri = ((WebSocketServerProtocolHandler.HandshakeComplete) e).requestUri();
+			String uri = handshake.requestUri();
 			if (uri.contains("?")) {
 				String param = uri.substring(uri.indexOf("?") + 1);
 				String[] param_list = param.split("&");
@@ -116,6 +113,8 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 					uri_param.put(kv[0], (kv.length > 1 ? kv[1]:""));
 				}
 			}
+
+			S.SESSION_LIST.put(ID, C);
 
 			//コネクトイベント
 			CONNECT_EVENT_LISTENER[] ELL = S.CONNECT_EL_LIST.getListeners(CONNECT_EVENT_LISTENER.class);
