@@ -1,9 +1,12 @@
 package su.rumishistem.rumi_java_lib.WebSocket.Server;
 
 import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
+
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.*;
+import kotlin.text.Charsets;
 import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
 import su.rumishistem.rumi_java_lib.SnowFlake;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT.CONNECT_EVENT;
@@ -30,7 +33,19 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 			WS_EVENT_LISTENER[] ELL = S.EL_LIST.getListeners(WS_EVENT_LISTENER.class);
 			for (WS_EVENT_LISTENER EL:ELL) {
 				if (S.CEL_LIST.get(EL.hashCode()).equals(ID)) {
-					EL.MESSAGE(new MESSAGE_EVENT(Text));
+					EL.MESSAGE(new MESSAGE_EVENT(Text.getBytes(Charsets.UTF_8)));
+				}
+			}
+		} else if (F instanceof BinaryWebSocketFrame) {
+			ByteBuf buffer = ((BinaryWebSocketFrame)F).content();
+			byte[] data = new byte[buffer.readableBytes()];
+			buffer.readBytes(data);
+
+			//メッセージ受信イベント
+			WS_EVENT_LISTENER[] ELL = S.EL_LIST.getListeners(WS_EVENT_LISTENER.class);
+			for (WS_EVENT_LISTENER EL:ELL) {
+				if (S.CEL_LIST.get(EL.hashCode()).equals(ID)) {
+					EL.MESSAGE(new MESSAGE_EVENT(data));
 				}
 			}
 		} else if (F instanceof CloseWebSocketFrame) {

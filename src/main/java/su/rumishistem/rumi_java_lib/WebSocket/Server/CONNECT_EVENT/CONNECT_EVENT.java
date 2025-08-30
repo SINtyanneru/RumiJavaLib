@@ -1,5 +1,7 @@
 package su.rumishistem.rumi_java_lib.WebSocket.Server.CONNECT_EVENT;
 
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT.WS_EVENT_LISTENER;
 
@@ -32,6 +34,16 @@ public class CONNECT_EVENT {
 				SESSION_LIST.get(ID).channel().writeAndFlush(new TextWebSocketFrame(TEXT));
 			}
 		} catch (Exception EX) {
+			//もみ消す
+		}
+	}
+
+	public void SendByte(byte[] b) {
+		try {
+			if (SESSION_LIST.get(ID) != null) {
+				SESSION_LIST.get(ID).channel().writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(b)));
+			}
+		} catch (Exception ex) {
 			//もみ消す
 		}
 	}

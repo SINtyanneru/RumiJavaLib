@@ -1,16 +1,22 @@
 package su.rumishistem.rumi_java_lib.WebSocket.Server.EVENT;
 
+import kotlin.text.Charsets;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class MESSAGE_EVENT {
-	private String MESSAGE = null;
+	private byte[] data = null;
 
-	public MESSAGE_EVENT(String MESSAGE){
-		this.MESSAGE = MESSAGE;
+	public MESSAGE_EVENT(byte[] data){
+		this.data = data;
+	}
+
+	public byte[] getData() {
+		return data;
 	}
 
 	public String getMessage(){
-		return MESSAGE;
+		return new String(data, Charsets.UTF_8);
 	}
 }
