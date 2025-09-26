@@ -49,18 +49,22 @@ public class CONNECT_EVENT {
 	 * @param MSG テキスト
 	 * @throws IOException
 	 */
-	public void sendMessage(String MSG) throws IOException {
+	public void sendMessage(String MSG) {
 		ByteBuf BB = Unpooled.copiedBuffer(MSG.getBytes());
 		CTX.writeAndFlush(BB);
 	}
 
+	public void sendData(byte[] data) {
+		ByteBuf bb = Unpooled.copiedBuffer(data);
+		CTX.writeAndFlush(bb);
+	}
 
 	/**
 	 * 接続元のIPアドレスを取得します
 	 * @return IP
 	 * @throws IOException
 	 */
-	public String getIP() throws IOException {
+	public String getIP() {
 		InetSocketAddress CLIENT_ADDRESS = (InetSocketAddress) CTX.channel().remoteAddress();
 		InetAddress ADDRESS = CLIENT_ADDRESS.getAddress();
 
