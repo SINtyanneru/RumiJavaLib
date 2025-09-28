@@ -8,8 +8,9 @@ import java.io.File;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			FileUploader fu = new RSCP("192.168.0.120").upload("test", "test/file.txt", true);
-			fu.file(new File("/home/rumisan/Documents/OS解説.txt"));
+			//new RSCP("192.168.0.120").remove("test", "test/file.txt");
+			//FileUploader fu = new RSCP("192.168.0.120").upload("test", "test/file.txt", true);
+			//fu.file(new File("/home/rumisan/Documents/OS解説.txt"));
 			//fu.close();
 		} catch (Exception EX) {
 			EX.printStackTrace();

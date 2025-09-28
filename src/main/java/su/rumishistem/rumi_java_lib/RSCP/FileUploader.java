@@ -21,7 +21,7 @@ public class FileUploader {
 
 	private String version;
 
-	public FileUploader(String host, String bucket, String name, boolean is_public) throws IOException {
+	public FileUploader(String host, int port, String bucket, String name, boolean is_public) throws IOException {
 		this.host = host;
 		this.bucket = bucket;
 		this.name = name;
@@ -35,7 +35,7 @@ public class FileUploader {
 			throw new RuntimeException("ファイル名が254文字を超えている");
 		}
 
-		this.socket = new Socket(host, 41029);
+		this.socket = new Socket(host, port);
 		out = socket.getOutputStream();
 		in = socket.getInputStream();
 
