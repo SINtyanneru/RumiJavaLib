@@ -7,6 +7,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
@@ -25,6 +27,7 @@ public class SocketServer {
 	private SocketServer SS = null;
 	protected SslContext SSLC = null;
 	protected boolean DefaultTLS = false;
+	protected boolean message = true;
 
 	public SocketServer() {
 		SS = this;
@@ -33,6 +36,10 @@ public class SocketServer {
 	public void setEventListener(CONNECT_EVENT_LISTENER EL) {
 		//追加
 		CONNECT_EL_LIST.add(CONNECT_EVENT_LISTENER.class, EL);
+	}
+
+	public void set_message(boolean message) {
+		this.message = message;
 	}
 
 	public void setSSLSetting(String Cert, String PrivateKey, String[] TLSVersion) throws SSLException {
@@ -67,6 +74,8 @@ public class SocketServer {
 					}
 
 					Ch.pipeline().addLast(new SocketServerHandler(SS));
+
+					Ch.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
 				}
 			});
 

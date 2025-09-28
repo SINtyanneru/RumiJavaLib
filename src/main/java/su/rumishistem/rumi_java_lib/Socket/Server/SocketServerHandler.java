@@ -37,11 +37,8 @@ public class SocketServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext CTX, Object MSG) {
 		ByteBuf BB = (ByteBuf) MSG;
-		String Text = BB.toString(io.netty.util.CharsetUtil.UTF_8);
 		byte[] ByteArray = new byte[BB.readableBytes()];
 		BB.readBytes(ByteArray);
-
-		ReceiveSB.append(Text);
 
 		//受信イベント発火
 		EVENT_LISTENER[] ELL = SS.EL_LIST.getListeners(EVENT_LISTENER.class);
@@ -53,26 +50,30 @@ public class SocketServerHandler extends ChannelInboundHandlerAdapter {
 			}
 		}
 
-		//改行が有るならメッセージイベント
-		if (ReceiveSB.lastIndexOf("\n") != -1) {
-			String S = ReceiveSB.toString();
-			String[] ULINE = null;
+		if (SS.message) {
+			String Text = BB.toString(io.netty.util.CharsetUtil.UTF_8);
+			ReceiveSB.append(Text);
+			//改行が有るならメッセージイベント
+			if (ReceiveSB.lastIndexOf("\n") != -1) {
+				String S = ReceiveSB.toString();
+				String[] ULINE = null;
 
-			ULINE = S.split("\r?\n");
+				ULINE = S.split("\r?\n");
 
-			for (String LINE : ULINE) {
-				byte[] BYTE_DATA = LINE.getBytes();
-				for (EVENT_LISTENER EL : ELL) {
-					if (SS.CEL_LIST.get(EL.hashCode()) != null) {
-						if (SS.CEL_LIST.get(EL.hashCode()).equals(ID)) {
-							EL.Message(new MessageEvent(BYTE_DATA));
+				for (String LINE : ULINE) {
+					byte[] BYTE_DATA = LINE.getBytes();
+					for (EVENT_LISTENER EL : ELL) {
+						if (SS.CEL_LIST.get(EL.hashCode()) != null) {
+							if (SS.CEL_LIST.get(EL.hashCode()).equals(ID)) {
+								EL.Message(new MessageEvent(BYTE_DATA));
+							}
 						}
 					}
 				}
-			}
 
-			//メッセージ発火後にバッファーをクリア
-			ReceiveSB = new StringBuilder();
+				//メッセージ発火後にバッファーをクリア
+				ReceiveSB = new StringBuilder();
+			}
 		}
 	}
 

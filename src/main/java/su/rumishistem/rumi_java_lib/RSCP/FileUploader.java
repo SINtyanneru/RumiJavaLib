@@ -81,7 +81,7 @@ public class FileUploader {
 		baos.close();
 
 		int result = in.read() & 0xFF;
-		if (result == 0x20) {
+		if (result == 0x10) {
 			try {
 				md = MessageDigest.getInstance("MD5");
 			} catch (NoSuchAlgorithmException ex) {
@@ -127,29 +127,29 @@ public class FileUploader {
 		handshake(max_size);
 
 		FileInputStream fis = new FileInputStream(f);
-		byte[] buffer = new byte[8024];
+		byte[] buffer = new byte[8192];
 		int length;
 		while ((length = fis.read(buffer)) != -1) {
 			write(buffer, length);
 			send_byte += length;
-			progress = (int)((send_byte / max_size) * 100);
+			progress = (int)((send_byte / (double)max_size) * 100);
 		}
 		fis.close();
 
-		end();
+		if ((in.read() & 0xFF) == 0x10) {
+			end();
+		} else {
+			throw new RuntimeException("チェックサムの送信が許可されなかった");
+		}
 	}
 
 	public void write(byte[] data) throws IOException {
 		out.write(data);
-		out.flush();
-
 		md.update(data);
 	}
 
 	public void write(byte[] data, int length) throws IOException {
 		out.write(data, 0, length);
-		out.flush();
-
 		md.update(data, 0, length);
 	}
 }
