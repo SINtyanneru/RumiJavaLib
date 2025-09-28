@@ -18,6 +18,7 @@ public class FileUploader {
 	private OutputStream out;
 	private InputStream in;
 	private MessageDigest md;
+	private int progress = 0;
 
 	private String version;
 
@@ -40,11 +41,6 @@ public class FileUploader {
 		in = socket.getInputStream();
 
 		byte[] welcome_message = in.readNBytes(5);
-		/*String log = "";
-		for (int i = 0; i < welcome_message.length; i++) {
-			log += String.format("%02X ", welcome_message[i] & 0xFF);
-		}
-		System.out.println(log);*/
 
 		if (welcome_message[0] == 0x52 && welcome_message[1] == 0x53 && welcome_message[2] == 0x43 && welcome_message[3] == 0x50) {
 			int version_length = welcome_message[4] & 0xFF;
@@ -55,7 +51,7 @@ public class FileUploader {
 		}
 	}
 
-	private void handshake(long size) throws IOException {
+	public void handshake(long size) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		baos.write(0x01);
 
@@ -100,6 +96,10 @@ public class FileUploader {
 		return version;
 	}
 
+	public int get_progress() {
+		return progress;
+	}
+
 	public void end() throws IOException, ChecksumError {
 		out.write(md.digest());
 		out.flush();
@@ -122,13 +122,17 @@ public class FileUploader {
 	}
 
 	public void file(File f) throws IOException, ChecksumError {
-		handshake(f.length());
+		long max_size = f.length();
+		long send_byte = 0;
+		handshake(max_size);
 
 		FileInputStream fis = new FileInputStream(f);
 		byte[] buffer = new byte[8024];
 		int length;
 		while ((length = fis.read(buffer)) != -1) {
 			write(buffer, length);
+			send_byte += length;
+			progress = (int)((send_byte / max_size) * 100);
 		}
 		fis.close();
 
