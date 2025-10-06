@@ -1,14 +1,18 @@
 package su.rumishistem.rumi_java_lib.JobWorker;
 
 import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
+
+import su.rumishistem.rumi_java_lib.ExceptionRunnable;
 import su.rumishistem.rumi_java_lib.FIFO;
 import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * ジョブワーカー
+ */
 public class JobWorker {
 	private static final int CACHE_JOB = 10;
 	private static final int RETRY_LIMIT = 10;
@@ -23,7 +27,13 @@ public class JobWorker {
 	private FIFO<JobQueue> end_job = new FIFO<>(CACHE_JOB);		//終了したジョブ
 	private FIFO<JobQueue> failed_job = new FIFO<>();			//失敗し、再試行待ちのジョブ
 	private FIFO<JobQueue> error_job = new FIFO<>(CACHE_JOB);	//失敗し、再試行しないジョブ
+	//TODO:再チャレンジする部分
 
+	/**
+	 * ワーカーを作成する！
+	 * @param worker_name 名前
+	 * @param pool_size 一度に処理できるサイズ
+	 */
 	public JobWorker(String worker_name, int pool_size) {
 		this.worker_name = worker_name;
 		this.pool_size = pool_size;
@@ -32,6 +42,12 @@ public class JobWorker {
 		LOG(LOG_TYPE.OK, "Jobworker["+worker_name+"] OK. size:" + pool_size);
 	}
 
+	/**
+	 * ジョブを登録する
+	 * @param name ジョブの名前
+	 * @param retry 失敗時に再チャレンジするか？
+	 * @param task タスク
+	 */
 	public void regist(String name, boolean retry, ExceptionRunnable task) {
 		String id = UUID.randomUUID().toString();
 		wait_job.add(new JobQueue(id, name, task, retry));

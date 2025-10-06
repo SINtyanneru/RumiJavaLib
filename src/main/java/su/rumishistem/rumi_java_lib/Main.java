@@ -1,11 +1,6 @@
 package su.rumishistem.rumi_java_lib;
 
-import su.rumishistem.rumi_java_lib.JobWorker.ExceptionRunnable;
 import su.rumishistem.rumi_java_lib.JobWorker.JobWorker;
-import su.rumishistem.rumi_java_lib.RSCP.FileUploader;
-import su.rumishistem.rumi_java_lib.RSCP.RSCP;
-
-import java.io.File;
 
 public class Main {
 	public static void main(String[] args) {
