@@ -3,6 +3,9 @@ package su.rumishistem.rumi_java_lib;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * iniで書かれた設定ファイルを解析する
+ */
 public class CONFIG {
 	public ArrayNode DATA = new ArrayNode();
 
