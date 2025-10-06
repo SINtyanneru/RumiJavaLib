@@ -8,10 +8,18 @@ import java.io.File;
 public class Main {
 	public static void main(String[] args) {
 		try {
-			//new RSCP("192.168.0.120").remove("test", "test/file.txt");
-			FileUploader fu = new RSCP("192.168.0.120").upload("test", "test/file.txt", true);
-			fu.file(new File("/home/rumisan/Downloads/G17GfbCaYAEYSL4.png"));
-			//fu.close();
+			FIFO<String> fifo = new FIFO<>();
+			fifo.add("あ");
+			fifo.add("い");
+			fifo.add("う");
+			fifo.add("お");
+			fifo.add("え");
+
+			System.out.println(fifo.get());
+			System.out.println(fifo.get());
+			System.out.println(fifo.get());
+			System.out.println(fifo.get());
+			System.out.println(fifo.get());
 		} catch (Exception EX) {
 			EX.printStackTrace();
 		}
