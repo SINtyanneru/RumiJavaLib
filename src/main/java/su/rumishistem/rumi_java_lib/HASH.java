@@ -13,16 +13,20 @@ public class HASH {
 		SHA3_512
 	}
 
-	public static String Gen(HASH_TYPE TYPE, byte[] INPUT) throws NoSuchAlgorithmException {
-		MessageDigest MD = MessageDigest.getInstance(TYPE_TO_STRING(TYPE));
-		byte[] HASH_BYTES = MD.digest(INPUT);
+	public static String Gen(HASH_TYPE TYPE, byte[] INPUT) {
+		try {
+			MessageDigest MD = MessageDigest.getInstance(TYPE_TO_STRING(TYPE));
+			byte[] HASH_BYTES = MD.digest(INPUT);
 
-		StringBuilder SB = new StringBuilder();
-		for (byte B:HASH_BYTES) {
-			SB.append(String.format("%02x", B));
+			StringBuilder SB = new StringBuilder();
+			for (byte B:HASH_BYTES) {
+				SB.append(String.format("%02x", B));
+			}
+
+			return SB.toString();
+		} catch (NoSuchAlgorithmException ex) {
+			return "";
 		}
-
-		return SB.toString();
 	}
 
 	private static String TYPE_TO_STRING(HASH_TYPE IN) {
