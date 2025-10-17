@@ -16,6 +16,10 @@ public class Ajax {
 		this.url = new URL(url);
 	}
 
+	public void set_header(String key, String value) {
+		header_list.put(key.toUpperCase(), value);
+	}
+
 	public AjaxResult GET() throws IOException {
 		HttpURLConnection connection = open_connection();
 		connection.setRequestMethod("GET");
