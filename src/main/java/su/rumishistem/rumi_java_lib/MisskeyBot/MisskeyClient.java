@@ -14,6 +14,7 @@ import su.rumishistem.rumi_java_lib.MisskeyBot.Event.MisskeyEventListener;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Exception.LoginException;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Type.Note;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Type.SelfUser;
+import su.rumishistem.rumi_java_lib.MisskeyBot.Type.User;
 import su.rumishistem.rumi_java_lib.WebSocket.Client.WebSocketClient;
 
 import java.io.File;
@@ -133,7 +134,47 @@ public class MisskeyClient {
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
-			throw new RuntimeException("ノートを作れなかった: IOException");
+			throw new RuntimeException("リアクション失敗: IOException");
+		}
+	}
+
+	public void follow(User user) {
+		HashMap<String, Object> body = new HashMap<>();
+		body.put("i", token);
+		body.put("userId", user.get_id());
+
+		try {
+			Ajax ajax = new Ajax("https://"+host+"/api/following/create");
+			ajax.set_header("Content-Type", MIME_JSON);
+			AjaxResult result = ajax.POST(new ObjectMapper().writeValueAsBytes(body));
+
+			if (result.get_code() != 200) {
+				JsonNode result_body = new ObjectMapper().readTree(result.get_body_as_string());
+				throw new RuntimeException("フォロー失敗:" + result_body);
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("フォロー失敗: IOException");
+		}
+	}
+
+	public void unfollow(User user) {
+		HashMap<String, Object> body = new HashMap<>();
+		body.put("i", token);
+		body.put("userId", user.get_id());
+
+		try {
+			Ajax ajax = new Ajax("https://"+host+"/api/following/delete");
+			ajax.set_header("Content-Type", MIME_JSON);
+			AjaxResult result = ajax.POST(new ObjectMapper().writeValueAsBytes(body));
+
+			if (result.get_code() != 200) {
+				JsonNode result_body = new ObjectMapper().readTree(result.get_body_as_string());
+				throw new RuntimeException("フォロー失敗:" + result_body);
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("フォロー失敗: IOException");
 		}
 	}
 }

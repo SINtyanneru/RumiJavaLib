@@ -51,11 +51,23 @@ public class Main {
 				@Override
 				public void NewFollow(NewFollowEvent e) {
 					System.out.println(e.get_user().get_name() + "にフォローされた");
+
+					try {
+						mk.follow(e.get_user());
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 
 				@Override
 				public void UnFollow(UnFollowEvent e) {
 					System.out.println(e.get_user().get_name() + "にフォロー解除された");
+
+					try {
+						mk.unfollow(e.get_user());
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 			});
 		} catch (Exception EX) {
