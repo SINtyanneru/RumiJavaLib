@@ -3,42 +3,137 @@ package su.rumishistem.rumi_java_lib.MisskeyBot;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import su.rumishistem.rumi_java_lib.Ajax.Ajax;
 import su.rumishistem.rumi_java_lib.Ajax.AjaxResult;
+import su.rumishistem.rumi_java_lib.MisskeyBot.API.GetI;
+import su.rumishistem.rumi_java_lib.MisskeyBot.API.UploadFile;
+import su.rumishistem.rumi_java_lib.MisskeyBot.Builder.NoteBuilder;
+import su.rumishistem.rumi_java_lib.MisskeyBot.Event.MisskeyEventListener;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Exception.LoginException;
+import su.rumishistem.rumi_java_lib.MisskeyBot.Type.Note;
+import su.rumishistem.rumi_java_lib.MisskeyBot.Type.SelfUser;
+import su.rumishistem.rumi_java_lib.WebSocket.Client.WebSocketClient;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MisskeyClient {
-	private static final String MIME_JSON = "application/json; charset=UTF-8";
+	public static final String MIME_JSON = "application/json; charset=UTF-8";
 
-	private ObjectMapper om = new ObjectMapper();
+	private OkHttpClient ws;
 	private String host;
 	private String token;
+	private SelfUser self;
 
-	public MisskeyClient(String host, String token) {
+	protected List<MisskeyEventListener> listener_list = new ArrayList<>();
+
+	public MisskeyClient(String host, String token) throws IOException {
 		this.host = host;
 		this.token = token;
 
-		try {
-			//ログイン
-			HashMap<String, String> i_body = new HashMap<>();
-			i_body.put("i", token);
-			Ajax ajax = new Ajax("https://"+host+"/api/i");
-			ajax.set_header("Content-Type", MIME_JSON);
+		//ログイン(できなければエラー落ち)
+		JsonNode i = new GetI(this).get();
+		self = new SelfUser(this, i);
 
-			//解析
-			AjaxResult result = ajax.POST(om.writeValueAsBytes(i_body));
-			if (result.get_code() == 200) {
-				JsonNode parse_body = om.readTree(result.get_body_as_string());
-			} else {
-				//ログイン失敗
-				throw new LoginException();
+		//WebSocketにログイン
+		Request req = new Request.Builder().url("wss://"+host+"/streaming?i=" + token).build();
+		ws = new OkHttpClient();
+		ws.newWebSocket(req, new StreamAPI(this));
+		ws.dispatcher().executorService().shutdown();
+	}
+
+	public void add_event_listener(MisskeyEventListener listener) {
+		listener_list.add(listener);
+	}
+
+	public OkHttpClient get_ws() {
+		return ws;
+	}
+
+	public String get_host() {
+		return host;
+	}
+
+	public String get_token() {
+		return token;
+	}
+
+	public SelfUser get_self() {
+		return self;
+	}
+
+	public String create_note(NoteBuilder build) {
+		HashMap<String, Object> body = new HashMap<>();
+		body.put("i", token);
+		body.put("text", build.text);
+		body.put("cw", build.cw);
+		body.put("replyId", build.reply_id);
+		body.put("renoteId", build.renote_id);
+		body.put("localOnly", build.local_only);
+
+		//閲覧
+		switch (build.visibility) {
+			case Public: body.put("visibility", "public"); break;
+			case Home: body.put("visibility", "home"); break;
+			case Followers: body.put("visibility", "followers"); break;
+			case DM: body.put("visibility", "specified"); break;
+		}
+
+		//ファイル
+		if (!build.file_list.isEmpty()) {
+			List<String> file_list = new ArrayList<>();
+			for (File file:build.file_list) {
+				try {
+					JsonNode d = new UploadFile(this).create_from_file(file.getName(), file);
+					file_list.add(d.get("id").asText());
+				} catch (IOException ex) {
+					throw new RuntimeException("ドライブにアップロード失敗：IOException");
+				}
 			}
-		} catch (IOException e) {
-			//あ？
+			body.put("fileIds", file_list);
+		}
+
+		try {
+			Ajax ajax = new Ajax("https://"+host+"/api/notes/create");
+			ajax.set_header("Content-Type", MIME_JSON);
+			AjaxResult result = ajax.POST(new ObjectMapper().writeValueAsBytes(body));
+			JsonNode result_body = new ObjectMapper().readTree(result.get_body_as_string());
+
+			if (result.get_code() != 200) {
+				throw new RuntimeException("ノートを作れなかった:" + result_body);
+			}
+
+			return result_body.get("createdNote").get("id").asText();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("ノートを作れなかった: IOException");
+		}
+	}
+
+	public void create_reaction(Note note, String emoji) {
+		HashMap<String, Object> body = new HashMap<>();
+		body.put("i", token);
+		body.put("noteId", note.get_id());
+		body.put("reaction", ":"+emoji+":");
+
+		try {
+			Ajax ajax = new Ajax("https://"+host+"/api/notes/reactions/create");
+			ajax.set_header("Content-Type", MIME_JSON);
+			AjaxResult result = ajax.POST(new ObjectMapper().writeValueAsBytes(body));
+
+			if (result.get_code() != 204) {
+				JsonNode result_body = new ObjectMapper().readTree(result.get_body_as_string());
+				throw new RuntimeException("リアクション失敗:" + result_body);
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("ノートを作れなかった: IOException");
 		}
 	}
 }
