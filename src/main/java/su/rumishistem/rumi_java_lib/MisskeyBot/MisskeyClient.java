@@ -8,6 +8,8 @@ import okhttp3.Request;
 import su.rumishistem.rumi_java_lib.Ajax.Ajax;
 import su.rumishistem.rumi_java_lib.Ajax.AjaxResult;
 import su.rumishistem.rumi_java_lib.MisskeyBot.API.GetI;
+import su.rumishistem.rumi_java_lib.MisskeyBot.API.GetNote;
+import su.rumishistem.rumi_java_lib.MisskeyBot.API.GetUser;
 import su.rumishistem.rumi_java_lib.MisskeyBot.API.UploadFile;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Builder.NoteBuilder;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Event.MisskeyEventListener;
@@ -175,6 +177,30 @@ public class MisskeyClient {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 			throw new RuntimeException("フォロー失敗: IOException");
+		}
+	}
+
+	public Note get_note_from_id(String id) {
+		try {
+			return new Note(this, new GetNote(this).get(id));
+		} catch (IOException ex) {
+			throw new RuntimeException("ノート取得失敗");
+		}
+	}
+
+	public User get_user_from_id(String id) {
+		try {
+			return new User(this, new GetUser(this).get_from_id(id));
+		} catch (IOException ex) {
+			throw new RuntimeException("ユーザー取得失敗");
+		}
+	}
+
+	public User get_user_from_id(String name, String host) {
+		try {
+			return new User(this, new GetUser(this).get_from_name(name, host));
+		} catch (IOException ex) {
+			throw new RuntimeException("ユーザー取得失敗");
 		}
 	}
 }

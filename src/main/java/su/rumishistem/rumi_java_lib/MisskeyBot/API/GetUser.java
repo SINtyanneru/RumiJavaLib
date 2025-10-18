@@ -34,4 +34,23 @@ public class GetUser {
 			return new ObjectMapper().readTree(result.get_body_as_string());
 		}
 	}
+
+	public JsonNode get_from_name(String name, String host) throws IOException {
+		HashMap<String, String> i_body = new HashMap<>();
+		i_body.put("i", client.get_token());
+		i_body.put("username", name);
+		i_body.put("host", host);
+
+		Ajax ajax = new Ajax("https://"+client.get_host()+"/api/users/show");
+		ajax.set_header("Content-Type", client.MIME_JSON);
+
+		//解析
+		AjaxResult result = ajax.POST(new ObjectMapper().writeValueAsBytes(i_body));
+		if (result.get_code() != 200) {
+			//ログイン失敗
+			throw new LoginException();
+		} else {
+			return new ObjectMapper().readTree(result.get_body_as_string());
+		}
+	}
 }
