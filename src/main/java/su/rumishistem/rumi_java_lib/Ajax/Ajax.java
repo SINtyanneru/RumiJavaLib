@@ -11,6 +11,7 @@ public class Ajax {
 	private HashMap<String, String> header_list = new HashMap<>(){{
 		put("USER-AGENT", "Ajax/1.0");
 	}};
+	private boolean follow_redirect = true;
 
 	public Ajax(String url) throws MalformedURLException {
 		this.url = new URL(url);
@@ -20,18 +21,22 @@ public class Ajax {
 		header_list.put(key.toUpperCase(), value);
 	}
 
+	public void set_follow_redirect(boolean bl) {
+		follow_redirect = bl;
+	}
+
 	public AjaxResult GET() throws IOException {
 		HttpURLConnection connection = open_connection();
 		connection.setRequestMethod("GET");
 		int code = connection.getResponseCode();
-		return new AjaxResult(code, get_br(code, connection));
+		return new AjaxResult(code, connection, get_br(code, connection));
 	}
 
 	public AjaxResult DELETE() throws IOException {
 		HttpURLConnection connection = open_connection();
 		connection.setRequestMethod("DELETE");
 		int code = connection.getResponseCode();
-		return new AjaxResult(code, get_br(code, connection));
+		return new AjaxResult(code, connection, get_br(code, connection));
 	}
 
 	public AjaxResult POST(byte[] body) throws IOException {
@@ -45,7 +50,7 @@ public class Ajax {
 		os.close();
 
 		int code = connection.getResponseCode();
-		return new AjaxResult(code, get_br(code, connection));
+		return new AjaxResult(code, connection, get_br(code, connection));
 	}
 
 	private InputStream get_br(int code, HttpURLConnection connection) throws IOException {
@@ -60,6 +65,7 @@ public class Ajax {
 
 	private HttpURLConnection open_connection() throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setInstanceFollowRedirects(follow_redirect);
 
 		for (String key:header_list.keySet()) {
 			connection.setRequestProperty(key, header_list.get(key));
