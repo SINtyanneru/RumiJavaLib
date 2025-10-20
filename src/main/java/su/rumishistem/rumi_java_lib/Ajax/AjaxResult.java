@@ -27,6 +27,7 @@ public class AjaxResult {
 
 	public String get_header(String key) {
 		for (Map.Entry<String, List<String>> entrie: connection.getHeaderFields().entrySet()) {
+			if (entrie.getKey() == null) continue;
 			if (entrie.getKey().equalsIgnoreCase(key)) {
 				return entrie.getValue().getFirst();
 			}
@@ -37,6 +38,7 @@ public class AjaxResult {
 
 	public String[] get_header_list(String key) {
 		for (Map.Entry<String, List<String>> entrie: connection.getHeaderFields().entrySet()) {
+			if (entrie.getKey() == null) continue;
 			if (entrie.getKey().equalsIgnoreCase(key)) {
 				String[] value_list = new String[entrie.getValue().size()];
 				for (int i = 0; i < value_list.length; i++) {
