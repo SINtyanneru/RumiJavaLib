@@ -30,6 +30,7 @@ public class MisskeyClient {
 	public static final String MIME_JSON = "application/json; charset=UTF-8";
 
 	private OkHttpClient ws;
+	private StreamAPI sa;
 	private String host;
 	private String token;
 	private SelfUser self;
@@ -45,10 +46,9 @@ public class MisskeyClient {
 		self = new SelfUser(this, i);
 
 		//WebSocketにログイン
-		Request req = new Request.Builder().url("wss://"+host+"/streaming?i=" + token).build();
 		ws = new OkHttpClient();
-		ws.newWebSocket(req, new StreamAPI(this));
-		ws.dispatcher().executorService().shutdown();
+		sa = new StreamAPI(this, ws);
+		sa.connect();
 	}
 
 	public void add_event_listener(MisskeyEventListener listener) {

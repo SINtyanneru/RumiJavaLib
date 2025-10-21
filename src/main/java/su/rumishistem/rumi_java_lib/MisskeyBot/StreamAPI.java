@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import su.rumishistem.rumi_java_lib.MisskeyBot.API.GetUser;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Event.*;
@@ -22,9 +20,17 @@ public class StreamAPI extends WebSocketListener {
 	private static final String HOME_TL_ID = "1";
 	private static final String MAIN_ID = "2";
 
+	private WebSocket ws;
+	private OkHttpClient ohp;
 	private MisskeyClient client;
-	public StreamAPI(MisskeyClient client) {
+	public StreamAPI(MisskeyClient client, OkHttpClient ohp) {
 		this.client = client;
+		this.ohp = ohp;
+	}
+
+	public void connect() {
+		Request req = new Request.Builder().url("wss://"+client.get_host()+"/streaming?i=" + client.get_token()).build();
+		ws = ohp.newWebSocket(req, this);
 	}
 
 	@Override
@@ -90,6 +96,6 @@ public class StreamAPI extends WebSocketListener {
 
 	@Override
 	public void onClosed(WebSocket s, int code, String reason) {
-		System.out.println("切断された");
+		connect();
 	}
 }
