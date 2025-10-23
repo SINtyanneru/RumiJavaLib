@@ -96,6 +96,20 @@ public class StreamAPI extends WebSocketListener {
 
 	@Override
 	public void onClosed(WebSocket s, int code, String reason) {
-		connect();
+		for (MisskeyEventListener listener:client.listener_list) {
+			listener.Disconnected();
+		}
+
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					new StreamAPI(client, ohp).connect();
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}).start();
 	}
 }
