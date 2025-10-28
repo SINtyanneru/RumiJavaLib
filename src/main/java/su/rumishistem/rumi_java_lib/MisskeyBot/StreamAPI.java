@@ -105,7 +105,7 @@ public class StreamAPI extends WebSocketListener {
 			public void run() {
 				try {
 					Thread.sleep(1000);
-					new StreamAPI(client, ohp).connect();
+					connect();
 				} catch (InterruptedException ex) {
 					ex.printStackTrace();
 				}
