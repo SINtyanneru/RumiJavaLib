@@ -34,7 +34,11 @@ public class RSVErrorCode {
 	}
 
 	public static HTTP_RESULT endpoint_not_found_request(String trace) {
-		return new HTTP_RESULT(404, gen("0x4005", "  \tエンドポイントが存在しない", trace), "application/json");
+		return new HTTP_RESULT(404, gen("0x4005", " エンドポイントが存在しない", trace), "application/json");
+	}
+
+	public static HTTP_RESULT overflow(String trace) {
+		return new HTTP_RESULT(413, gen("0x4007", "  オーバーフロー", trace), "application/json");
 	}
 
 	public static HTTP_RESULT system_error(String trace) {
