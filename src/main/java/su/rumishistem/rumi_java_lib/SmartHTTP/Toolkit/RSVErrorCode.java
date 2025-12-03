@@ -21,6 +21,10 @@ public class RSVErrorCode {
 		return new HTTP_RESULT(401, gen("0x4002", "認証エラー", trace), "application/json");
 	}
 
+	public static HTTP_RESULT permission_request(String trace) {
+		return new HTTP_RESULT(401, gen("0x4006", "権限エラー", trace), "application/json");
+	}
+
 	public static HTTP_RESULT conflict_request(String trace) {
 		return new HTTP_RESULT(409, gen("0x4003", "リクエストが衝突した", trace), "application/json");
 	}
