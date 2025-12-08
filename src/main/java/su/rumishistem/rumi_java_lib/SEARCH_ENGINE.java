@@ -47,7 +47,7 @@ public class SEARCH_ENGINE {
 
 			SQL_SCRIPT = SQL_SCRIPT.replace("{WHERE}", SS);
 
-			return SQL.RUN(SQL_SCRIPT, PARAM.toArray());
+			return SQL.new_auto_commit_connection().select_execute(SQL_SCRIPT, PARAM.toArray());
 		} catch (Exception EX) {
 			EX.printStackTrace();
 			return null;
