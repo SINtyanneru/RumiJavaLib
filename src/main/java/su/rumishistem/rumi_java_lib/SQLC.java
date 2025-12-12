@@ -38,7 +38,7 @@ public class SQLC {
 		while (result.next()) {
 			ArrayNode row = new ArrayNode();
 			for (int i = 1; i <= col_count; i++) {
-				String name = meta.getColumnName(i);
+				String name = meta.getColumnLabel(i);
 				Object value = result.getObject(i);
 				row.setDATA(name, new ArrayData(value));
 			}
