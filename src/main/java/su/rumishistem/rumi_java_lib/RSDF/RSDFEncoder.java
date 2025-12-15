@@ -6,6 +6,7 @@ import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 public class RSDFEncoder {
@@ -48,6 +49,9 @@ public class RSDFEncoder {
 			} else if (value.getClass().isArray()) {
 				//配列
 				baos.write(encode_array((Object[]) value));
+			} else if (value instanceof List<?>) {
+				//配列
+				baos.write(encode_array(((List<?>)value).toArray()));
 			} else {
 				baos.write(encode_value(value));
 			}
@@ -75,6 +79,8 @@ public class RSDFEncoder {
 
 			if (value.getClass().isArray()) {
 				baos.write(encode_array((Object[]) value));
+			} else if (value instanceof List<?>) {
+				baos.write(encode_array(((List<?>)value).toArray()));
 			} else if (value instanceof Map) {
 				baos.write(encode_dict((Map<String, ?>) value));
 			} else {
