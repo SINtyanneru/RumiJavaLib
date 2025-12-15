@@ -53,6 +53,20 @@ public class Ajax {
 		return new AjaxResult(code, connection, get_br(code, connection));
 	}
 
+	public AjaxResult PATCH(byte[] body) throws IOException {
+		HttpURLConnection connection = open_connection();
+		connection.setRequestMethod("PATCH");
+		connection.setDoOutput(true);
+
+		//送信
+		OutputStream os = connection.getOutputStream();
+		os.write(body, 0, body.length);
+		os.close();
+
+		int code = connection.getResponseCode();
+		return new AjaxResult(code, connection, get_br(code, connection));
+	}
+
 	private InputStream get_br(int code, HttpURLConnection connection) throws IOException {
 		InputStream is = null;
 		if (code >= 200 && code <= 299) {
