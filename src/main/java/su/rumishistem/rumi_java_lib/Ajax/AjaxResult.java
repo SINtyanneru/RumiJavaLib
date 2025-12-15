@@ -12,13 +12,13 @@ import java.util.Map;
 
 public class AjaxResult {
 	private int code = 0;
-	private HttpURLConnection connection;
-	private InputStream is;
+	private Map<String, java.util.List<String>> header_list;
+	private byte[] body;
 
-	public AjaxResult(int code, HttpURLConnection connection, InputStream is) {
+	public AjaxResult(int code, Map<String, java.util.List<String>> header_list, byte[] body) {
 		this.code = code;
-		this.connection = connection;
-		this.is = is;
+		this.header_list = header_list;
+		this.body = body;
 	}
 
 	public int get_code() {
@@ -26,42 +26,22 @@ public class AjaxResult {
 	}
 
 	public String get_header(String key) {
-		for (Map.Entry<String, List<String>> entrie: connection.getHeaderFields().entrySet()) {
-			if (entrie.getKey() == null) continue;
-			if (entrie.getKey().equalsIgnoreCase(key)) {
-				return entrie.getValue().getFirst();
-			}
-		}
-
-		return null;
+		return header_list.get(key).get(0);
 	}
 
 	public String[] get_header_list(String key) {
-		for (Map.Entry<String, List<String>> entrie: connection.getHeaderFields().entrySet()) {
-			if (entrie.getKey() == null) continue;
-			if (entrie.getKey().equalsIgnoreCase(key)) {
-				String[] value_list = new String[entrie.getValue().size()];
-				for (int i = 0; i < value_list.length; i++) {
-					value_list[i] = entrie.getValue().get(i);
-				}
-				return value_list;
-			}
+		List<String> list = header_list.get(key);
+		String[] array = new String[list.size()];
+
+		for (int i = 0; i < array.length; i++) {
+			array[i] = list.get(0);
 		}
 
-		return null;
+		return array;
 	}
 
 	public byte[] get_body_as_byte() throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		byte[] buffer = new byte[1024];
-		int read_length = 0;
-		while ((read_length = is.read(buffer)) != -1) {
-			baos.write(buffer, 0, read_length);
-		}
-		is.close();
-
-		return baos.toByteArray();
+		return body;
 	}
 
 	public String get_body_as_string() throws IOException {

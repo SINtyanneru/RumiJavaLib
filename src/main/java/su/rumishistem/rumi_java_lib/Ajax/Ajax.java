@@ -3,18 +3,25 @@ package su.rumishistem.rumi_java_lib.Ajax;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Ajax {
-	private URL url;
+	private HttpClient client;
+	private URI uri;
 	private HashMap<String, String> header_list = new HashMap<>(){{
 		put("USER-AGENT", "Ajax/1.0");
 	}};
 	private boolean follow_redirect = true;
 
 	public Ajax(String url) throws MalformedURLException {
-		this.url = new URL(url);
+		uri = URI.create(url);
+		rebuild_client();
 	}
 
 	public void set_header(String key, String value) {
@@ -23,68 +30,58 @@ public class Ajax {
 
 	public void set_follow_redirect(boolean bl) {
 		follow_redirect = bl;
+		rebuild_client();
 	}
 
 	public AjaxResult GET() throws IOException {
-		HttpURLConnection connection = open_connection();
-		connection.setRequestMethod("GET");
-		int code = connection.getResponseCode();
-		return new AjaxResult(code, connection, get_br(code, connection));
+		HttpRequest r = base_build().GET().build();
+		return send(r);
 	}
 
 	public AjaxResult DELETE() throws IOException {
-		HttpURLConnection connection = open_connection();
-		connection.setRequestMethod("DELETE");
-		int code = connection.getResponseCode();
-		return new AjaxResult(code, connection, get_br(code, connection));
+		HttpRequest r = base_build().DELETE().build();
+		return send(r);
 	}
 
 	public AjaxResult POST(byte[] body) throws IOException {
-		HttpURLConnection connection = open_connection();
-		connection.setRequestMethod("POST");
-		connection.setDoOutput(true);
-
-		//送信
-		OutputStream os = connection.getOutputStream();
-		os.write(body, 0, body.length);
-		os.close();
-
-		int code = connection.getResponseCode();
-		return new AjaxResult(code, connection, get_br(code, connection));
+		HttpRequest r = base_build().POST(HttpRequest.BodyPublishers.ofByteArray(body)).build();
+		return send(r);
 	}
 
 	public AjaxResult PATCH(byte[] body) throws IOException {
-		HttpURLConnection connection = open_connection();
-		connection.setRequestMethod("PATCH");
-		connection.setDoOutput(true);
-
-		//送信
-		OutputStream os = connection.getOutputStream();
-		os.write(body, 0, body.length);
-		os.close();
-
-		int code = connection.getResponseCode();
-		return new AjaxResult(code, connection, get_br(code, connection));
+		HttpRequest r = base_build().method("PATCH", HttpRequest.BodyPublishers.ofByteArray(body)).build();
+		return send(r);
 	}
 
-	private InputStream get_br(int code, HttpURLConnection connection) throws IOException {
-		InputStream is = null;
-		if (code >= 200 && code <= 299) {
-			is = connection.getInputStream();
-		} else if (code >= 400 && code <= 599) {
-			is = connection.getErrorStream();
+	private void rebuild_client() {
+		HttpClient.Builder builder = HttpClient.newBuilder();
+		if (follow_redirect) {
+			builder.followRedirects(HttpClient.Redirect.NORMAL);
+		} else {
+			builder.followRedirects(HttpClient.Redirect.NEVER);
 		}
-		return is;
+		client = builder.build();
 	}
 
-	private HttpURLConnection open_connection() throws IOException {
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setInstanceFollowRedirects(follow_redirect);
+	private HttpRequest.Builder base_build() {
+		HttpRequest.Builder builder = HttpRequest.newBuilder();
+		builder.uri(uri);
 
-		for (String key:header_list.keySet()) {
-			connection.setRequestProperty(key, header_list.get(key));
+		for (Map.Entry<String, String> entry:header_list.entrySet()) {
+			builder.header(entry.getKey(), entry.getValue());
 		}
 
-		return connection;
+		return builder;
+	}
+
+	private AjaxResult send(HttpRequest r) throws IOException {
+		try {
+			HttpResponse<byte[]> response = client.send(r, HttpResponse.BodyHandlers.ofByteArray());
+
+			return new AjaxResult(response.statusCode(), response.headers().map(), response.body());
+		} catch (InterruptedException ex) {
+			//は？
+			return null;
+		}
 	}
 }
