@@ -28,11 +28,11 @@ public class RSDFEncoder {
 			throw new RuntimeException("ルートに入れれる型は配列か辞書のみです。");
 		}
 
-		StringBuilder sb = new StringBuilder();
+		/*StringBuilder sb = new StringBuilder();
 		for (byte b:baos.toByteArray()) {
 			sb.append(String.format("%02X ", b));
 		}
-		System.out.println(sb.toString());
+		System.out.println(sb.toString());*/
 
 		return baos.toByteArray();
 	}
