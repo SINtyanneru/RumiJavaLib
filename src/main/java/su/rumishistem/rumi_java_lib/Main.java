@@ -6,13 +6,17 @@ import su.rumishistem.rumi_java_lib.MisskeyBot.Event.NewFollowEvent;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Event.NewNoteEvent;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Event.UnFollowEvent;
 import su.rumishistem.rumi_java_lib.MisskeyBot.MisskeyClient;
+import su.rumishistem.rumi_java_lib.RSDF.RSDFDecoder;
+import su.rumishistem.rumi_java_lib.RSDF.RSDFEncoder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 public class Main {
 	public static void main(String[] args) {
 		try {
+			/*
 			MisskeyClient mk = new MisskeyClient("eth.rumiserver.com", "i76C85ODE7hlmFaRZWztl4g3gDt5j3pc");
 
 			mk.add_event_listener(new MisskeyEventListener() {
@@ -69,7 +73,7 @@ public class Main {
 						ex.printStackTrace();
 					}
 				}
-			});
+			});*/
 		} catch (Exception EX) {
 			EX.printStackTrace();
 		}

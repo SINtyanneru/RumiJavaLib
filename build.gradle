@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'rumi_java_lib'
-version = '13.81'
+version = '13.82'
 
 repositories {
 	mavenCentral()
