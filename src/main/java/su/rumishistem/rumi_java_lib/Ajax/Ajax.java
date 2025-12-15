@@ -25,6 +25,7 @@ public class Ajax {
 	}
 
 	public void set_header(String key, String value) {
+		if (key.equalsIgnoreCase("HOST")) return;
 		header_list.put(key.toUpperCase(), value);
 	}
 
