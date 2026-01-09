@@ -15,39 +15,49 @@ public class SQLC {
 
 	public void update_execute(String script, Object[] param_list) throws SQLException {
 		PreparedStatement stmt = connection.prepareStatement(script);
-		stmt_set_param(stmt, param_list);
-		stmt.executeUpdate();
 
-		if (auto_commit) {
-			connection.commit();
-			connection.close();
+		try {
+			stmt_set_param(stmt, param_list);
+			stmt.executeUpdate();
+		} finally {
+			if (stmt != null) stmt.close();
+			if (auto_commit) commit();
 		}
 	}
 
 	public ArrayNode select_execute(String script, Object[] param_list) throws SQLException {
-		PreparedStatement stmt = connection.prepareStatement(script);
-		stmt_set_param(stmt, param_list);
+		PreparedStatement stmt = null;
+		ResultSet result = null;
 
-		ResultSet result = stmt.executeQuery();
-		ResultSetMetaData meta = result.getMetaData();
-		final int col_count = meta.getColumnCount();
+		try {
+			stmt = connection.prepareStatement(script);
+			stmt_set_param(stmt, param_list);
 
-		int data_i = 0;
-		ArrayNode data = new ArrayNode();
+			result = stmt.executeQuery();
+			ResultSetMetaData meta = result.getMetaData();
+			final int col_count = meta.getColumnCount();
 
-		while (result.next()) {
-			ArrayNode row = new ArrayNode();
-			for (int i = 1; i <= col_count; i++) {
-				String name = meta.getColumnLabel(i);
-				Object value = result.getObject(i);
-				row.setDATA(name, new ArrayData(value));
+			int data_i = 0;
+			ArrayNode data = new ArrayNode();
+
+			while (result.next()) {
+				ArrayNode row = new ArrayNode();
+				for (int i = 1; i <= col_count; i++) {
+					String name = meta.getColumnLabel(i);
+					Object value = result.getObject(i);
+					row.setDATA(name, new ArrayData(value));
+				}
+
+				data.setDATA(data_i, row);
+				data_i += 1;
 			}
 
-			data.setDATA(data_i, row);
-			data_i += 1;
+			return data;
+		} finally {
+			if (result != null) result.close();
+			if (stmt != null) stmt.close();
+			if (auto_commit) commit();
 		}
-
-		return data;
 	}
 
 	public void begin() throws SQLException {
