@@ -77,13 +77,13 @@ public class SQLC {
 	private void stmt_set_param(PreparedStatement stmt, Object[] param_list) throws SQLException {
 		for (int i = 0; i < param_list.length; i++) {
 			Object param = param_list[i];
-			Class<?> c = param.getClass();
 
 			if (param == null) {
 				stmt.setNull(i+1, Types.NULL);
 				continue;
 			}
 
+			Class<?> c = param.getClass();
 			if (c == String.class) {
 				stmt.setString(i+1, (String) param);
 			} else if (c == Integer.class) {
