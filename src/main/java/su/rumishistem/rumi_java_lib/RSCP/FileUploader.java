@@ -104,11 +104,11 @@ public class FileUploader {
 		out.write(md.digest());
 		out.flush();
 
-		if ((in.read() & 0xFF) == 0x20) {
-			close();
-		} else {
+		if ((in.read() & 0xFF) == 0x40) {
 			throw new ChecksumError();
 		}
+
+		close();
 	}
 
 	public void close() {
