@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'rumi_java_lib'
-version = '13.90'
+version = '13.91'
 
 repositories {
 	mavenCentral()
@@ -32,6 +32,8 @@ dependencies {
 	implementation("io.netty:netty-all:4.1.68.Final")
 
 	implementation("com.github.kwhat:jnativehook:2.2.2")
+
+	implementation files("/home/rumisan/source/rsdf-java/target/rsdf-java-1.0-jar-with-dependencies.jar")
 }
 
 jar {
