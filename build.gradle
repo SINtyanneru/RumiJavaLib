@@ -8,6 +8,12 @@ version = '13.91'
 
 repositories {
 	mavenCentral()
+	maven {
+		url "https://repo.rumia.me/maven2/"
+		metadataSources {
+			artifact()
+		}
+	}
 }
 
 dependencies {
@@ -33,7 +39,7 @@ dependencies {
 
 	implementation("com.github.kwhat:jnativehook:2.2.2")
 
-	implementation files("/home/rumisan/source/rsdf-java/target/rsdf-java-1.0-jar-with-dependencies.jar")
+	implementation("su.rumishistem:rsdf-java:1.0")
 }
 
 jar {
