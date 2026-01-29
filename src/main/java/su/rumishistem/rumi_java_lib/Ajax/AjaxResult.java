@@ -1,12 +1,11 @@
 package su.rumishistem.rumi_java_lib.Ajax;
 
-import kotlin.text.Charsets;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +44,6 @@ public class AjaxResult {
 	}
 
 	public String get_body_as_string() throws IOException {
-		return new String(get_body_as_byte(), Charsets.UTF_8);
+		return new String(get_body_as_byte(), StandardCharsets.UTF_8);
 	}
 }

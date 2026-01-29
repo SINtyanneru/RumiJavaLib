@@ -6,8 +6,6 @@ import su.rumishistem.rumi_java_lib.MisskeyBot.Event.NewFollowEvent;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Event.NewNoteEvent;
 import su.rumishistem.rumi_java_lib.MisskeyBot.Event.UnFollowEvent;
 import su.rumishistem.rumi_java_lib.MisskeyBot.MisskeyClient;
-import su.rumishistem.rumi_java_lib.RSDF.RSDFDecoder;
-import su.rumishistem.rumi_java_lib.RSDF.RSDFEncoder;
 
 import java.io.File;
 import java.io.IOException;
